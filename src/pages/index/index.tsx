@@ -101,6 +101,12 @@ const HomePage: React.FC = () => {
   const { toast } = useToast();
   const chatRef = useRef<HTMLDivElement>(null);
   const promptRef = useRef<HTMLInputElement>(null);
+
+  const model = useSimple(core.model);
+  const installedModels = useSimple(core.installed_models);
+  const visited = useSimple(core.visited);
+  const API_URL = useSimple(core.localAPI);
+
   const [history, setHistory] = useState<
     {
       who: 'me' | 'ollama';
@@ -112,9 +118,6 @@ const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [txt, setTxt] = useState('');
   const [ctx, setCtx] = useState<number[]>();
-  const model = useSimple(core.model);
-  const installedModels = useSimple(core.installed_models);
-  const visited = useSimple(core.visited);
 
   const getAvailableModels = async () => {
     try {
@@ -216,6 +219,10 @@ const HomePage: React.FC = () => {
       getAvailableModels();
     }
   };
+
+  useEffect(() => {
+    getAvailableModels();
+  }, [API_URL]);
 
   useEffect(() => {
     initPageLoad();
