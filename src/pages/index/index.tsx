@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ReloadIcon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { IntroDialog } from './parts/IntroDialog';
 
 function extractTextAndCodeBlocks(
   inputString: string
@@ -107,12 +108,13 @@ const HomePage: React.FC = () => {
       created_at: Date;
     }[]
   >([]);
-
+  const [showDialog, setShowDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [txt, setTxt] = useState('');
   const [ctx, setCtx] = useState<number[]>();
   const model = useSimple(core.model);
   const installedModels = useSimple(core.installed_models);
+  const visited = useSimple(core.visited);
 
   const getAvailableModels = async () => {
     try {
@@ -207,12 +209,21 @@ const HomePage: React.FC = () => {
     }
   }, [txt, history, ctx, chatRef, promptRef, model]);
 
+  const initPageLoad = () => {
+    if (visited === false) {
+      setShowDialog(true);
+    } else {
+      getAvailableModels();
+    }
+  };
+
   useEffect(() => {
-    getAvailableModels();
+    initPageLoad();
   }, []);
 
   return (
     <div className=" h-full w-full flex flex-col justify-center items-center">
+      {showDialog && <IntroDialog onClose={() => setShowDialog(false)} />}
       <div className="flex flex-row mb-2 w-[100%] p-4">
         <Input
           ref={promptRef}

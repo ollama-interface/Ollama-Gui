@@ -10,11 +10,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { core } from '@/core';
+import { OLLAMA_COMMAND, core } from '@/core';
 import { ClipboardCopyIcon } from '@radix-ui/react-icons';
 import { useSimple } from 'simple-core-state';
-
-const OLLAMA_COMMAND = `OLLAMA_ORIGINS=https://ollama-web-ui.vercel.app OLLAMA_HOST=127.0.0.1:11435 ollama serve`;
 
 export const SideInfoSheet: React.FC = () => {
   const url = useSimple(core.localAPI);
@@ -23,12 +21,12 @@ export const SideInfoSheet: React.FC = () => {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" className="whitespace-nowrap">
-          Info & Help
+          Settings & Info
         </Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Welcome to Ollama Chat Box</SheetTitle>
+          <SheetTitle>Welcome to Ollama Web Interface</SheetTitle>
           <SheetDescription>
             Thank you for visiting this website, I made this because there is no
             web chat interface I have found at the time building this.

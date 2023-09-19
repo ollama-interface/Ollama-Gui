@@ -12,10 +12,11 @@ const instance = new SimpleCore(
         size: 1,
       },
     ],
+    visited: false,
   },
   { storage: { prefix: 'ollama_web_ui' } }
 );
 
-instance.persist(['model', 'localAPI']);
+instance.persist(['model', 'localAPI', 'visited']);
 
 export const core = instance.core();
