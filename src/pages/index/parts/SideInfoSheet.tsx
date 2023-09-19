@@ -14,6 +14,8 @@ import { core } from '@/core';
 import { ClipboardCopyIcon } from '@radix-ui/react-icons';
 import { useSimple } from 'simple-core-state';
 
+const OLLAMA_COMMAND = `OLLAMA_ORIGINS=https://ollama-web-ui.vercel.app OLLAMA_HOST=127.0.0.1:11435 ollama serve`;
+
 export const SideInfoSheet: React.FC = () => {
   const url = useSimple(core.localAPI);
 
@@ -55,14 +57,12 @@ export const SideInfoSheet: React.FC = () => {
                 Serve command for ollama:
               </Label>
               <code className="relative rounded bg-neutral-200 px-[0.5rem] py-[0.5rem] font-mono text-sm font-semibold pb-8">
-                {`OLLAMA_ORIGINS=https://ollama-web-ui.vercel.app ollama serve`}
+                {OLLAMA_COMMAND}
               </code>
               <div className="flex justify-end mt-2">
                 <Button
                   onClick={() => {
-                    navigator.clipboard.writeText(
-                      'OLLAMA_ORIGINS=https://ollama-web-ui.vercel.app ollama serve'
-                    );
+                    navigator.clipboard.writeText(OLLAMA_COMMAND);
                   }}
                 >
                   <ClipboardCopyIcon className="mr-2" />

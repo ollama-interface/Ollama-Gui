@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ReloadIcon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
 function extractTextAndCodeBlocks(
   inputString: string
@@ -117,6 +118,12 @@ const HomePage: React.FC = () => {
     try {
       const res = await ollamaRequest('GET', 'api/tags');
       if (res?.data?.models) {
+        toast({
+          variant: 'default',
+          color: 'green',
+          title: 'Connected',
+          description: 'Connection has been esteblished',
+        });
         core.installed_models.set(res.data.models);
       } else {
         toast({
@@ -164,7 +171,6 @@ const HomePage: React.FC = () => {
           txt: codeBlocks,
           who: 'ollama',
         });
-        // setHistory();
       } else {
         currentHistory.push({
           txt: [{ content: txtMsg, type: 'text' }],
@@ -227,6 +233,7 @@ const HomePage: React.FC = () => {
           onClick={() => submitPrompt()}
           className="flex-shrink-0"
         >
+          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
           Submit
         </Button>
 
@@ -252,7 +259,17 @@ const HomePage: React.FC = () => {
                         ?.length
                     }
                   >
-                    {item.name}
+                    <div className="flex flex-row items-center">
+                      <a>{item.name}</a>
+                      {!installedModels.filter((e) =>
+                        e.name.includes(item.name)
+                      )?.length && (
+                        <ExclamationTriangleIcon
+                          className="ml-2"
+                          color="#e94646"
+                        />
+                      )}
+                    </div>
                   </SelectItem>
                 ))}
               </SelectGroup>
