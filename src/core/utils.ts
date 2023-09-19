@@ -17,6 +17,7 @@ export const ollamaRequest = async (
 			headers: {
 				"Content-Type": "application/json",
 			},
+			withCredentials: true,
 		}
 	);
 
