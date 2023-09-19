@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { core } from ".";
 
 export const ollamaRequest = async (
 	prompt: string,
@@ -6,7 +7,7 @@ export const ollamaRequest = async (
 	ctx?: number[]
 ) => {
 	const res = await Axios.post(
-		"http://localhost:11434/api/generate",
+		`${core.localAPI._value}/api/generate`,
 		{
 			model: mdl,
 			prompt: prompt,
