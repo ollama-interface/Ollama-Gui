@@ -227,7 +227,7 @@ const HomePage: React.FC = () => {
               core.model.set(e);
             }}
           >
-            <SelectTrigger className="w-[100px]">
+            <SelectTrigger className="w-fit whitespace-nowrap">
               <SelectValue placeholder="Select a Model" />
             </SelectTrigger>
             <SelectContent>
