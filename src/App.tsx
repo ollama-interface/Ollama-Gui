@@ -32,6 +32,7 @@ import {
 	Sheet,
 	SheetFooter,
 } from "./components/ui/sheet";
+import { ClipboardCopyIcon } from "@radix-ui/react-icons";
 
 function extractTextAndCodeBlocks(
 	inputString: string
@@ -225,14 +226,32 @@ function App() {
 								Thank you for visiting this website, I made this because there
 								is no web chat interface I have found at the time building this.
 							</SheetDescription>
-							<div className="mt-4">
-								<a className="mr-2 text-md text-neutral-600">Download:</a>
+							<div className="">
+								<a className="mr-1 text-sm font-bold text-neutral-800">
+									Download link:
+								</a>
 								<a
 									href="https://ollama.ai/"
-									className="font-medium text-primary underline underline-offset-4 "
+									className="text-sm  underline underline-offset-4"
 								>
 									https://ollama.ai/
 								</a>
+								<div className="flex flex-col mt-4">
+									<a className="mt-4 text-sm mb-2">Serve command for ollama:</a>
+									<code className="relative rounded bg-neutral-200 px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold pb-8">
+										{`OLLAMA_ORIGINS=https://ollama-web-pvx6p8f7s-twanluttik.vercel.app ollama serve`}
+									</code>
+									<div className="flex justify-end mt-2">
+										<Button>
+											<ClipboardCopyIcon className="mr-2" />
+											Copy
+										</Button>
+									</div>
+									<a className="italic text-sm text-neutral-500 mt-6">
+										We need to run this, otherwise the website can't access your
+										ollama server on <strong>your</strong> machine
+									</a>
+								</div>
 							</div>
 							<SheetFooter className="pt-20 flex flex-col">
 								<a
