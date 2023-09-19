@@ -6,21 +6,25 @@ export const ollamaRequest = async (
 	mdl: string,
 	ctx?: number[]
 ) => {
-	const res = await Axios.post(
-		`${core.localAPI._value}/api/generate`,
-		{
-			model: mdl,
-			prompt: prompt,
-			context: ctx,
-		},
-		{
-			headers: {
-				"Content-Type": "application/json",
+	try {
+		const res = await Axios.post(
+			`${core.localAPI._value}/api/generate`,
+			{
+				model: mdl,
+				prompt: prompt,
+				context: ctx,
 			},
-		}
-	);
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
 
-	return res.data;
+		return res.data;
+	} catch (error) {
+		throw error;
+	}
 };
 
 export interface OllamaReturnObj {

@@ -33,6 +33,7 @@ import {
 	SheetFooter,
 } from "./components/ui/sheet";
 import { ClipboardCopyIcon } from "@radix-ui/react-icons";
+import { useToast } from "./components/ui/use-toast";
 
 function extractTextAndCodeBlocks(
 	inputString: string
@@ -105,6 +106,7 @@ const models = [
 ];
 
 function App() {
+	const { toast } = useToast();
 	const chatRef = useRef<HTMLDivElement>(null);
 	const [history, setHistory] = useState<
 		{
@@ -120,51 +122,61 @@ function App() {
 	const model = useSimple(core.model);
 
 	const submitPrompt = useCallback(async () => {
-		setLoading(true);
+		try {
+			setLoading(true);
 
-		// Push my question to the history
-		const ch = history;
-		ch.push({
-			created_at: new Date(),
-			txt: [{ content: txt, type: "text" }],
-			who: "me",
-		});
-		setHistory(ch);
-		setTxt("");
-
-		// Request promopt
-		const res = await ollamaRequest(txt, model, ctx);
-		const convertedToJson: OllamaReturnObj[] = convertTextToJson(res);
-
-		const txtMsg = convertedToJson.map((item) => item.response).join("");
-		const currentHistory = history;
-
-		if (txtMsg.includes("```")) {
-			const codeBlocks = extractTextAndCodeBlocks(txtMsg);
-			console.log(codeBlocks);
-			currentHistory.push({
+			// Push my question to the history
+			const ch = history;
+			ch.push({
 				created_at: new Date(),
-				txt: codeBlocks,
-				who: "ollama",
+				txt: [{ content: txt, type: "text" }],
+				who: "me",
 			});
-			// setHistory();
-		} else {
-			currentHistory.push({
-				txt: [{ content: txtMsg, type: "text" }],
-				who: "ollama",
-				created_at: new Date(),
+			setHistory(ch);
+			setTxt("");
+
+			// Request promopt
+			const res = await ollamaRequest(txt, model, ctx);
+			const convertedToJson: OllamaReturnObj[] = convertTextToJson(res);
+
+			const txtMsg = convertedToJson.map((item) => item.response).join("");
+			const currentHistory = history;
+
+			if (txtMsg.includes("```")) {
+				const codeBlocks = extractTextAndCodeBlocks(txtMsg);
+				console.log(codeBlocks);
+				currentHistory.push({
+					created_at: new Date(),
+					txt: codeBlocks,
+					who: "ollama",
+				});
+				// setHistory();
+			} else {
+				currentHistory.push({
+					txt: [{ content: txtMsg, type: "text" }],
+					who: "ollama",
+					created_at: new Date(),
+				});
+			}
+
+			if (!!convertedToJson[convertedToJson.length - 1].context?.length) {
+				setCtx(convertedToJson[convertedToJson.length - 1].context);
+			}
+			if (chatRef.current) {
+				chatRef.current.scrollTo(0, chatRef.current.scrollHeight * 2);
+			}
+
+			setLoading(false);
+			setHistory(currentHistory);
+		} catch (error) {
+			toast({
+				variant: "destructive",
+				title: "Failed",
+				description:
+					"Something went wrong sending the promt, Check Info & Help",
 			});
+			setLoading(false);
 		}
-
-		if (!!convertedToJson[convertedToJson.length - 1].context?.length) {
-			setCtx(convertedToJson[convertedToJson.length - 1].context);
-		}
-		if (chatRef.current) {
-			chatRef.current.scrollTo(0, chatRef.current.scrollHeight * 2);
-		}
-
-		setLoading(false);
-		setHistory(currentHistory);
 	}, [txt, history, ctx, chatRef, model]);
 
 	return (
