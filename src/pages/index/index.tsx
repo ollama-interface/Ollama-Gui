@@ -110,6 +110,7 @@ const HomePage: React.FC = () => {
   const [txt, setTxt] = useState('');
   const [ctx, setCtx] = useState<number[]>();
   const model = useSimple(core.model);
+  const installedModels = useSimple(core.installed_models);
 
   const getAvailableModels = async () => {
     try {
@@ -234,7 +235,14 @@ const HomePage: React.FC = () => {
               <SelectGroup>
                 <SelectLabel>Models</SelectLabel>
                 {models.map((item, index) => (
-                  <SelectItem key={index} value={item.name}>
+                  <SelectItem
+                    key={index}
+                    value={item.name}
+                    disabled={
+                      !installedModels.filter((e) => e.name.includes(item.name))
+                        ?.length
+                    }
+                  >
                     {item.name}
                   </SelectItem>
                 ))}
