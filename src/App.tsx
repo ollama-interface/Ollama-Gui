@@ -239,10 +239,16 @@ function App() {
 								<div className="flex flex-col mt-4">
 									<a className="mt-4 text-sm mb-2">Serve command for ollama:</a>
 									<code className="relative rounded bg-neutral-200 px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold pb-8">
-										{`OLLAMA_ORIGINS=https://ollama-web-pvx6p8f7s-twanluttik.vercel.app ollama serve`}
+										{`OLLAMA_ORIGINS=https://ollama-web-ui.vercel.app ollama serve`}
 									</code>
 									<div className="flex justify-end mt-2">
-										<Button>
+										<Button
+											onClick={() => {
+												navigator.clipboard.writeText(
+													"OLLAMA_ORIGINS=https://ollama-web-ui.vercel.app ollama serve"
+												);
+											}}
+										>
 											<ClipboardCopyIcon className="mr-2" />
 											Copy
 										</Button>
