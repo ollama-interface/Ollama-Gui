@@ -98,6 +98,7 @@ const models = [
 const HomePage: React.FC = () => {
   const { toast } = useToast();
   const chatRef = useRef<HTMLDivElement>(null);
+  const promptRef = useRef<HTMLInputElement>(null);
   const [history, setHistory] = useState<
     {
       who: 'me' | 'ollama';
@@ -191,7 +192,14 @@ const HomePage: React.FC = () => {
       });
       setLoading(false);
     }
-  }, [txt, history, ctx, chatRef, model]);
+
+    if (promptRef?.current !== null) {
+      console.log('xxx');
+      setTimeout(() => {
+        promptRef.current?.focus();
+      }, 0);
+    }
+  }, [txt, history, ctx, chatRef, promptRef, model]);
 
   useEffect(() => {
     getAvailableModels();
@@ -201,6 +209,7 @@ const HomePage: React.FC = () => {
     <div className=" h-full w-full flex flex-col justify-center items-center">
       <div className="flex flex-row mb-2 w-[100%] p-4">
         <Input
+          ref={promptRef}
           autoFocus
           value={txt}
           disabled={loading}
@@ -265,9 +274,7 @@ const HomePage: React.FC = () => {
                 <p className="mr-2 mt-2.5 text-neutral-400">You</p>
               )}
               <div
-                className={`right-0 flex flex-col mb-10 bg-neutral-50 border-solid border-neutral-200 border rounded-xl p-2 w-[80%] ${
-                  item.who === 'ollama' ? '' : ''
-                }`}
+                className={`right-0 flex flex-col mb-10 bg-neutral-50 border-solid border-neutral-200 border rounded-xl p-2 w-[80%]`}
               >
                 {item.txt?.map((txtItem, txtIndex) => {
                   if (txtItem.type === 'text') {
