@@ -1,40 +1,27 @@
-import { useCallback, useRef, useState } from "react";
-
-import "./App.css";
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/use-toast";
 import {
 	OllamaReturnObj,
 	convertTextToJson,
 	core,
 	ollamaRequest,
-} from "./core";
-import { Skeleton } from "./components/ui/skeleton";
-import dayjs from "dayjs";
-
-import CodeEditor from "@uiw/react-textarea-code-editor";
+} from "@/core";
 import {
 	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
 	SelectTrigger,
 	SelectValue,
-} from "./components/ui/select";
+	SelectContent,
+	SelectGroup,
+	SelectLabel,
+	SelectItem,
+} from "@radix-ui/react-select";
+import dayjs from "dayjs";
+import { useCallback, useRef, useState } from "react";
 import { useSimple } from "simple-core-state";
-import {
-	SheetTrigger,
-	SheetContent,
-	SheetHeader,
-	SheetTitle,
-	SheetDescription,
-	Sheet,
-	SheetFooter,
-} from "./components/ui/sheet";
-import { ClipboardCopyIcon } from "@radix-ui/react-icons";
-import { useToast } from "./components/ui/use-toast";
-import { SideInfoSheet } from "./pages/index/parts/Side";
+import CodeEditor from "@uiw/react-textarea-code-editor";
+import { SideInfoSheet } from "./parts/Side";
 
 function extractTextAndCodeBlocks(
 	inputString: string
