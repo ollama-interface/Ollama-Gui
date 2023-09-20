@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { core, createNewConversation } from '@/core';
-import { ModelTypes } from '@/core/types';
 import React, { useCallback } from 'react';
 import { useSimple } from 'simple-core-state';
 

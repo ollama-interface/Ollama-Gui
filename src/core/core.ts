@@ -1,5 +1,5 @@
 import { SimpleCore } from 'simple-core-state';
-import { ICoreType, ModelTypes } from './types';
+import { ICoreType } from './types';
 
 const instance = new SimpleCore<ICoreType>(
   {

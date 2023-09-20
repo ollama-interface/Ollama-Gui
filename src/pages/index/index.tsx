@@ -8,7 +8,6 @@ import {
   allomaGenerate,
   convertTextToJson,
   core,
-  createNewConversation,
   ollamaRequest,
 } from '@/core';
 
@@ -59,19 +58,12 @@ function extractTextAndCodeBlocks(
   return matches as any;
 }
 
-interface HistoryType {
-  who: 'me' | 'ollama';
-  txt: { content: string; type: 'text' | 'code' }[];
-  created_at: Date;
-}
-
 const HomePage: React.FC = () => {
   const { toast } = useToast();
   const chatRef = useRef<HTMLDivElement>(null);
   const promptRef = useRef<HTMLInputElement>(null);
 
   const model = useSimple(core.model);
-  const installedModels = useSimple(core.installed_models);
   const visited = useSimple(core.visited);
   const API_URL = useSimple(core.localAPI);
   const conversations = useSimple(core.conversations);

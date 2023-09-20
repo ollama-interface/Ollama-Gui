@@ -34,7 +34,7 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
             Thank you for visiting this website, I made this because there is no
             web chat interface I have found at the time building this.
           </SheetDescription>
-          <div className="">
+          <div className="h-100%">
             <Label className="mb-1 font-medium text-neutral-900 mr-1">
               Ollama:
             </Label>
