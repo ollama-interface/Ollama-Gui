@@ -21,7 +21,7 @@ export const MainRouter = () => {
       <Helmet>
         <meta
           http-equiv="Content-Security-Policy"
-          content="default-src 'self'; style-src 'self' 'unsafe-inline'"
+          content="script-src 'self' https://ollama-web-ui.vercel.app;"
         ></meta>
       </Helmet>
       {routesList.map((item, index) => (
