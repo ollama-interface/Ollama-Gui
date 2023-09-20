@@ -18,12 +18,12 @@ const routesList = [
 export const MainRouter = () => {
   return (
     <Routes>
-      <Helmet>
+      {/* <Helmet>
         <meta
           http-equiv="Content-Security-Policy"
           content="script-src 'self' https://ollama-web-ui.vercel.app;"
         ></meta>
-      </Helmet>
+      </Helmet> */}
       {routesList.map((item, index) => (
         <Route
           path={item.path}
