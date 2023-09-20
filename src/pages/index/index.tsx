@@ -8,7 +8,6 @@ import {
   allomaGenerate,
   convertTextToJson,
   core,
-  formatBytes,
   ollamaRequest,
 } from '@/core';
 
