@@ -6,7 +6,6 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue,
 } from '@/components/ui/select';
 import { core, createNewConversation } from '@/core';
 import React, { useCallback } from 'react';
@@ -46,18 +45,14 @@ export const SelectConversation: React.FC<ISelectConversationProps> = ({
         onValueChange={onSelectHanlder}
       >
         <SelectTrigger className="w-fit whitespace-nowrap">
-          <SelectValue placeholder="Select a Model" />
+          {currentConversation}
         </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
+        <SelectContent className="w-full">
+          <SelectGroup className="w-full">
             <SelectLabel>Conversations</SelectLabel>
-            {/* <SelectItem value={'session'}>Session Mode</SelectItem> */}
             {Object.entries(conversations)?.map((item, index) => (
               <SelectItem key={index} value={item[0]}>
-                <div className="flex flex-row items-center">
-                  <a>{item[0]}</a>
-                  {/* <a className="ml-4">{item[1].ctx?.length}</a> */}
-                </div>
+                <a>{item[0]}</a>
               </SelectItem>
             ))}
             <Button

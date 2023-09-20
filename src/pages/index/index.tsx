@@ -16,10 +16,16 @@ import { SideInfoSheet } from './parts/SideInfoSheet';
 import { useSimple } from 'simple-core-state';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 
-import { ReloadIcon } from '@radix-ui/react-icons';
+import { ReloadIcon, TrashIcon } from '@radix-ui/react-icons';
 import { IntroDialog } from './parts/IntroDialog';
 import { SelectConversation } from './parts/SelectConversation';
 import { SelectModel } from './parts/SelectModel';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { ConfirmChatClear } from './parts/ConfirmChatClear';
 
 function extractTextAndCodeBlocks(
   inputString: string
@@ -70,6 +76,7 @@ const HomePage: React.FC = () => {
   const currentConversation = useSimple(core.current_conversation);
 
   const [showDialog, setShowDialog] = useState(false);
+  const [showChatClearDialog, setShowChatClearDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [txt, setTxt] = useState('');
 
@@ -100,6 +107,10 @@ const HomePage: React.FC = () => {
       });
     }
   };
+
+  const removeConv = useCallback(() => {
+    setShowChatClearDialog(true);
+  }, []);
 
   const submitPrompt = useCallback(async () => {
     try {
@@ -192,6 +203,16 @@ const HomePage: React.FC = () => {
     }
   };
 
+  const deleteConversation = useCallback(() => {
+    const cc = { ...conversations };
+    delete cc[currentConversation];
+    core.conversations.set(cc);
+
+    // Select a new conversation
+    const nextId = Object.entries(cc)[0][0] || 'session';
+    core.current_conversation.set(nextId);
+  }, [currentConversation, conversations]);
+
   useEffect(() => {
     getAvailableModels();
   }, [API_URL]);
@@ -209,6 +230,18 @@ const HomePage: React.FC = () => {
           }}
         />
       )}
+
+      {showChatClearDialog && (
+        <ConfirmChatClear
+          onClose={(e) => {
+            setShowChatClearDialog(false);
+            if (e) {
+              deleteConversation();
+            }
+          }}
+        />
+      )}
+
       <div className="flex flex-row mb-2 w-[100%] p-4">
         <Input
           ref={promptRef}
@@ -234,6 +267,23 @@ const HomePage: React.FC = () => {
         </Button>
 
         <SelectConversation loading={loading} />
+        <Tooltip>
+          <TooltipTrigger className="">
+            <Button
+              disabled={currentConversation === 'session'}
+              variant={'destructive'}
+              size={'default'}
+              className="w-10 p-0 px-2 ml-2"
+              onClick={removeConv}
+            >
+              <TrashIcon height={21} width={21} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <p>Delete Conversation</p>
+          </TooltipContent>
+        </Tooltip>
+
         <SelectModel loading={loading} />
         <SideInfoSheet loading={loading} />
       </div>
