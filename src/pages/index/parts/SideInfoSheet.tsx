@@ -22,14 +22,24 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
   const url = useSimple(core.localAPI);
   const convs = useSimple(core.conversations);
 
+  const clearConversations = () => {
+    core.conversations.set({});
+    core.current_conversation.set('');
+    toast({
+      title: 'Conversation has been cleared',
+      description:
+        'All conversations has been cleared and you can start from fresh.',
+    });
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" className="whitespace-nowrap">
+        <Button variant="outline" className="whitespace-nowrap dark:text-white">
           Settings & Info
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className="border-neutral-100 dark:border-neutral-900">
         <SheetHeader>
           <SheetTitle>Welcome to Ollama Web Interface</SheetTitle>
           <SheetDescription>
@@ -39,30 +49,31 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
         </SheetHeader>
 
         <div className="h-100%">
-          <Label className="mb-1 font-medium text-neutral-900 mr-1">
+          <Label className="mb-1 font-medium text-neutral-900 dark:text-neutral-100 mr-1">
             Ollama:
           </Label>
           <a
             href="https://ollama.ai/"
-            className="text-sm  underline underline-offset-4"
+            className="text-sm  underline underline-offset-4 dark:text-white"
           >
             https://ollama.ai/
           </a>
           <div className="flex flex-col mt-4">
-            <Label className="mb-1 font-medium text-neutral-900">
+            <Label className="mb-1 font-medium text-neutral-900 dark:text-neutral-100">
               Ollama remote address:
             </Label>
             <Input
               disabled={loading}
               type="text"
+              className="dark:text-white"
               placeholder="Ollama url"
               value={url}
               onChange={(e) => core.localAPI.set(e.currentTarget.value)}
             />
-            <Label className="mt-6 mb-1 font-medium text-neutral-900">
+            <Label className="mt-6 mb-1 font-medium text-neutral-900 dark:text-neutral-100">
               Serve command for ollama:
             </Label>
-            <code className="relative rounded bg-neutral-200 px-[0.5rem] py-[0.5rem] font-mono text-sm font-semibold pb-8">
+            <code className="relative rounded bg-neutral-200 dark:text-white dark:bg-neutral-800 px-[0.5rem] py-[0.5rem] font-mono text-sm font-semibold pb-8">
               <p className="break-words">{OLLAMA_COMMAND}</p>
               <Button
                 size="sm"
@@ -75,12 +86,13 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
                 Copy
               </Button>
             </code>
-            <a className="italic text-sm text-neutral-800 mt-2">
+            <a className="italic text-sm text-neutral-800 dark:text-neutral-200 mt-2">
               We need to run this, otherwise the website can't access your
               ollama server that is running on <strong>your</strong> machine.
             </a>
-            <div className="mt-6 mb-6 justify-start flex">
+            <div className="mt-6 mb-6 justify-start flex flex-col">
               <Button
+                className="w-fit"
                 onClick={() => {
                   toast({
                     title: 'Copied to clipboard',
@@ -92,6 +104,13 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
                 <ClipboardCopyIcon className="mr-2" />
                 Copy Conversations Data
               </Button>
+              <Button
+                onClick={clearConversations}
+                variant="destructive"
+                className="mt-2 w-fit"
+              >
+                Reset Conversations
+              </Button>
             </div>
           </div>
           <div
@@ -100,13 +119,13 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
           >
             <a
               href="https://twitter.com/twanluttik"
-              className="mt-10 text-sm font-semibold hover:opacity-60 tracking-tight"
+              className="mt-10 text-sm font-semibold hover:opacity-60 tracking-tight dark:text-white"
             >
               Twan Luttik - X (Twitter)
             </a>
             <a
               href="https://github.com/TwanLuttik/ollama-web-ui"
-              className="mt-2 text-sm underline hover:opacity-60"
+              className="mt-2 text-sm underline hover:opacity-60 dark:text-white"
             >
               https://github.com/TwanLuttik/ollama-web-ui
             </a>

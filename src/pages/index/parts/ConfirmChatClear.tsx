@@ -41,7 +41,7 @@ export const ConfirmChatClear: React.FC<IConfirmChatClearProps> = ({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
+          <AlertDialogTitle className="dark:text-neutral-50">
             Are you sure you want to delete the conversation
           </AlertDialogTitle>
           <AlertDialogDescription>
@@ -50,6 +50,7 @@ export const ConfirmChatClear: React.FC<IConfirmChatClearProps> = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel
+            className="dark:text-neutral-50"
             onClick={() => {
               onClose(false);
             }}

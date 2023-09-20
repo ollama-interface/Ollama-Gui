@@ -21,7 +21,6 @@ export const IntroDialog = (p: { onClose: () => void }) => {
     <Dialog
       onOpenChange={(e) => {
         if (!e) {
-          core.visited.set(true);
           p.onClose();
         }
       }}
@@ -29,7 +28,7 @@ export const IntroDialog = (p: { onClose: () => void }) => {
       <DialogTrigger className="hidden" ref={ref}></DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="mb-2">
+          <DialogTitle className="mb-2 dark:text-white">
             Welcome to Ollama Web Interface
           </DialogTitle>
           <DialogDescription>
@@ -39,7 +38,7 @@ export const IntroDialog = (p: { onClose: () => void }) => {
             your machine, you can clone the repo and run it your yourself!
           </DialogDescription>
 
-          <DialogDescription className="mt-8 text-neutral-950 font-semibold">
+          <DialogDescription className="mt-8 text-neutral-950 dark:text-neutral-50 font-semibold">
             Please check 'Settings & Info' for configuring Ollama.
           </DialogDescription>
         </DialogHeader>

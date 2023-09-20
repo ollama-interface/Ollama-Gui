@@ -44,7 +44,7 @@ export const SelectConversation: React.FC<ISelectConversationProps> = ({
         value={currentConversation}
         onValueChange={onSelectHanlder}
       >
-        <SelectTrigger className="w-fit whitespace-nowrap">
+        <SelectTrigger className="w-fit whitespace-nowrap dark:text-white">
           {currentConversation}
         </SelectTrigger>
         <SelectContent className="w-full">

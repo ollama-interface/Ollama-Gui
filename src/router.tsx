@@ -17,20 +17,22 @@ const routesList = [
 
 export const MainRouter = () => {
   return (
-    <Routes>
-      {/* <Helmet>
+    <div className="dark:bg-zinc-950 h-full">
+      <Routes>
+        {/* <Helmet>
         <meta
-          http-equiv="Content-Security-Policy"
-          content="script-src 'self' https://ollama-web-ui.vercel.app;"
+        http-equiv="Content-Security-Policy"
+        content="script-src 'self' https://ollama-web-ui.vercel.app;"
         ></meta>
       </Helmet> */}
-      {routesList.map((item, index) => (
-        <Route
-          path={item.path}
-          element={<Suspense>{item.element}</Suspense>}
-          key={index}
-        />
-      ))}
-    </Routes>
+        {routesList.map((item, index) => (
+          <Route
+            path={item.path}
+            element={<Suspense>{item.element}</Suspense>}
+            key={index}
+          />
+        ))}
+      </Routes>
+    </div>
   );
 };

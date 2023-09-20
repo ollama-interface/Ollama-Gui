@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { ConfirmChatClear } from './parts/ConfirmChatClear';
+import { ModeToggle } from '@/components/mode-toggle';
 
 function extractTextAndCodeBlocks(
   inputString: string
@@ -223,7 +224,7 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div className=" h-full w-full flex flex-col justify-center items-center">
+    <div className="dark:bg-black h-full w-full flex flex-col justify-center items-center">
       {showDialog && (
         <IntroDialog
           onClose={() => {
@@ -250,7 +251,7 @@ const HomePage: React.FC = () => {
           value={txt}
           disabled={loading}
           placeholder="Prompt"
-          className="mr-2"
+          className="mr-2 dark:text-zinc-300"
           onChange={(e) => setTxt(e.currentTarget.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
@@ -271,10 +272,9 @@ const HomePage: React.FC = () => {
         <Tooltip>
           <TooltipTrigger className="">
             <Button
-              disabled={currentConversation === 'session'}
-              variant={'destructive'}
-              size={'default'}
-              className="w-10 p-0 px-2 ml-2"
+              disabled={loading || currentConversation === 'session'}
+              size="default"
+              className="w-10 p-0 px-2 ml-2 bg-red-400 hover:bg-red-400 dark:bg-red-500 dark:hover:bg-red-500 dark:text-white hover:opacity-60"
               onClick={removeConv}
             >
               <TrashIcon height={21} width={21} />
@@ -287,16 +287,7 @@ const HomePage: React.FC = () => {
 
         <SelectModel loading={loading} />
         <SideInfoSheet loading={loading} />
-      </div>
-      <div>
-        <p>
-          {formatBytes(
-            new Blob([
-              JSON.stringify(conversations[currentConversation]).toString(),
-            ]).size
-          )}
-        </p>
-        {/* {JSON.stringify(conversations[currentConversation]).toString().} */}
+        <ModeToggle />
       </div>
       <div className="h-full w-full flex flex-row overflow-hidden">
         <div ref={chatRef} className="w-full overflow-y-scroll px-4">
@@ -304,7 +295,7 @@ const HomePage: React.FC = () => {
             (item, index) => (
               <div
                 key={index}
-                className={`relative w-full flex ${
+                className={` relative w-full flex ${
                   item.who === 'ollama' ? 'justify-end' : ''
                 }`}
               >
@@ -312,12 +303,15 @@ const HomePage: React.FC = () => {
                   <p className="mr-2 mt-2.5 text-neutral-400">You</p>
                 )}
                 <div
-                  className={`right-0 flex flex-col mb-10 bg-neutral-50 border-solid border-neutral-200 border rounded-xl p-2 w-[80%]`}
+                  className={`right-0 flex flex-col mb-10 bg-zinc-100 dark:bg-zinc-900 border-solid border-neutral-200 dark:border-neutral-800  border rounded-xl p-2 w-[80%]`}
                 >
                   {item.txt?.map((txtItem, txtIndex) => {
                     if (txtItem.type === 'text') {
                       return (
-                        <p key={txtIndex} className="text-left">
+                        <p
+                          key={txtIndex}
+                          className="text-left text-neutral-700 dark:text-neutral-300"
+                        >
                           {txtItem.content}
                         </p>
                       );
@@ -325,7 +319,7 @@ const HomePage: React.FC = () => {
                       return (
                         <CodeEditor
                           key={txtIndex}
-                          className="bg-neutral-800 rounded-md my-2"
+                          className="bg-neutral-800 dark:bg-black rounded-md my-2"
                           language="javascript"
                           value={txtItem.content}
                           data-color-mode="dark"

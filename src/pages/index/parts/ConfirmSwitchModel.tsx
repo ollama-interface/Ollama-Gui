@@ -43,7 +43,9 @@ export const ConfirmSwitchModel: React.FC<IConfirmSwitchModelProps> = ({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure you want to switch</AlertDialogTitle>
+          <AlertDialogTitle className="dark:text-white">
+            Are you sure you want to switch
+          </AlertDialogTitle>
           <AlertDialogDescription>
             Swithcing to a different model could make the conversation out of
             place maybe?
@@ -57,7 +59,7 @@ export const ConfirmSwitchModel: React.FC<IConfirmSwitchModelProps> = ({
             />
             <label
               htmlFor="terms"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 dark:text-white"
             >
               Reset conversation history and knowledge
             </label>
@@ -65,6 +67,7 @@ export const ConfirmSwitchModel: React.FC<IConfirmSwitchModelProps> = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel
+            className="dark:text-white"
             onClick={() => {
               onClose(false, confirmReset);
             }}

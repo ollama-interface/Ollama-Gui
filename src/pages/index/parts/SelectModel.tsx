@@ -97,7 +97,7 @@ export const SelectModel: React.FC<ISelectConversationProps> = ({
           // core.
         }}
       >
-        <SelectTrigger className="w-fit whitespace-nowrap">
+        <SelectTrigger className="w-fit whitespace-nowrap dark:text-white">
           <SelectValue placeholder="Select a Model" />
         </SelectTrigger>
         <SelectContent>
