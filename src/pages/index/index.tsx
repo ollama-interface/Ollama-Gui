@@ -89,7 +89,7 @@ const HomePage: React.FC = () => {
           variant: 'default',
           color: 'green',
           title: 'Connected',
-          description: 'Connection has been esteblished',
+          description: 'Connection has been established',
         });
         core.installed_models.set(res.data.models);
       } else {
