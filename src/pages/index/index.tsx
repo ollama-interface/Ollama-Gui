@@ -8,6 +8,7 @@ import {
   allomaGenerate,
   convertTextToJson,
   core,
+  formatBytes,
   ollamaRequest,
 } from '@/core';
 
@@ -286,6 +287,16 @@ const HomePage: React.FC = () => {
 
         <SelectModel loading={loading} />
         <SideInfoSheet loading={loading} />
+      </div>
+      <div>
+        <p>
+          {formatBytes(
+            new Blob([
+              JSON.stringify(conversations[currentConversation]).toString(),
+            ]).size
+          )}
+        </p>
+        {/* {JSON.stringify(conversations[currentConversation]).toString().} */}
       </div>
       <div className="h-full w-full flex flex-row overflow-hidden">
         <div ref={chatRef} className="w-full overflow-y-scroll px-4">

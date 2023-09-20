@@ -7,7 +7,7 @@ import {
   SelectLabel,
   SelectTrigger,
 } from '@/components/ui/select';
-import { core, createNewConversation } from '@/core';
+import { core, createNewConversation, formatBytes } from '@/core';
 import React, { useCallback } from 'react';
 import { useSimple } from 'simple-core-state';
 
@@ -52,7 +52,15 @@ export const SelectConversation: React.FC<ISelectConversationProps> = ({
             <SelectLabel>Conversations</SelectLabel>
             {Object.entries(conversations)?.map((item, index) => (
               <SelectItem key={index} value={item[0]}>
-                <a>{item[0]}</a>
+                <a>
+                  {item[0]} (
+                  {formatBytes(
+                    new Blob([
+                      JSON.stringify(conversations[item[0]]).toString(),
+                    ]).size
+                  )}
+                  )
+                </a>
               </SelectItem>
             ))}
             <Button

@@ -67,3 +67,21 @@ export function convertTextToJson(inputText: string): OllamaReturnObj[] {
 
   return jsonArray;
 }
+
+export function formatBytes(bytes: number) {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let unit = 'B';
+
+  if (bytes >= 1024) {
+    bytes /= 1024;
+    unit += Math.floor(bytes % 1024);
+  }
+
+  if (unit === 'GB') {
+    return `${Math.round(bytes / 1024)} ${units[1]}`;
+  } else if (unit === 'TB') {
+    return `${Math.round(bytes / 1024)} ${units[2]}`;
+  } else {
+    return `${Math.round(bytes)} ${units[0]}`;
+  }
+}
