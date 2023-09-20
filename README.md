@@ -1,5 +1,9 @@
 # Ollama Web Interface
 
+### Build with
+
+- shadcn - UI Library
+
 This is a web interface for Ollama soy you can easily chat through the web instead of the command line.
 
 <img src="./other/preview.img.png" />

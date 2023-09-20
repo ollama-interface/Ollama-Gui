@@ -8,6 +8,7 @@ import {
   allomaGenerate,
   convertTextToJson,
   core,
+  createNewConversation,
   ollamaRequest,
 } from '@/core';
 
@@ -15,17 +16,11 @@ import dayjs from 'dayjs';
 import { SideInfoSheet } from './parts/SideInfoSheet';
 import { useSimple } from 'simple-core-state';
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { ReloadIcon, ExclamationTriangleIcon } from '@radix-ui/react-icons';
+
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { IntroDialog } from './parts/IntroDialog';
+import { SelectConversation } from './parts/SelectConversation';
+import { SelectModel } from './parts/SelectModel';
 
 function extractTextAndCodeBlocks(
   inputString: string
@@ -64,38 +59,11 @@ function extractTextAndCodeBlocks(
   return matches as any;
 }
 
-const models = [
-  {
-    name: 'llama2',
-  },
-  {
-    name: 'llama2:13b',
-  },
-  {
-    name: 'llama2:70b',
-  },
-  {
-    name: 'llama2-uncensored',
-  },
-  {
-    name: 'codellama',
-  },
-  {
-    name: 'orca-mini',
-  },
-  {
-    name: 'vicuna',
-  },
-  {
-    name: 'nous-hermes',
-  },
-  {
-    name: 'nous-hermes:13b',
-  },
-  {
-    name: 'wizard-vicuna',
-  },
-];
+interface HistoryType {
+  who: 'me' | 'ollama';
+  txt: { content: string; type: 'text' | 'code' }[];
+  created_at: Date;
+}
 
 const HomePage: React.FC = () => {
   const { toast } = useToast();
@@ -106,18 +74,12 @@ const HomePage: React.FC = () => {
   const installedModels = useSimple(core.installed_models);
   const visited = useSimple(core.visited);
   const API_URL = useSimple(core.localAPI);
+  const conversations = useSimple(core.conversations);
+  const currentConversation = useSimple(core.current_conversation);
 
-  const [history, setHistory] = useState<
-    {
-      who: 'me' | 'ollama';
-      txt: { content: string; type: 'text' | 'code' }[];
-      created_at: Date;
-    }[]
-  >([]);
   const [showDialog, setShowDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [txt, setTxt] = useState('');
-  const [ctx, setCtx] = useState<number[]>();
 
   const getAvailableModels = async () => {
     try {
@@ -152,30 +114,40 @@ const HomePage: React.FC = () => {
       setLoading(true);
 
       // Push my question to the history
-      const ch = history;
+      const ch = conversations[currentConversation].chatHistory;
       ch.push({
         created_at: new Date(),
         txt: [{ content: txt, type: 'text' }],
         who: 'me',
       });
-      setHistory(ch);
+
+      core.conversations.updatePiece(currentConversation, {
+        ...conversations[currentConversation],
+        chatHistory: ch,
+      });
       setTxt('');
 
       // Request promopt
-      const res = await allomaGenerate(txt, model, ctx);
+      const res = await allomaGenerate(
+        txt,
+        model,
+        conversations[currentConversation].ctx
+      );
       const convertedToJson: OllamaReturnObj[] = convertTextToJson(res);
 
       const txtMsg = convertedToJson.map((item) => item.response).join('');
-      const currentHistory = history;
+      const currentHistory = conversations[currentConversation].chatHistory;
 
       if (txtMsg.includes('```')) {
         const codeBlocks = extractTextAndCodeBlocks(txtMsg);
-        console.log(codeBlocks);
-        currentHistory.push({
-          created_at: new Date(),
-          txt: codeBlocks,
-          who: 'ollama',
-        });
+        if (!codeBlocks) {
+        } else {
+          currentHistory.push({
+            created_at: new Date(),
+            txt: codeBlocks,
+            who: 'ollama',
+          });
+        }
       } else {
         currentHistory.push({
           txt: [{ content: txtMsg, type: 'text' }],
@@ -184,16 +156,16 @@ const HomePage: React.FC = () => {
         });
       }
 
-      if (!!convertedToJson[convertedToJson.length - 1].context?.length) {
-        setCtx(convertedToJson[convertedToJson.length - 1].context);
-      }
-
       if (chatRef.current) {
         chatRef.current.scrollTo(0, chatRef.current.scrollHeight * 2);
       }
 
       setLoading(false);
-      setHistory(currentHistory);
+      core.conversations.updatePiece(currentConversation, {
+        model: model,
+        chatHistory: currentHistory,
+        ctx: convertedToJson[convertedToJson.length - 1].context,
+      });
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -210,7 +182,15 @@ const HomePage: React.FC = () => {
         promptRef.current?.focus();
       }, 0);
     }
-  }, [txt, history, ctx, chatRef, promptRef, model]);
+  }, [
+    txt,
+    history,
+    chatRef,
+    promptRef,
+    model,
+    conversations,
+    currentConversation,
+  ]);
 
   const initPageLoad = () => {
     if (visited === false) {
@@ -230,7 +210,13 @@ const HomePage: React.FC = () => {
 
   return (
     <div className=" h-full w-full flex flex-col justify-center items-center">
-      {showDialog && <IntroDialog onClose={() => setShowDialog(false)} />}
+      {showDialog && (
+        <IntroDialog
+          onClose={() => {
+            setShowDialog(false);
+          }}
+        />
+      )}
       <div className="flex flex-row mb-2 w-[100%] p-4">
         <Input
           ref={promptRef}
@@ -255,96 +241,61 @@ const HomePage: React.FC = () => {
           Submit
         </Button>
 
-        <div className="mx-2">
-          <Select
-            value={model}
-            onValueChange={(e) => {
-              core.model.set(e);
-            }}
-          >
-            <SelectTrigger className="w-fit whitespace-nowrap">
-              <SelectValue placeholder="Select a Model" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Models</SelectLabel>
-                {models.map((item, index) => (
-                  <SelectItem
-                    key={index}
-                    value={item.name}
-                    disabled={
-                      !installedModels.filter((e) => e.name.includes(item.name))
-                        ?.length
-                    }
-                  >
-                    <div className="flex flex-row items-center">
-                      <a>{item.name}</a>
-                      {!installedModels.filter((e) =>
-                        e.name.includes(item.name)
-                      )?.length && (
-                        <ExclamationTriangleIcon
-                          className="ml-2"
-                          color="#e94646"
-                        />
-                      )}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <SideInfoSheet />
+        <SelectConversation loading={loading} />
+        <SelectModel loading={loading} />
+        <SideInfoSheet loading={loading} />
       </div>
       <div className="h-full w-full flex flex-row overflow-hidden">
         <div ref={chatRef} className="w-full overflow-y-scroll px-4">
-          {history?.map((item, index) => (
-            <div
-              key={index}
-              className={`relative w-full flex ${
-                item.who === 'ollama' ? 'justify-end' : ''
-              }`}
-            >
-              {item.who === 'me' && (
-                <p className="mr-2 mt-2.5 text-neutral-400">You</p>
-              )}
+          {conversations[currentConversation]?.chatHistory?.map(
+            (item, index) => (
               <div
-                className={`right-0 flex flex-col mb-10 bg-neutral-50 border-solid border-neutral-200 border rounded-xl p-2 w-[80%]`}
+                key={index}
+                className={`relative w-full flex ${
+                  item.who === 'ollama' ? 'justify-end' : ''
+                }`}
               >
-                {item.txt?.map((txtItem, txtIndex) => {
-                  if (txtItem.type === 'text') {
-                    return (
-                      <p key={txtIndex} className="text-left">
-                        {txtItem.content}
-                      </p>
-                    );
-                  } else if (txtItem.type === 'code') {
-                    return (
-                      <CodeEditor
-                        key={txtIndex}
-                        className="bg-neutral-800 rounded-md my-2"
-                        language="javascript"
-                        value={txtItem.content}
-                        data-color-mode="dark"
-                        style={{
-                          fontSize: 12,
-                          fontFamily:
-                            'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                        }}
-                      />
-                    );
-                  }
-                })}
+                {item.who === 'me' && (
+                  <p className="mr-2 mt-2.5 text-neutral-400">You</p>
+                )}
+                <div
+                  className={`right-0 flex flex-col mb-10 bg-neutral-50 border-solid border-neutral-200 border rounded-xl p-2 w-[80%]`}
+                >
+                  {item.txt?.map((txtItem, txtIndex) => {
+                    if (txtItem.type === 'text') {
+                      return (
+                        <p key={txtIndex} className="text-left">
+                          {txtItem.content}
+                        </p>
+                      );
+                    } else if (txtItem.type === 'code') {
+                      return (
+                        <CodeEditor
+                          key={txtIndex}
+                          className="bg-neutral-800 rounded-md my-2"
+                          language="javascript"
+                          value={txtItem.content}
+                          data-color-mode="dark"
+                          style={{
+                            fontSize: 12,
+                            fontFamily:
+                              'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+                          }}
+                        />
+                      );
+                    }
+                  })}
 
-                <p className="absolute bottom-[20px] text-xs text-neutral-500">
-                  {dayjs(item.created_at).format('HH:MM:ss')}
-                </p>
+                  <p className="absolute bottom-[20px] text-xs text-neutral-500">
+                    {dayjs(item.created_at).format('HH:MM:ss')}
+                  </p>
+                </div>
+                {item.who === 'ollama' && (
+                  <p className="ml-2 mt-2.5 text-neutral-400">Ollama</p>
+                )}
               </div>
-              {item.who === 'ollama' && (
-                <p className="ml-2 mt-2.5 text-neutral-400">Ollama</p>
-              )}
-            </div>
-          ))}
+            )
+          )}
           {loading && (
             <Skeleton className="w-full h-[20px] rounded-full mt-2" />
           )}

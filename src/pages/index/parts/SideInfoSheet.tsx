@@ -14,7 +14,10 @@ import { OLLAMA_COMMAND, core } from '@/core';
 import { ClipboardCopyIcon } from '@radix-ui/react-icons';
 import { useSimple } from 'simple-core-state';
 
-export const SideInfoSheet: React.FC = () => {
+interface ISideInfoSheetProps {
+  loading: boolean;
+}
+export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
   const url = useSimple(core.localAPI);
 
   return (
@@ -46,6 +49,7 @@ export const SideInfoSheet: React.FC = () => {
                 Ollama remote address:
               </Label>
               <Input
+                disabled={loading}
                 type="text"
                 placeholder="Ollama url"
                 value={url}
