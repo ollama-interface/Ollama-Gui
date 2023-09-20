@@ -23,8 +23,10 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
   const convs = useSimple(core.conversations);
 
   const clearConversations = () => {
-    core.conversations.set({});
-    core.current_conversation.set('');
+    core.conversations.set({
+      session: { chatHistory: [], ctx: [], model: 'llama2' },
+    });
+    core.current_conversation.set('session');
     toast({
       title: 'Conversation has been cleared',
       description:
