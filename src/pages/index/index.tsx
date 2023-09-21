@@ -159,15 +159,7 @@ const HomePage: React.FC = () => {
         promptRef.current?.focus();
       }, 0);
     }
-  }, [
-    txt,
-    history,
-    chatRef,
-    promptRef,
-    model,
-    conversations,
-    currentConversation,
-  ]);
+  }, [txt, chatRef, promptRef, model, conversations, currentConversation]);
 
   const initPageLoad = () => {
     if (visited === false) {
@@ -237,7 +229,7 @@ const HomePage: React.FC = () => {
           value={txt}
           disabled={loading}
           placeholder="Prompt"
-          className="mr-2 dark:text-zinc-300"
+          className="mr-2 dark:text-zinc-300  outline-none hold:outline-none"
           onChange={(e) => setTxt(e.currentTarget.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
@@ -304,6 +296,8 @@ const HomePage: React.FC = () => {
                     } else if (txtItem.type === 'code') {
                       return (
                         <CodeEditor
+                          disabled={true}
+                          contentEditable={false}
                           key={txtIndex}
                           className="bg-neutral-800 dark:bg-black rounded-md my-2"
                           language="javascript"
@@ -332,9 +326,12 @@ const HomePage: React.FC = () => {
           {loading && (
             <Skeleton className="w-full h-[20px] rounded-full mt-2" />
           )}
-          {history?.length === 0 && !loading && (
-            <p className="text-neutral-600">No message</p>
-          )}
+          {conversations[currentConversation].chatHistory?.length === 0 &&
+            !loading && (
+              <p className="text-neutral-400 dark:text-neutral-600 text-center mt-10">
+                No message
+              </p>
+            )}
         </div>
       </div>
     </div>
