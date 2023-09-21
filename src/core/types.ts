@@ -6,18 +6,22 @@ export type ModelTypes =
   | 'codellama'
   | 'orca-mini';
 
+export interface IConversationType {
+  model: ModelTypes;
+  ctx: number[];
+  chatHistory: {
+    created_at: Date;
+    txt: { content: string; type: 'text' | 'code' }[];
+    who: 'ollama' | 'me';
+    name?: string;
+  }[];
+}
+
+export type IConversations = { [index: string]: IConversationType };
+
 export type ICoreType = {
   conversations: {
-    [index: string]: {
-      model: ModelTypes;
-      ctx: number[];
-      chatHistory: {
-        created_at: Date;
-        txt: { content: string; type: 'text' | 'code' }[];
-        who: 'ollama' | 'me';
-        name?: string;
-      }[];
-    };
+    [index: string]: IConversationType;
   };
   current_conversation: string;
   model: ModelTypes;
