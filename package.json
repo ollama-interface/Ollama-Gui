@@ -34,7 +34,6 @@
     "react-helmet": "^6.1.0",
     "react-router-dom": "^6.16.0",
     "simple-core-state": "^0.0.16",
-    "styled-components": "^6.0.8",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7"
   },
