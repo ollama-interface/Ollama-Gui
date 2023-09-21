@@ -11,7 +11,7 @@ Welcome to Ollama GUI, this is interface for ollama cli to make it easier to cha
 
 1.  Clone the repo
 2.  `pnpm install`
-3.  `pnpm build`
+3.  `pnpm tauri build`
 4.  Go to `/src-tauri/target/release/bundle/dmg/*.dmg` and install the program with the .dmg file.
 
 <br />
