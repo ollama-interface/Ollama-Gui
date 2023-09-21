@@ -36,7 +36,6 @@ const HomePage: React.FC = () => {
 
   const model = useSimple(core.model);
   const visited = useSimple(core.visited);
-  const API_URL = useSimple(core.localAPI);
   const ollamaConnected = useSimple(core.server_connected);
   const conversations = useSimple(core.conversations);
   const currentConversation = useSimple(core.current_conversation);
@@ -205,8 +204,11 @@ const HomePage: React.FC = () => {
   }, [currentConversation, conversations, model]);
 
   useEffect(() => {
-    getAvailableModels();
-  }, [API_URL]);
+    if (ollamaConnected) getAvailableModels();
+    else {
+      core.installed_models.reset();
+    }
+  }, [ollamaConnected]);
 
   useEffect(() => {
     initPageLoad();

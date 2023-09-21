@@ -21,8 +21,13 @@
       },
       "all": false,
       "shell": {
-        "all": false,
-        "open": true
+        "all": true,
+        "scope": [
+          {
+            "name": "run-ollama-server",
+            "cmd": "OLLAMA_ORIGINS=* OLLAMA_HOST=127.0.0.1:11435 ollama serve"
+          }
+        ]
       }
     },
     "bundle": {
