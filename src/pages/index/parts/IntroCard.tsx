@@ -9,9 +9,10 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { OLLAMA_COMMAND, core, ollamaRequest } from '@/core';
+import { OLLAMA_COMMAND, core } from '@/core';
 import React, { useEffect, useRef } from 'react';
 import { useSimple } from 'simple-core-state';
+import { TryConnect } from '../helper';
 
 interface IIntroCardProps {
   onClose: (e?: boolean) => void;
@@ -21,15 +22,6 @@ export const IntroCard: React.FC<IIntroCardProps> = (p) => {
   const { toast } = useToast();
   const ref = useRef<HTMLButtonElement>(null);
   const server_connected = useSimple(core.server_connected);
-
-  const TryConnect = async () => {
-    try {
-      await ollamaRequest('GET', '');
-      core.server_connected.set(true);
-    } catch (error) {
-      core.server_connected.set(false);
-    }
-  };
 
   useEffect(() => {
     if (ref.current) ref.current.click();
@@ -81,11 +73,7 @@ export const IntroCard: React.FC<IIntroCardProps> = (p) => {
             3. Start connecting to your server
           </DialogDescription>
           <div>
-            <Button
-              onClick={() => TryConnect()}
-              size="sm"
-              disabled={server_connected}
-            >
+            <Button onClick={TryConnect} size="sm" disabled={server_connected}>
               Connect
             </Button>
             {server_connected && (

@@ -54,6 +54,7 @@ const HomePage: React.FC = () => {
       throw error;
     }
   };
+
   const getAvailableModels = async () => {
     try {
       await checkIsRunning();

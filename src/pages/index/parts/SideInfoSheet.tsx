@@ -12,6 +12,8 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { OLLAMA_COMMAND, core } from '@/core';
 import { useSimple } from 'simple-core-state';
+import { TryConnect } from '../helper';
+import { Badge } from '@/components/ui/badge';
 
 interface ISideInfoSheetProps {
   loading: boolean;
@@ -21,6 +23,7 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
   const { toast } = useToast();
   const url = useSimple(core.localAPI);
   const convs = useSimple(core.conversations);
+  const ollamaConnected = useSimple(core.server_connected);
 
   const clearConversations = () => {
     core.conversations.set({
@@ -79,14 +82,39 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
             <Label className="mb-1 font-medium text-neutral-900 dark:text-neutral-100">
               Ollama remote address:
             </Label>
+
             <Input
-              disabled={loading}
+              disabled={ollamaConnected || loading}
               type="text"
               className="dark:text-white"
               placeholder="Ollama url"
               value={url}
               onChange={(e) => core.localAPI.set(e.currentTarget.value)}
             />
+            <div className="mb-4 mt-2 fkex">
+              <Button size="sm" onClick={TryConnect} disabled={ollamaConnected}>
+                Connect
+              </Button>
+              <Button
+                className="ml-2"
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  core.server_connected.set(false);
+                }}
+                disabled={!ollamaConnected}
+              >
+                Disconnect
+              </Button>
+              {ollamaConnected && (
+                <Badge
+                  className="ml-2 bg-green-200 hover:bg-green-200 text-green-700"
+                  variant="secondary"
+                >
+                  Connected
+                </Badge>
+              )}
+            </div>
             <Label className="mt-6 mb-1 font-medium text-neutral-900 dark:text-neutral-100">
               Serve command for ollama:
             </Label>
