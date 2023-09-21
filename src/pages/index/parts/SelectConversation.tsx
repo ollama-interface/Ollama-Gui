@@ -53,7 +53,7 @@ export const SelectConversation: React.FC<ISelectConversationProps> = ({
             {Object.entries(conversations)?.map((item, index) => (
               <SelectItem key={index} value={item[0]}>
                 <a>
-                  {item[0]} (
+                  {item[0]} {` `}(
                   {formatBytes(
                     new Blob([
                       JSON.stringify(conversations[item[0]]).toString(),
@@ -63,15 +63,15 @@ export const SelectConversation: React.FC<ISelectConversationProps> = ({
                 </a>
               </SelectItem>
             ))}
-            <Button
-              className="ml-1 mt-1.5 mb-1"
-              size="sm"
-              variant="outline"
-              onClick={newConv}
-            >
-              Create new conversation
-            </Button>
           </SelectGroup>
+          <Button
+            className="mt-1"
+            size="sm"
+            variant="outline"
+            onClick={newConv}
+          >
+            Create new conversation
+          </Button>
         </SelectContent>
       </Select>
     </div>
