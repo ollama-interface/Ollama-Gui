@@ -1,3 +1,4 @@
+import { trimWhitespace } from '.';
 import { core } from './core';
 import { ModelTypes } from './types';
 
@@ -37,7 +38,11 @@ export function extractTextAndCodeBlocks(
     }
 
     // Add the code block to the array
-    matches.push({ content: codeBlock, type: 'code', who: 'ollama' });
+    matches.push({
+      content: trimWhitespace(codeBlock),
+      type: 'code',
+      who: 'ollama',
+    });
 
     // Update the current index
     currentIndex = index + match.length;
