@@ -11,12 +11,12 @@ import {
 } from '@/components/ui/sheet';
 import { useToast } from '@/components/ui/use-toast';
 import { OLLAMA_COMMAND, core } from '@/core';
-import { ClipboardCopyIcon } from '@radix-ui/react-icons';
 import { useSimple } from 'simple-core-state';
 
 interface ISideInfoSheetProps {
   loading: boolean;
 }
+
 export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
   const { toast } = useToast();
   const url = useSimple(core.localAPI);
@@ -31,6 +31,21 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
       title: 'Conversation has been cleared',
       description:
         'All conversations has been cleared and you can start from fresh.',
+    });
+  };
+
+  const importConversations = async () => {
+    const data = await navigator.clipboard.readText();
+    if (!data) {
+      return;
+    }
+
+    core.conversations.set(JSON.parse(data));
+    core.current_conversation.set('session');
+
+    toast({
+      title: 'Successfully imported',
+      description: 'All of your conversation has been imported',
     });
   };
 
@@ -92,28 +107,35 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
               We need to run this, otherwise the website can't access your
               ollama server that is running on <strong>your</strong> machine.
             </a>
-            <div className="mt-6 mb-6 justify-start flex flex-col">
-              <Button
-                className="w-fit"
-                onClick={() => {
-                  toast({
-                    title: 'Copied to clipboard',
-                    description: 'Past it somewhere save like a txt file',
-                  });
-                  navigator.clipboard.writeText(JSON.stringify(convs));
-                }}
-              >
-                <ClipboardCopyIcon className="mr-2" />
-                Copy Conversations Data
-              </Button>
-              <Button
-                onClick={clearConversations}
-                variant="destructive"
-                className="mt-2 w-fit"
-              >
-                Reset Conversations
-              </Button>
+            <div className="mt-6 justify-start flex flex-col">
+              <Label className="font-medium">
+                You can import & export data by copy your data{' '}
+              </Label>
+              <div className="mt-2">
+                <Button
+                  className="w-fit"
+                  onClick={() => {
+                    toast({
+                      title: 'Copied to clipboard',
+                      description: 'Past it somewhere save like a txt file',
+                    });
+                    navigator.clipboard.writeText(JSON.stringify(convs));
+                  }}
+                >
+                  Export
+                </Button>
+                <Button className="w-fit ml-2" onClick={importConversations}>
+                  Import
+                </Button>
+              </div>
             </div>
+            <Button
+              onClick={clearConversations}
+              variant="destructive"
+              className="mt-6 w-fit"
+            >
+              Reset Conversations
+            </Button>
           </div>
           <div
             style={{ height: 'calc(100% - 455px)' }}

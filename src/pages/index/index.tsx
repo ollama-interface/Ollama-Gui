@@ -8,6 +8,7 @@ import {
   allomaGenerate,
   convertTextToJson,
   core,
+  extractTextAndCodeBlocks,
   ollamaRequest,
 } from '@/core';
 
@@ -27,43 +28,6 @@ import {
 } from '@/components/ui/tooltip';
 import { ConfirmChatClear } from './parts/ConfirmChatClear';
 import { ModeToggle } from '@/components/mode-toggle';
-
-function extractTextAndCodeBlocks(
-  inputString: string
-): { content: string; type: 'text' | 'code' }[] {
-  const codeBlockRegex = /```([\s\S]*?)```/g;
-  const matches = [];
-  let currentIndex = 0;
-
-  inputString.replace(codeBlockRegex, (match, codeBlock, index) => {
-    // Add the text before the code block to the array
-    if (index > currentIndex) {
-      const textBeforeCodeBlock = inputString
-        .substring(currentIndex, index)
-        .trim();
-      if (textBeforeCodeBlock.length > 0) {
-        matches.push({ content: textBeforeCodeBlock, type: 'text' });
-      }
-    }
-
-    // Add the code block to the array
-    matches.push({ content: codeBlock, type: 'code', who: 'ollama' });
-
-    // Update the current index
-    currentIndex = index + match.length;
-    return match;
-  });
-
-  // Add any remaining text after the last code block
-  if (currentIndex < inputString.length) {
-    const textAfterLastCodeBlock = inputString.substring(currentIndex).trim();
-    if (textAfterLastCodeBlock.length > 0) {
-      matches.push({ content: textAfterLastCodeBlock, type: 'text' });
-    }
-  }
-
-  return matches as any;
-}
 
 const HomePage: React.FC = () => {
   const { toast } = useToast();
@@ -129,19 +93,27 @@ const HomePage: React.FC = () => {
         ...conversations[currentConversation],
         chatHistory: ch,
       });
+
       setTxt('');
 
-      // Request promopt
+      // request the prompt
       const res = await allomaGenerate(
         txt,
         model,
         conversations[currentConversation].ctx
       );
+
+      // We neet to convert the NDJSOn to json format
       const convertedToJson: OllamaReturnObj[] = convertTextToJson(res);
 
+      // we need to convert our data set into one string
       const txtMsg = convertedToJson.map((item) => item.response).join('');
-      const currentHistory = conversations[currentConversation].chatHistory;
 
+      const currentHistory = [
+        ...conversations[currentConversation].chatHistory,
+      ];
+
+      // TODO: Make function that converts a piece of string into data blocks of types of text we show, so like code or a ordered list and etc...
       if (txtMsg.includes('```')) {
         const codeBlocks = extractTextAndCodeBlocks(txtMsg);
         if (!codeBlocks) {
@@ -177,11 +149,12 @@ const HomePage: React.FC = () => {
         description:
           'Something went wrong sending the promt, Check Info & Help',
       });
+
       setLoading(false);
     }
 
+    // After its done, we need to auto focus since we disable the input whole its processing the request.
     if (promptRef?.current !== null) {
-      console.log('xxx');
       setTimeout(() => {
         promptRef.current?.focus();
       }, 0);
@@ -205,14 +178,28 @@ const HomePage: React.FC = () => {
   };
 
   const deleteConversation = useCallback(() => {
+    // shallow copy
     const cc = { ...conversations };
-    delete cc[currentConversation];
+
+    // Don't delete the session object but clear instead
+    if (currentConversation === 'session') {
+      cc['session'] = {
+        chatHistory: [],
+        ctx: [],
+        model: model,
+      };
+    } else {
+      // all other conversations will be removed
+      delete cc[currentConversation];
+    }
+
+    // Update the core
     core.conversations.set(cc);
 
     // Select a new conversation
     const nextId = Object.entries(cc)[0][0] || 'session';
     core.current_conversation.set(nextId);
-  }, [currentConversation, conversations]);
+  }, [currentConversation, conversations, model]);
 
   useEffect(() => {
     getAvailableModels();
@@ -271,7 +258,7 @@ const HomePage: React.FC = () => {
         <Tooltip>
           <TooltipTrigger className="">
             <Button
-              disabled={loading || currentConversation === 'session'}
+              disabled={loading}
               size="default"
               className="w-10 p-0 px-2 ml-2 bg-red-400 hover:bg-red-400 dark:bg-red-500 dark:hover:bg-red-500 dark:text-white hover:opacity-60"
               onClick={removeConv}
