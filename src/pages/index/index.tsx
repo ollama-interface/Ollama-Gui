@@ -18,7 +18,6 @@ import { useSimple } from 'simple-core-state';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 
 import { ReloadIcon, TrashIcon } from '@radix-ui/react-icons';
-import { IntroDialog } from './parts/IntroDialog';
 import { SelectConversation } from './parts/SelectConversation';
 import { SelectModel } from './parts/SelectModel';
 import {
@@ -28,6 +27,8 @@ import {
 } from '@/components/ui/tooltip';
 import { ConfirmChatClear } from './parts/ConfirmChatClear';
 import { ModeToggle } from '@/components/mode-toggle';
+import { IntroCard } from './parts/IntroCard';
+import { Badge } from '@/components/ui/badge';
 
 const HomePage: React.FC = () => {
   const { toast } = useToast();
@@ -37,16 +38,27 @@ const HomePage: React.FC = () => {
   const model = useSimple(core.model);
   const visited = useSimple(core.visited);
   const API_URL = useSimple(core.localAPI);
+  const ollamaConnected = useSimple(core.server_connected);
   const conversations = useSimple(core.conversations);
   const currentConversation = useSimple(core.current_conversation);
 
-  const [showDialog, setShowDialog] = useState(false);
+  const [showIntroCard, setShowIntroCard] = useState(false);
   const [showChatClearDialog, setShowChatClearDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [txt, setTxt] = useState('');
 
+  const checkIsRunning = async () => {
+    try {
+      await ollamaRequest('GET', '');
+      core.server_connected.set(true);
+    } catch (error) {
+      core.server_connected.set(false);
+      throw error;
+    }
+  };
   const getAvailableModels = async () => {
     try {
+      await checkIsRunning();
       const res = await ollamaRequest('GET', 'api/tags');
       if (res?.data?.models) {
         toast({
@@ -163,7 +175,7 @@ const HomePage: React.FC = () => {
 
   const initPageLoad = () => {
     if (visited === false) {
-      setShowDialog(true);
+      setShowIntroCard(true);
     } else {
       getAvailableModels();
     }
@@ -203,14 +215,14 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="dark:bg-black h-full w-full flex flex-col justify-center items-center">
-      {showDialog && (
-        <IntroDialog
-          onClose={() => {
-            setShowDialog(false);
+      {showIntroCard && (
+        <IntroCard
+          onClose={(e) => {
+            if (e) core.visited.set(true);
+            setShowIntroCard(false);
           }}
         />
       )}
-
       {showChatClearDialog && (
         <ConfirmChatClear
           onClose={(e) => {
@@ -222,50 +234,62 @@ const HomePage: React.FC = () => {
         />
       )}
 
-      <div className="flex flex-row mb-2 w-[100%] p-4">
-        <Input
-          ref={promptRef}
-          autoFocus
-          value={txt}
-          disabled={loading}
-          placeholder="Prompt"
-          className="mr-2 dark:text-zinc-300  outline-none hold:outline-none"
-          onChange={(e) => setTxt(e.currentTarget.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              submitPrompt();
-            }
-          }}
-        />
-        <Button
-          disabled={loading}
-          onClick={() => submitPrompt()}
-          className="flex-shrink-0"
-        >
-          {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-          Submit
-        </Button>
-
-        <SelectConversation loading={loading} />
-        <Tooltip>
-          <TooltipTrigger className="">
-            <Button
-              disabled={loading}
-              size="default"
-              className="w-10 p-0 px-2 ml-2 bg-red-400 hover:bg-red-400 dark:bg-red-500 dark:hover:bg-red-500 dark:text-white hover:opacity-60"
-              onClick={removeConv}
+      <div className="flex flex-col w-full">
+        <div className="flex justify-center">
+          {ollamaConnected && (
+            <Badge
+              className="bg-green-200 hover:bg-green-200 text-green-700"
+              variant="secondary"
             >
-              <TrashIcon height={21} width={21} />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <p>Delete Conversation</p>
-          </TooltipContent>
-        </Tooltip>
+              Connected
+            </Badge>
+          )}
+        </div>
+        <div className="flex flex-row mb-2 w-full p-4 pt-2">
+          <Input
+            ref={promptRef}
+            autoFocus
+            value={txt}
+            disabled={loading}
+            placeholder="Prompt"
+            className="mr-2 dark:text-zinc-300  outline-none hold:outline-none"
+            onChange={(e) => setTxt(e.currentTarget.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                submitPrompt();
+              }
+            }}
+          />
+          <Button
+            disabled={loading}
+            onClick={() => submitPrompt()}
+            className="flex-shrink-0"
+          >
+            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+            Submit
+          </Button>
 
-        <SelectModel loading={loading} />
-        <SideInfoSheet loading={loading} />
-        <ModeToggle />
+          <SelectConversation loading={loading} />
+          <Tooltip>
+            <TooltipTrigger className="">
+              <Button
+                disabled={loading}
+                size="default"
+                className="w-10 p-0 px-2 ml-2 bg-red-400 hover:bg-red-400 dark:bg-red-500 dark:hover:bg-red-500 dark:text-white hover:opacity-60"
+                onClick={removeConv}
+              >
+                <TrashIcon height={21} width={21} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p>Delete Conversation</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <SelectModel loading={loading} />
+          <SideInfoSheet loading={loading} />
+          <ModeToggle />
+        </div>
       </div>
       <div className="h-full w-full flex flex-row overflow-hidden">
         <div ref={chatRef} className="w-full overflow-y-scroll px-4">

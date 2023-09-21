@@ -8,10 +8,13 @@
   },
   "package": {
     "productName": "ollama-interface",
-    "version": "0.0.0"
+    "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
+      "window": {
+        "all": true
+      },
       "http": {
         "all": true,
         "request": true

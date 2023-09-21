@@ -9,8 +9,16 @@ Welcome to Ollama GUI, this is interface for ollama cli to make it easier to cha
 
 ## Create a build to fully self host it and offline use
 
-1.  Clone the repo
-2.  `pnpm install`
+### Requirements
+
+- [Git](https://git-scm.com/)
+- [NodeJS](https://nodejs.org/en)
+- [pnpm](https://pnpm.io/)
+
+<br />
+
+1.  Clone the repo `git clone git@github.com:ollama-interface/Ollama-Gui.git`
+2.  `pnpm i`
 3.  `pnpm tauri build`
 4.  Go to `/src-tauri/target/release/bundle/dmg/*.dmg` and install the program with the .dmg file.
 
@@ -21,7 +29,7 @@ You as well you need to install [Ollama](https://ollama.ai) and after you instal
 <br />
 <br />
 
-This is not affiliated with Ollama.ai but just giving value to the comunnity from me.
+This is not affiliated with Ollama.ai but just giving value to the community from me.
 <br />
 
 For any questions, please contact [Twan Luttik (Twitter - X)](twitter.com/twanluttik)

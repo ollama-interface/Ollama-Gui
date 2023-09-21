@@ -9,6 +9,7 @@ const instance = new SimpleCore<ICoreType>(
     current_conversation: 'session',
     model: 'llama2',
     localAPI: 'http://127.0.0.1:11435',
+    server_connected: false,
     installed_models: [
       {
         digest: '1',

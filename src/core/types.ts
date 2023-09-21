@@ -22,6 +22,7 @@ export type ICoreType = {
   current_conversation: string;
   model: ModelTypes;
   localAPI: string;
+  server_connected: boolean;
   installed_models: {
     digest: string;
     modified_at: string;
