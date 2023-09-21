@@ -148,10 +148,10 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
               Twan Luttik - X (Twitter)
             </a>
             <a
-              href="https://github.com/TwanLuttik/ollama-web-ui"
+              href="https://github.com/ollama-interface/Ollama-Gui"
               className="mt-2 text-sm underline hover:opacity-60 dark:text-white"
             >
-              https://github.com/TwanLuttik/ollama-web-ui
+              https://github.com/ollama-interface/Ollama-Gui
             </a>
           </div>
         </div>
