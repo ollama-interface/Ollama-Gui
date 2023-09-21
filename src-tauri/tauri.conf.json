@@ -41,9 +41,9 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "ollama-interface",
-        "width": 800,
-        "height": 600
+        "title": "Ollama Chat",
+        "width": 1050,
+        "height": 750
       }
     ]
   }
