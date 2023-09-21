@@ -53,13 +53,19 @@ export const SelectConversation: React.FC<ISelectConversationProps> = ({
             {Object.entries(conversations)?.map((item, index) => (
               <SelectItem key={index} value={item[0]}>
                 <a>
-                  {item[0]} {` `}(
+                  {item[0]} {` `}
                   {formatBytes(
                     new Blob([
                       JSON.stringify(conversations[item[0]]).toString(),
                     ]).size
-                  )}
-                  )
+                  ) === '44 Bytes'
+                    ? ''
+                    : `
+                      (${formatBytes(
+                        new Blob([
+                          JSON.stringify(conversations[item[0]]).toString(),
+                        ]).size
+                      )})`}
                 </a>
               </SelectItem>
             ))}
