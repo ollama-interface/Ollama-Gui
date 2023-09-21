@@ -47,7 +47,7 @@ export const IntroCard: React.FC<IIntroCardProps> = (p) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="mb-2 dark:text-white">
-            Welcome to Ollama Web Interface
+            Welcome to Ollama Chat Interface
           </DialogTitle>
           <DialogDescription className="pt-2">
             1. Install Ollama on your mac,
