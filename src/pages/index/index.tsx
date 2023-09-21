@@ -9,6 +9,7 @@ import {
   convertTextToJson,
   core,
   extractTextAndCodeBlocks,
+  formatBytes,
   ollamaRequest,
 } from '@/core';
 
@@ -236,7 +237,7 @@ const HomePage: React.FC = () => {
         />
       )}
 
-      <div className="flex flex-col w-full pb-[5px]">
+      <div className="flex flex-col w-full pb-[5px] mt-2">
         <div className="flex justify-center">
           {ollamaConnected && (
             <Badge
@@ -246,13 +247,26 @@ const HomePage: React.FC = () => {
               Connected
             </Badge>
           )}
+
+          <div className="flex flex-row ml-2">
+            <p className="text-black dark:text-white mr-1">
+              Conversation size:
+            </p>
+            <p className="text-neutral-600 dark:text-neutral-400">
+              {formatBytes(
+                new Blob([
+                  JSON.stringify(conversations[currentConversation]).toString(),
+                ]).size
+              )}
+            </p>
+          </div>
         </div>
         <div className="flex flex-row ] w-full p-4 pt-2">
           <Input
             ref={promptRef}
             autoFocus
             value={txt}
-            disabled={loading}
+            disabled={!ollamaConnected || loading}
             placeholder="Prompt"
             className="mr-2 dark:text-zinc-300  outline-none hold:outline-none"
             onChange={(e) => setTxt(e.currentTarget.value)}
@@ -263,7 +277,7 @@ const HomePage: React.FC = () => {
             }}
           />
           <Button
-            disabled={loading}
+            disabled={!ollamaConnected || loading}
             onClick={() => submitPrompt()}
             className="flex-shrink-0"
           >
