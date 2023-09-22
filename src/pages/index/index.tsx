@@ -10,6 +10,7 @@ import {
   core,
   extractTextAndCodeBlocks,
   formatBytes,
+  ollamaRequest,
 } from '@/core';
 
 import { SideInfoSheet } from './parts/SideInfoSheet';
@@ -28,7 +29,7 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { IntroCard } from './parts/IntroCard';
 import { Badge } from '@/components/ui/badge';
 import { ConversationBlock } from './parts/ConversationBlock';
-import { UpdateModelsAvailability } from './helper';
+import { UpdateModelsAvailability, checkIsRunningUpdate } from './helper';
 
 const HomePage: React.FC = () => {
   const { toast } = useToast();
@@ -184,6 +185,7 @@ const HomePage: React.FC = () => {
   }, [ollamaConnected]);
 
   useEffect(() => {
+    checkIsRunningUpdate();
     initPageLoad();
   }, []);
 
