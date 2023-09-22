@@ -14,6 +14,8 @@ import { OLLAMA_COMMAND, core } from '@/core';
 import { useSimple } from 'simple-core-state';
 import { TryConnect } from '../helper';
 import { Badge } from '@/components/ui/badge';
+import { ConfirmModal } from '@/components/ConfirmModal';
+import { useState } from 'react';
 
 interface ISideInfoSheetProps {
   loading: boolean;
@@ -52,14 +54,21 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
     });
   };
 
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const onResetResponse = (e: boolean) => {
+    if (e) clearConversations();
+    setShowResetConfirm(false);
+  };
+
   return (
     <Sheet>
+      {showResetConfirm && <ConfirmModal onResponse={onResetResponse} />}
       <SheetTrigger asChild>
         <Button variant="outline" className="whitespace-nowrap dark:text-white">
           Settings & Info
         </Button>
       </SheetTrigger>
-      <SheetContent className="border-neutral-100 dark:border-neutral-900">
+      <SheetContent className="border-neutral-100 dark:border-neutral-900 overflow-auto">
         <SheetHeader>
           <SheetTitle>Welcome to Ollama Web Interface</SheetTitle>
           <SheetDescription>
@@ -80,7 +89,7 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
           </a>
           <div className="flex flex-col mt-4">
             <Label className="mb-1 font-medium text-neutral-900 dark:text-neutral-100">
-              Ollama remote address:
+              Ollama remote address:https://twitter.com/twanluttik
             </Label>
 
             <Input
@@ -158,7 +167,7 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
               </div>
             </div>
             <Button
-              onClick={clearConversations}
+              onClick={() => setShowResetConfirm(true)}
               variant="destructive"
               className="mt-6 w-fit"
             >
@@ -171,12 +180,15 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
           >
             <a
               href="https://twitter.com/twanluttik"
+              target="_blank"
               className="mt-10 text-sm font-semibold hover:opacity-60 tracking-tight dark:text-white"
             >
               Twan Luttik - X (Twitter)
             </a>
+
             <a
               href="https://github.com/ollama-interface/Ollama-Gui"
+              target="_blank"
               className="mt-2 text-sm underline hover:opacity-60 dark:text-white"
             >
               https://github.com/ollama-interface/Ollama-Gui
