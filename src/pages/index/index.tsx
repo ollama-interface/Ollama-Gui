@@ -10,7 +10,6 @@ import {
   core,
   extractTextAndCodeBlocks,
   formatBytes,
-  ollamaRequest,
 } from '@/core';
 
 import { SideInfoSheet } from './parts/SideInfoSheet';
