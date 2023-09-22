@@ -10,7 +10,6 @@ import {
   core,
   extractTextAndCodeBlocks,
   formatBytes,
-  ollamaRequest,
 } from '@/core';
 
 import { SideInfoSheet } from './parts/SideInfoSheet';
@@ -29,6 +28,7 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { IntroCard } from './parts/IntroCard';
 import { Badge } from '@/components/ui/badge';
 import { ConversationBlock } from './parts/ConversationBlock';
+import { UpdateModelsAvailability } from './helper';
 
 const HomePage: React.FC = () => {
   const { toast } = useToast();
@@ -45,45 +45,6 @@ const HomePage: React.FC = () => {
   const [showChatClearDialog, setShowChatClearDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [txt, setTxt] = useState('');
-
-  const checkIsRunning = async () => {
-    try {
-      await ollamaRequest('GET', '');
-      core.server_connected.set(true);
-    } catch (error) {
-      core.server_connected.set(false);
-      throw error;
-    }
-  };
-
-  const getAvailableModels = async () => {
-    try {
-      await checkIsRunning();
-      const res = await ollamaRequest('GET', 'api/tags');
-      if (res?.data?.models) {
-        toast({
-          variant: 'default',
-          color: 'green',
-          title: 'Connected',
-          description: 'Connection has been established',
-        });
-        core.installed_models.set(res.data.models);
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Failed',
-          description: 'No models has been found',
-        });
-      }
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed',
-        description:
-          'Your ollama is not running, please start your ollama server and refresh the page',
-      });
-    }
-  };
 
   const removeConv = useCallback(() => {
     setShowChatClearDialog(true);
@@ -178,7 +139,7 @@ const HomePage: React.FC = () => {
     if (visited === false) {
       setShowIntroCard(true);
     } else {
-      getAvailableModels();
+      UpdateModelsAvailability();
     }
   };
 
@@ -207,8 +168,17 @@ const HomePage: React.FC = () => {
   }, [currentConversation, conversations, model]);
 
   useEffect(() => {
-    if (ollamaConnected) getAvailableModels();
-    else {
+    if (ollamaConnected) {
+      try {
+        UpdateModelsAvailability();
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Something went wrong',
+          description: error as string,
+        });
+      }
+    } else {
       core.installed_models.reset();
     }
   }, [ollamaConnected]);

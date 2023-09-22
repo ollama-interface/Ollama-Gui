@@ -19,6 +19,13 @@ export interface IConversationType {
 
 export type IConversations = { [index: string]: IConversationType };
 
+export type IModelType = {
+  digest: string;
+  modified_at: string;
+  name: string;
+  size: number;
+};
+
 export type ICoreType = {
   conversations: {
     [index: string]: IConversationType;
@@ -27,11 +34,7 @@ export type ICoreType = {
   model: ModelTypes;
   localAPI: string;
   server_connected: boolean;
-  installed_models: {
-    digest: string;
-    modified_at: string;
-    name: string;
-    size: number;
-  }[];
+  installed_models: IModelType[];
+  unofficial_installed_models: IModelType[];
   visited: boolean;
 };

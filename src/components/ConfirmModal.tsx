@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   AlertDialogCancel,
   AlertDialogDescription,
@@ -15,10 +15,14 @@ interface IConfirmModalProps {
   onResponse: (e: boolean) => void;
 }
 
-export const ConfirmModal: React.FC<IConfirmModalProps> = () => {
+export const ConfirmModal: React.FC<IConfirmModalProps> = (props) => {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => ref.current?.click(), []);
+
   return (
-    <AlertDialog>
-      <AlertDialogTrigger>Open</AlertDialogTrigger>
+    <AlertDialog onOpenChange={props.onResponse}>
+      <AlertDialogTrigger ref={ref} className="hidden"></AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>

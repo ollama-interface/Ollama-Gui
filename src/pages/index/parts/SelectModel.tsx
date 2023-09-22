@@ -56,6 +56,7 @@ export const SelectModel: React.FC<ISelectConversationProps> = ({
 }) => {
   const model = useSimple(core.model);
   const installedModels = useSimple(core.installed_models);
+  const installedUnoffModels = useSimple(core.unofficial_installed_models);
   const currentConv = useSimple(core.current_conversation);
   const conversations = useSimple(core.conversations);
 
@@ -118,6 +119,13 @@ export const SelectModel: React.FC<ISelectConversationProps> = ({
                     ?.length && (
                     <ExclamationTriangleIcon className="ml-2" color="#e94646" />
                   )}
+                </div>
+              </SelectItem>
+            ))}
+            {installedUnoffModels.map((item, index) => (
+              <SelectItem key={index} value={item.name}>
+                <div className="flex flex-row items-center">
+                  <a>{item.name}</a>
                 </div>
               </SelectItem>
             ))}

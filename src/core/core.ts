@@ -18,6 +18,7 @@ const instance = new SimpleCore<ICoreType>(
         size: 1,
       },
     ],
+    unofficial_installed_models: [],
     visited: false,
   },
   { storage: { prefix: 'ollama_web_ui_' } }
