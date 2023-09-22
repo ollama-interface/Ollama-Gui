@@ -91,6 +91,7 @@ const HomePage: React.FC = () => {
 
   const submitPrompt = useCallback(async () => {
     try {
+      if (txt === '') return;
       setLoading(true);
 
       // Push my question to the history
@@ -277,7 +278,7 @@ const HomePage: React.FC = () => {
             }}
           />
           <Button
-            disabled={!ollamaConnected || loading}
+            disabled={txt === '' || !ollamaConnected || loading}
             onClick={() => submitPrompt()}
             className="flex-shrink-0"
           >
