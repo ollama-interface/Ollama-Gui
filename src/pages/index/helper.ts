@@ -28,14 +28,12 @@ export const UpdateModelsAvailability = async (): Promise<boolean> => {
     let x = [...res.data.models] as IModelType[];
     x = x.filter((e) => {
       const mName = e.name;
-      const m2Name = official_models.filter((e) => mName?.includes(e.name));
-
+      const m2Name = official_models.filter((e) => mName === e.name);
       if (!m2Name?.length) {
         return true;
       }
       return false;
     });
-
     core.unofficial_installed_models.set(x);
 
     return true;
