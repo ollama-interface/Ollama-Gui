@@ -14,6 +14,7 @@ Welcome to Ollama GUI, this is interface for ollama cli to make it easier to cha
 - [Git](https://git-scm.com/)
 - [NodeJS](https://nodejs.org/en)
 - [pnpm](https://pnpm.io/)
+- [rust](https://www.rust-lang.org/)
 
 <br />
 
