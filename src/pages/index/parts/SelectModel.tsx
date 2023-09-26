@@ -7,45 +7,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { core } from '@/core';
+import { core, official_models } from '@/core';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import React, { useCallback, useState } from 'react';
 import { useSimple } from 'simple-core-state';
 import { ConfirmSwitchModel } from './ConfirmSwitchModel';
 import { ModelTypes } from '@/core/types';
-
-const models = [
-  {
-    name: 'llama2',
-  },
-  {
-    name: 'llama2:13b',
-  },
-  {
-    name: 'llama2:70b',
-  },
-  {
-    name: 'llama2-uncensored',
-  },
-  {
-    name: 'codellama',
-  },
-  {
-    name: 'orca-mini',
-  },
-  {
-    name: 'vicuna',
-  },
-  {
-    name: 'nous-hermes',
-  },
-  {
-    name: 'nous-hermes:13b',
-  },
-  {
-    name: 'wizard-vicuna',
-  },
-];
 
 interface ISelectConversationProps {
   loading: boolean;
@@ -104,7 +71,7 @@ export const SelectModel: React.FC<ISelectConversationProps> = ({
         <SelectContent>
           <SelectGroup>
             <SelectLabel>Models</SelectLabel>
-            {models.map((item, index) => (
+            {official_models.map((item, index) => (
               <SelectItem
                 key={index}
                 value={item.name}

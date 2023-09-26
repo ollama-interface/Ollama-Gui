@@ -7,7 +7,7 @@ export const OLLAMA_COMMAND = `OLLAMA_ORIGINS=* OLLAMA_HOST=${OLLAMA_HOST} ollam
 
 export const official_models = [
   {
-    name: 'llama2',
+    name: 'llama2:latest',
   },
   {
     name: 'llama2:13b',
@@ -16,10 +16,10 @@ export const official_models = [
     name: 'llama2:70b',
   },
   {
-    name: 'llama2-uncensored',
+    name: 'llama2-uncensored:latest',
   },
   {
-    name: 'codellama',
+    name: 'codellama:latest',
   },
   {
     name: 'orca-mini',
