@@ -1,5 +1,4 @@
-import { core, official_models, ollamaRequest } from '@/core';
-import { IModelType } from '@/core/types';
+import { core, ollamaRequest } from '@/core';
 
 export const TryConnect = async () => {
   try {
@@ -24,17 +23,6 @@ export const UpdateModelsAvailability = async (): Promise<boolean> => {
   const res = await ollamaRequest('GET', 'api/tags');
   if (res?.data?.models) {
     core.installed_models.set(res.data.models);
-
-    let x = [...res.data.models] as IModelType[];
-    x = x.filter((e) => {
-      const mName = e.name;
-      const m2Name = official_models.filter((e) => mName === e.name);
-      if (!m2Name?.length) {
-        return true;
-      }
-      return false;
-    });
-    core.unofficial_installed_models.set(x);
 
     return true;
   } else {
