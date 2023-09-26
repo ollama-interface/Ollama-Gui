@@ -35,6 +35,5 @@ export type ICoreType = {
   localAPI: string;
   server_connected: boolean;
   installed_models: IModelType[];
-  unofficial_installed_models: IModelType[];
   visited: boolean;
 };

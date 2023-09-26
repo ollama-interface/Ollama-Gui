@@ -14,39 +14,6 @@ import { useSimple } from 'simple-core-state';
 import { ConfirmSwitchModel } from './ConfirmSwitchModel';
 import { ModelTypes } from '@/core/types';
 
-const models = [
-  {
-    name: 'llama2',
-  },
-  {
-    name: 'llama2:13b',
-  },
-  {
-    name: 'llama2:70b',
-  },
-  {
-    name: 'llama2-uncensored',
-  },
-  {
-    name: 'codellama',
-  },
-  {
-    name: 'orca-mini',
-  },
-  {
-    name: 'vicuna',
-  },
-  {
-    name: 'nous-hermes',
-  },
-  {
-    name: 'nous-hermes:13b',
-  },
-  {
-    name: 'wizard-vicuna',
-  },
-];
-
 interface ISelectConversationProps {
   loading: boolean;
 }
@@ -56,7 +23,6 @@ export const SelectModel: React.FC<ISelectConversationProps> = ({
 }) => {
   const model = useSimple(core.model);
   const installedModels = useSimple(core.installed_models);
-  const installedUnoffModels = useSimple(core.unofficial_installed_models);
   const currentConv = useSimple(core.current_conversation);
   const conversations = useSimple(core.conversations);
 
@@ -90,12 +56,8 @@ export const SelectModel: React.FC<ISelectConversationProps> = ({
         disabled={loading}
         value={model}
         onValueChange={(e) => {
-          console.log(e);
-
           setShowWarning(true);
-          // if (currentConv === 'session') setShowWarning(true);
           core.model.set(e as ModelTypes);
-          // core.
         }}
       >
         <SelectTrigger className="w-fit whitespace-nowrap dark:text-white">
@@ -104,28 +66,14 @@ export const SelectModel: React.FC<ISelectConversationProps> = ({
         <SelectContent>
           <SelectGroup>
             <SelectLabel>Models</SelectLabel>
-            {models.map((item, index) => (
-              <SelectItem
-                key={index}
-                value={item.name}
-                disabled={
-                  !installedModels.filter((e) => e.name.includes(item.name))
-                    ?.length
-                }
-              >
+            {installedModels.map((item, index) => (
+              <SelectItem key={index} value={item.name}>
                 <div className="flex flex-row items-center">
                   <a>{item.name}</a>
                   {!installedModels.filter((e) => e.name.includes(item.name))
                     ?.length && (
                     <ExclamationTriangleIcon className="ml-2" color="#e94646" />
                   )}
-                </div>
-              </SelectItem>
-            ))}
-            {installedUnoffModels.map((item, index) => (
-              <SelectItem key={index} value={item.name}>
-                <div className="flex flex-row items-center">
-                  <a>{item.name}</a>
                 </div>
               </SelectItem>
             ))}

@@ -10,15 +10,7 @@ const instance = new SimpleCore<ICoreType>(
     model: 'llama2',
     localAPI: 'http://127.0.0.1:11435',
     server_connected: false,
-    installed_models: [
-      {
-        digest: '1',
-        modified_at: '1',
-        name: 'example:1',
-        size: 1,
-      },
-    ],
-    unofficial_installed_models: [],
+    installed_models: [],
     visited: false,
   },
   { storage: { prefix: 'ollama_web_ui_' } }
