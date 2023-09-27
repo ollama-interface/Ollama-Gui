@@ -2,7 +2,7 @@
 
 Welcome to Ollama GUI, this is interface for ollama cli to make it easier to chat with, this also includes other features such as persisted conversation, switch between conversations and more.
 
-<img src="./.github/docs/preview-1.png" />
+<img src="./.github/docs/preview-2.png" />
 
 <br />
 <br />
