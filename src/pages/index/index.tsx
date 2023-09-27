@@ -45,12 +45,14 @@ const HomePage: React.FC = () => {
   const [showChatClearDialog, setShowChatClearDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [txt, setTxt] = useState('');
+  const [responseTime, setResponseTime] = useState(0);
 
   const removeConv = useCallback(() => {
     setShowChatClearDialog(true);
   }, []);
 
   const submitPrompt = useCallback(async () => {
+    const startTime = Date.now();
     try {
       if (txt === '') return;
       setLoading(true);
@@ -133,6 +135,10 @@ const HomePage: React.FC = () => {
         promptRef.current?.focus();
       }, 0);
     }
+
+    const endTime = Date.now();
+
+    setResponseTime(endTime - startTime);
   }, [txt, chatRef, promptRef, model, conversations, currentConversation]);
 
   const initPageLoad = () => {
@@ -223,7 +229,7 @@ const HomePage: React.FC = () => {
             )}
 
             <div className="flex flex-row ml-2">
-              <p className="text-black dark:text-white mr-1">
+              <p className="font-medium text-black dark:text-white mr-1">
                 Conversation size:
               </p>
               <p className="text-neutral-600 dark:text-neutral-400">
@@ -235,6 +241,12 @@ const HomePage: React.FC = () => {
                   ]).size
                 )}
               </p>
+              <div className="ml-2 flex flex-row">
+                <p className="font-medium text-black dark:text-white">
+                  Time taken:
+                </p>
+                <p className="ml-1 text-neutral-500 ">{responseTime / 1000}s</p>
+              </div>
             </div>
           </div>
           <div className="flex flex-row ] w-full p-4 pt-2">
@@ -260,8 +272,6 @@ const HomePage: React.FC = () => {
               {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
               Submit
             </Button>
-
-            {/* <SelectConversation loading={loading} /> */}
 
             <Tooltip>
               <TooltipTrigger className="">

@@ -22,7 +22,7 @@ export const Sidebar: React.FC<ISidebarProps> = (props) => {
     <div className="p-4 pt-3 w-[350px]">
       <Button
         disabled={props.loading}
-        className="w-full"
+        className="w-full dark:text-white"
         variant="outline"
         onClick={newConv}
       >
@@ -33,15 +33,17 @@ export const Sidebar: React.FC<ISidebarProps> = (props) => {
           {Object.entries(convs).map((item, index) => {
             return (
               <div
+                className={`${
+                  currentConv === item[0]
+                    ? 'bg-neutral-200 dark:bg-neutral-800'
+                    : 'bg-neutral-100 dark:bg-neutral-900'
+                } p-2 hover:bg-neutral-200 mb-2 rounded-md select-none cursor-pointer text-black dark:text-white`}
                 onClick={() => {
                   core.current_conversation.set(item[0]);
                 }}
                 onDoubleClick={() => {
                   setCurrentEdit(item[0]);
                 }}
-                className={`${
-                  currentConv === item[0] ? 'bg-neutral-200' : 'bg-neutral-100'
-                } p-2 hover:bg-neutral-200 mb-2 rounded-md select-none cursor-pointer`}
                 key={index}
               >
                 {currentEdit !== item[0] ? (
