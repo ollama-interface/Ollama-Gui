@@ -15,6 +15,7 @@ export interface IConversationType {
     who: 'ollama' | 'me';
     name?: string;
   }[];
+  name?: string;
 }
 
 export type IConversations = { [index: string]: IConversationType };

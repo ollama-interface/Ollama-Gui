@@ -16,7 +16,6 @@ import { SideInfoSheet } from './parts/SideInfoSheet';
 import { useSimple } from 'simple-core-state';
 
 import { ReloadIcon, TrashIcon } from '@radix-ui/react-icons';
-import { SelectConversation } from './parts/SelectConversation';
 import { SelectModel } from './parts/SelectModel';
 import {
   Tooltip,
@@ -29,6 +28,7 @@ import { IntroCard } from './parts/IntroCard';
 import { Badge } from '@/components/ui/badge';
 import { ConversationBlock } from './parts/ConversationBlock';
 import { UpdateModelsAvailability, checkIsRunningUpdate } from './helper';
+import { Sidebar } from './parts/Sidebar';
 
 const HomePage: React.FC = () => {
   const { toast } = useToast();
@@ -189,107 +189,113 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div className="dark:bg-black h-full w-full flex flex-col justify-center items-center">
-      {showIntroCard && (
-        <IntroCard
-          onClose={(e) => {
-            if (e) core.visited.set(true);
-            setShowIntroCard(false);
-          }}
-        />
-      )}
-      {showChatClearDialog && (
-        <ConfirmChatClear
-          onClose={(e) => {
-            setShowChatClearDialog(false);
-            if (e) {
-              deleteConversation();
-            }
-          }}
-        />
-      )}
-
-      <div className="flex flex-col w-full pb-[5px] mt-2">
-        <div className="flex justify-center">
-          {ollamaConnected && (
-            <Badge
-              className="bg-green-200 hover:bg-green-200 text-green-700"
-              variant="secondary"
-            >
-              Connected
-            </Badge>
-          )}
-
-          <div className="flex flex-row ml-2">
-            <p className="text-black dark:text-white mr-1">
-              Conversation size:
-            </p>
-            <p className="text-neutral-600 dark:text-neutral-400">
-              {formatBytes(
-                new Blob([
-                  JSON.stringify(conversations[currentConversation]).toString(),
-                ]).size
-              )}
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-row ] w-full p-4 pt-2">
-          <Input
-            ref={promptRef}
-            autoFocus
-            value={txt}
-            disabled={!ollamaConnected || loading}
-            placeholder="Prompt"
-            className="mr-2 dark:text-zinc-300  outline-none hold:outline-none"
-            onChange={(e) => setTxt(e.currentTarget.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                submitPrompt();
+    <div className="flex flex-row h-full">
+      <Sidebar loading={loading} />
+      <div className="dark:bg-black h-full w-full flex flex-col justify-center items-center">
+        {showIntroCard && (
+          <IntroCard
+            onClose={(e) => {
+              if (e) core.visited.set(true);
+              setShowIntroCard(false);
+            }}
+          />
+        )}
+        {showChatClearDialog && (
+          <ConfirmChatClear
+            onClose={(e) => {
+              setShowChatClearDialog(false);
+              if (e) {
+                deleteConversation();
               }
             }}
           />
-          <Button
-            disabled={txt === '' || !ollamaConnected || loading}
-            onClick={() => submitPrompt()}
-            className="flex-shrink-0"
-          >
-            {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-            Submit
-          </Button>
+        )}
 
-          <SelectConversation loading={loading} />
-          <Tooltip>
-            <TooltipTrigger className="">
-              <Button
-                disabled={loading}
-                size="default"
-                className="w-10 p-0 px-2 ml-2 bg-red-400 hover:bg-red-400 dark:bg-red-500 dark:hover:bg-red-500 dark:text-white hover:opacity-60"
-                onClick={removeConv}
+        <div className="flex flex-col w-full pb-[5px] mt-2">
+          <div className="flex justify-center">
+            {ollamaConnected && (
+              <Badge
+                className="bg-green-200 hover:bg-green-200 text-green-700"
+                variant="secondary"
               >
-                <TrashIcon height={21} width={21} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>Delete Conversation</p>
-            </TooltipContent>
-          </Tooltip>
+                Connected
+              </Badge>
+            )}
 
-          <SelectModel loading={loading} />
-          <SideInfoSheet loading={loading} />
-          <ModeToggle />
+            <div className="flex flex-row ml-2">
+              <p className="text-black dark:text-white mr-1">
+                Conversation size:
+              </p>
+              <p className="text-neutral-600 dark:text-neutral-400">
+                {formatBytes(
+                  new Blob([
+                    JSON.stringify(
+                      conversations[currentConversation]
+                    ).toString(),
+                  ]).size
+                )}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-row ] w-full p-4 pt-2">
+            <Input
+              ref={promptRef}
+              autoFocus
+              value={txt}
+              disabled={!ollamaConnected || loading}
+              placeholder="Prompt"
+              className="mr-2 dark:text-zinc-300  outline-none hold:outline-none"
+              onChange={(e) => setTxt(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  submitPrompt();
+                }
+              }}
+            />
+            <Button
+              disabled={txt === '' || !ollamaConnected || loading}
+              onClick={() => submitPrompt()}
+              className="flex-shrink-0"
+            >
+              {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+              Submit
+            </Button>
+
+            {/* <SelectConversation loading={loading} /> */}
+
+            <Tooltip>
+              <TooltipTrigger className="">
+                <Button
+                  disabled={loading}
+                  size="default"
+                  className="w-10 p-0 px-2 ml-2 bg-red-400 hover:bg-red-400 dark:bg-red-500 dark:hover:bg-red-500 dark:text-white hover:opacity-60"
+                  onClick={removeConv}
+                >
+                  <TrashIcon height={21} width={21} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Delete Conversation</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <SelectModel loading={loading} />
+            <SideInfoSheet loading={loading} />
+            <ModeToggle />
+          </div>
         </div>
-      </div>
 
-      <div className="h-full w-full flex flex-row overflow-hidden">
-        <div ref={chatRef} className="w-full overflow-y-scroll px-4">
-          <ConversationBlock
-            conversations={conversations}
-            currentConversation={currentConversation}
-            loading={loading}
-          />
-          {loading && (
-            <Skeleton className="w-full h-[20px] rounded-full mt-2" />
-          )}
+        <div className="h-full w-full flex flex-row overflow-hidden">
+          <div ref={chatRef} className="w-full overflow-y-scroll px-4">
+            <ConversationBlock
+              conversations={conversations}
+              currentConversation={currentConversation}
+              loading={loading}
+            />
+            {loading && (
+              <Skeleton className="w-full h-[20px] rounded-full mt-2" />
+            )}
+          </div>
         </div>
       </div>
     </div>

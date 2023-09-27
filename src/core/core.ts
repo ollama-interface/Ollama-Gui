@@ -4,7 +4,7 @@ import { ICoreType } from './types';
 const instance = new SimpleCore<ICoreType>(
   {
     conversations: {
-      session: { chatHistory: [], ctx: [], model: 'llama2' },
+      session: { chatHistory: [], ctx: [], model: 'llama2', name: 'Session' },
     },
     current_conversation: 'session',
     model: 'llama2',

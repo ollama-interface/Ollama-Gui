@@ -89,7 +89,7 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
           </a>
           <div className="flex flex-col mt-4">
             <Label className="mb-1 font-medium text-neutral-900 dark:text-neutral-100">
-              Ollama remote address:https://twitter.com/twanluttik
+              Ollama remote address:
             </Label>
 
             <Input
