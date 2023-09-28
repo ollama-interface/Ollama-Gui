@@ -59,13 +59,14 @@ jobs:
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
         run: pnpm i # Change this to npm, yarn or pnpm.
 
-      - name: Build the app
-        uses: tauri-apps/tauri-action@v0
+      - name: Build
+        run: |
+          pnpm build--ci -v --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NODE_OPTIONS: --max-old-space-size=4096
+
+      - name: Publish Artifacts
+        uses: ./.github/actions/publish-artifacts
         with:
-          tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
-          releaseName: 'App Name v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
-          releaseBody: 'See the assets to download and install this version.'
-          releaseDraft: true
-          prerelease: false
+          target: ${{ matrix.settings.target }}
+          profile: release
