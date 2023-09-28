@@ -23,15 +23,6 @@ runs:
         if-no-files-found: error
         retention-days: 1
 
-    # - name: Publish artifacts (Debian - deb)
-    #   if: ${{ matrix.settings.host == 'ubuntu-20.04' }}
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: Ollama-deb-${{ inputs.target }}-${{ env.GITHUB_SHA_SHORT }}
-    #     path: target/${{ inputs.target }}/${{ inputs.profile }}/bundle/deb/*.deb
-    #     if-no-files-found: error
-    #     retention-days: 1
-
     - name: Publish artifacts (Windows - msi)
       if: ${{ matrix.settings.host == 'windows-latest' }}
       uses: actions/upload-artifact@v3
@@ -49,14 +40,3 @@ runs:
         path: target/${{ inputs.target }}/${{ inputs.profile }}/bundle/dmg/*.dmg
         if-no-files-found: error
         retention-days: 1
-
-    # - name: Publish updater binaries
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: Ollama-Updaters-${{ inputs.target }}-${{ env.GITHUB_SHA_SHORT }}
-    #     path: |
-    #       target/${{ inputs.target }}/${{ inputs.profile }}/bundle/**/*.tar.gz*
-    #       target/${{ inputs.target }}/${{ inputs.profile }}/bundle/**/*.zip*
-    #       !target/**/deb/**/*.tar.gz
-    #     if-no-files-found: error
-    #     retention-days: 1

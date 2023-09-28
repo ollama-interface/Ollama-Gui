@@ -17,9 +17,9 @@ jobs:
           - host: macos-latest
             target: aarch64-apple-darwin
             bundles: dmg
-          - host: windows-latest
-            target: x86_64-pc-windows-msvc
-            bundles: msi
+          # - host: windows-latest
+          #   target: x86_64-pc-windows-msvc
+          #   bundles: msi
 
           - host: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
@@ -55,18 +55,36 @@ jobs:
           sudo apt-get purge --allow-remove-essential libc6-i386 ".*:i386"
           sudo dpkg --remove-architecture i386
 
-      - name: Setup Node.js, pnpm and dependencies
-        uses: ./.github/actions/setup-pnpm
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          version: 8.x.x
 
-      - name: Setup System and Rust
-        uses: ./.github/actions/setup-system
-        env:
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+      - name: Install Node.js
+        uses: actions/setup-node@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          targets: ${{ matrix.settings.target }}
+          token: ${{ inputs.token }}
+          check-latest: true
+          node-version-file: '.nvmrc'
+
+      - name: Install pnpm deps
+        shell: ${{ runner.os == 'Windows' && 'powershell' || 'bash' }}
+        run: pnpm i --frozen-lockfile
+
+      - name: Install Rust
+        id: toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ inputs.targets }}
+          toolchain: stable
+          components: clippy, rustfmt
+
+      - name: Cache Rust Dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ inputs.save-cache }}
+          prefix-key: 'v0-rust-deps'
+          shared-key: ${{ inputs.targets }}
 
       - name: Build
         run: |
