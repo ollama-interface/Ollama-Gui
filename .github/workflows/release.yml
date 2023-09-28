@@ -61,7 +61,7 @@ jobs:
 
       - name: Build
         run: |
-          pnpm build--ci -v --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
+          pnpm tauri build --ci -v --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
