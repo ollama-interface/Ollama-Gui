@@ -7,19 +7,57 @@ on:
 
 jobs:
   release:
-    permissions:
-      contents: write
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
+        settings:
+          - host: macos-latest
+            target: x86_64-apple-darwin
+            bundles: dmg
+          - host: macos-latest
+            target: aarch64-apple-darwin
+            bundles: dmg
+          - host: windows-latest
+            target: x86_64-pc-windows-msvc
+            bundles: msi
+          # - host: windows-latest
+          #   target: aarch64-pc-windows-msvc
+          - host: ubuntu-20.04
+            target: x86_64-unknown-linux-gnu
+            bundles: appimage
+          # - host: ubuntu-20.04
+          #   target: x86_64-unknown-linux-musl
+          # - host: ubuntu-20.04
+          #   target: aarch64-unknown-linux-gnu
+          # - host: ubuntu-20.04
+          #   target: aarch64-unknown-linux-musl
+          # - host: ubuntu-20.04
+          #   target: armv7-unknown-linux-gnueabihf
         platform: [macos-latest, ubuntu-20.04, windows-latest]
         pnpm-version: [8.8.0]
         node-version: [18]
-    runs-on: ${{ matrix.platform }}
-
+    runs-on: ${{ matrix.settings.host }}
     steps:
+      - name: Maximize build space
+        if: ${{ runner.os == 'Linux' }}
+        uses: easimon/maximize-build-space@master
+        with:
+          swap-size-mb: 3072
+          root-reserve-mb: 6144
+          remove-dotnet: 'true'
+          remove-codeql: 'true'
+          remove-haskell: 'true'
+          remove-docker-images: 'true'
+
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Symlink target to C:\
+        if: ${{ runner.os == 'Windows' }}
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path C:\ollama_target
+          New-Item -Path target -ItemType Junction -Value C:\ollama_target
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
