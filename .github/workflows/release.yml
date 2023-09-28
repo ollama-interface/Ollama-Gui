@@ -60,9 +60,7 @@ jobs:
         run: pnpm i # Change this to npm, yarn or pnpm.
 
       - name: Build the app
-        # uses: tauri-apps/tauri-action@v0
-        run: |
-          pnpm build && cd build
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
