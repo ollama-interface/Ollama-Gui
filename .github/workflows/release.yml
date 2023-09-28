@@ -13,6 +13,8 @@ jobs:
       fail-fast: false
       matrix:
         platform: [macos-latest, ubuntu-20.04, windows-latest]
+        pnpm-version: [8.7.4]
+        node-version: [18]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -34,11 +36,11 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-     - name: Pnpm install
+      - name: Pnpm install
         uses: pnpm/action-setup@v2
         with:
           version: ${{ matrix.pnpm-version }}
-          
+
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
