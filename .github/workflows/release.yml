@@ -6,7 +6,7 @@ on:
 # NOTE: For Linux builds, we can only build with Ubuntu. It should be the oldest base system we intend to support. See PR-759 & https://tauri.app/v1/guides/building/linux for reference.
 
 jobs:
-  desktop-main:
+  app-main:
     strategy:
       fail-fast: true
       matrix:
@@ -26,6 +26,8 @@ jobs:
             bundles: appimage
     name: Desktop - Main ${{ matrix.settings.target }}
     runs-on: ${{ matrix.settings.host }}
+    env:
+      GITHUB_TOKEN: secrets.GH_TOKEN
     steps:
       - name: Maximize build space
         if: ${{ runner.os == 'Linux' }}
@@ -63,7 +65,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          token: ${{ inputs.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           check-latest: true
           node-version-file: '.nvmrc'
 
@@ -75,7 +77,7 @@ jobs:
         id: toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ inputs.targets }}
+          targets: ${{ matrix.settings.target }}
           toolchain: stable
           components: clippy, rustfmt
 
@@ -84,7 +86,7 @@ jobs:
         with:
           save-if: ${{ inputs.save-cache }}
           prefix-key: 'v0-rust-deps'
-          shared-key: ${{ inputs.targets }}
+          shared-key: ${{ matrix.settings.target }}
 
       - name: Build
         run: |
