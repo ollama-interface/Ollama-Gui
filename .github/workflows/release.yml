@@ -34,15 +34,28 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
+     - name: Pnpm install
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ matrix.pnpm-version }}
+          
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          check-latest: true
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+          cache-dependency-path: '**/pnpm-lock.yaml'
+
       - name: Sync node version and setup cache
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
-          cache: 'yarn' # Set this to npm, yarn or pnpm.
+          cache: 'pnpm' # Set this to npm, yarn or pnpm.
 
       - name: Install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: yarn install # Change this to npm, yarn or pnpm.
+        run: pnpm i # Change this to npm, yarn or pnpm.
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
