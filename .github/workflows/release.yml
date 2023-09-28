@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [macos-latest, ubuntu-20.04, windows-latest]
-        pnpm-version: [8.7.4]
+        pnpm-version: [8.8.0]
         node-version: [18]
     runs-on: ${{ matrix.platform }}
 
@@ -61,7 +61,6 @@ jobs:
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
-
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
