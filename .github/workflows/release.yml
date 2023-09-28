@@ -10,6 +10,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
+        pnpm-version: [8.8.0]
+        node-version: [18]
         settings:
           - host: macos-latest
             target: x86_64-apple-darwin
@@ -23,9 +25,7 @@ jobs:
           - host: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
             bundles: appimage
-        platform: [macos-latest, ubuntu-20.04, windows-latest]
-        pnpm-version: [8.8.0]
-        node-version: [18]
+
     runs-on: ${{ matrix.settings.host }}
     steps:
       - name: Maximize build space
