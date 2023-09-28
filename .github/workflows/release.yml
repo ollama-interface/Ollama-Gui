@@ -1,17 +1,15 @@
 name: Release
+
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
 
+# NOTE: For Linux builds, we can only build with Ubuntu. It should be the oldest base system we intend to support. See PR-759 & https://tauri.app/v1/guides/building/linux for reference.
+
 jobs:
-  release:
+  desktop-main:
     strategy:
       fail-fast: true
       matrix:
-        pnpm-version: [8.8.0]
-        node-version: [18]
         settings:
           - host: macos-latest
             target: x86_64-apple-darwin
@@ -22,10 +20,11 @@ jobs:
           - host: windows-latest
             target: x86_64-pc-windows-msvc
             bundles: msi
+
           - host: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
             bundles: appimage
-
+    name: Desktop - Main ${{ matrix.settings.target }}
     runs-on: ${{ matrix.settings.host }}
     steps:
       - name: Maximize build space
@@ -49,43 +48,25 @@ jobs:
           New-Item -ItemType Directory -Force -Path C:\ollama_target
           New-Item -Path target -ItemType Junction -Value C:\ollama_target
 
-      - name: Install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-20.04'
-        # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
+      - name: Remove 32-bit libs
+        if: ${{ runner.os == 'Linux' }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+          dpkg -l | grep i386
+          sudo apt-get purge --allow-remove-essential libc6-i386 ".*:i386"
+          sudo dpkg --remove-architecture i386
 
-      - name: Rust setup
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
+      - name: Setup Node.js, pnpm and dependencies
+        uses: ./.github/actions/setup-pnpm
         with:
-          workspaces: './src-tauri -> target'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pnpm install
-        uses: pnpm/action-setup@v2
+      - name: Setup System and Rust
+        uses: ./.github/actions/setup-system
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
         with:
-          version: ${{ matrix.pnpm-version }}
-
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          check-latest: true
-          node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
-          cache-dependency-path: '**/pnpm-lock.yaml'
-
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
-          cache: 'pnpm' # Set this to npm, yarn or pnpm.
-
-      - name: Install frontend dependencies
-        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: pnpm i # Change this to npm, yarn or pnpm.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          targets: ${{ matrix.settings.target }}
 
       - name: Build
         run: |
