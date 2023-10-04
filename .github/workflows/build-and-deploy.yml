@@ -50,19 +50,6 @@ jobs:
       - name: Build for MacOS Silicon
         run: pnpm build:app:silicon
       
-      # List the contents of the build directory
-      - name: List files in the build directory
-        run: ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/
-
-      #   ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/
-      #   shell: /bin/bash -e {0}
-      # total 7504
-      # drwxr-xr-x  6 runner  staff      192 Oct  4 13:58 .
-      # drwxr-xr-x  4 runner  staff      128 Oct  4 13:58 ..
-      # -rwxrwxrwx  1 runner  staff    14159 Oct  4 13:58 bundle_dmg.sh
-      # -rw-r--r--  1 runner  staff   155899 Oct  4 13:50 icon.icns
-      # -rw-r--r--@ 1 runner  staff  3664672 Oct  4 13:58 ollama-interface_0.1.0_aarch64.dmg
-      # drwxr-xr-x  4 runner  staff      128 Oct  4 13:58 support
       # Archive the MacOS Silicon build artifacts
       - name: Archive MacOS Silicon artifacts
         uses: actions/upload-artifact@v3
@@ -97,6 +84,22 @@ jobs:
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
           path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
           if-no-files-found: error  # or 'warn' or 'ignore'
+      
+      # List the contents of the build directory
+      - name: List files in the build directory
+        run: |
+          echo "Listing contents of root directory"
+          ls -la /
+          echo "Listing contents of home directory"
+          ls -la /home
+          echo "Listing contents of user directory"
+          ls -la /home/runner
+          echo "Listing contents of macos-silicon directory"
+          ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/
+          echo "Listing contents of macos-intel directory"
+          ls -la src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/
+          echo "Listing contents of macos-universal directory"
+          ls -la src-tauri/target/universal-apple-darwin/release/bundle/dmg/
 
       # Placeholder steps for future implementation for Windows
       # - name: Build for Windows
@@ -155,7 +158,7 @@ jobs:
           echo "Listing contents of macos-intel directory"
           ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-intel
           echo "Listing contents of macos-universal directory"
-          ls -la /home/run
+          ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-universal
 
       # Generate the tag
       - name: Generate tag
@@ -194,7 +197,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           # asset_path: ./macos-silicon/*.dmg
-          asset_path: src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.dmg  # adjusted path
+          asset_path: /home/runner/work/Ollama-Gui/Ollama-Gui/macos-silicon/*.dmg  # adjusted path
           asset_name: Ollama-Gui-MacOS-Silicon.dmg
           asset_content_type: application/octet-stream
 
@@ -206,6 +209,18 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           # asset_path: ./macos-intel/*.dmg
-          asset_path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg  # adjusted path
+          asset_path: /home/runner/work/Ollama-Gui/Ollama-Gui/macos-intel/*.dmg  # adjusted path
           asset_name: Ollama-Gui-MacOS-Intel.dmg
+          asset_content_type: application/octet-stream
+
+      # Upload the MacOS Intel build artifact to the GitHub release
+      - name: Upload Release Asset (MacOS Universal)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          # asset_path: ./macos-intel/*.dmg
+          asset_path: /home/runner/work/Ollama-Gui/Ollama-Gui/macos-universal/*.dmg  # adjusted path
+          asset_name: Ollama-Gui-MacOS-Universal.dmg
           asset_content_type: application/octet-stream
