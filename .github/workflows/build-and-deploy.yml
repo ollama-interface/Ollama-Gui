@@ -49,6 +49,10 @@ jobs:
       # Build the project for MacOS Silicon
       - name: Build for MacOS Silicon
         run: pnpm build:app:silicon
+      
+      # List the contents of the build directory
+      - name: List files in the build directory
+        run: ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/
 
       # Archive the MacOS Silicon build artifacts
       - name: Archive MacOS Silicon artifacts
@@ -56,7 +60,8 @@ jobs:
         with:
           name: macos-silicon
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
-          path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/ollama-interface_0.1.0_aarch64.dmg 
+          path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+          if-no-files-found: error  # or 'warn' or 'ignore'
 
       # Build the project for MacOS Intel
       - name: Build for MacOS Intel
@@ -68,8 +73,9 @@ jobs:
         with:
           name: macos-intel
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
-          path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/ollama-interface_0.1.0_x64.dmg
-
+          path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
+          if-no-files-found: error  # or 'warn' or 'ignore'
+      
       # Build the project for MacOS Universal (both Silicon and Intel)
       - name: Build for MacOS Universal
         run: pnpm build:app:universal
@@ -80,7 +86,8 @@ jobs:
         with:
           name: macos-universal
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
-          path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/ollama-interface_0.1.0_universal.dmg
+          path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+          if-no-files-found: error  # or 'warn' or 'ignore'
 
       # Placeholder steps for future implementation for Windows
       # - name: Build for Windows
@@ -151,7 +158,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./macos-silicon/*.dmg
+          # asset_path: ./macos-silicon/*.dmg
+          asset_path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg  # adjusted path
           asset_name: Ollama-Gui-MacOS-Silicon.dmg
           asset_content_type: application/octet-stream
 
@@ -162,6 +170,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./macos-intel/*.dmg
+          # asset_path: ./macos-intel/*.dmg
+          asset_path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg  # adjusted path
           asset_name: Ollama-Gui-MacOS-Intel.dmg
           asset_content_type: application/octet-stream
