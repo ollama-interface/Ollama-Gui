@@ -37,7 +37,7 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      
+
       # Check if there is a cache of the pnpm modules and restore it
       - name: Cache pnpm modules
         uses: actions/cache@v2
@@ -58,7 +58,7 @@ jobs:
       # Build the project for MacOS Silicon
       - name: Build for MacOS Silicon
         run: pnpm build:app:silicon
-      
+
       # Archive the MacOS Silicon build artifacts
       - name: Archive MacOS Silicon artifacts
         uses: actions/upload-artifact@v3
@@ -66,7 +66,7 @@ jobs:
           name: macos-silicon
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
           path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
-          if-no-files-found: error  # or 'warn' or 'ignore'
+          if-no-files-found: error # or 'warn' or 'ignore'
 
       # Build the project for MacOS Intel
       - name: Build for MacOS Intel
@@ -79,8 +79,8 @@ jobs:
           name: macos-intel
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
           path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
-          if-no-files-found: error  # or 'warn' or 'ignore'
-      
+          if-no-files-found: error # or 'warn' or 'ignore'
+
       # Build the project for MacOS Universal (both Silicon and Intel)
       - name: Build for MacOS Universal
         run: pnpm build:app:universal
@@ -92,7 +92,7 @@ jobs:
           name: macos-universal
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
           path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
-          if-no-files-found: error  # or 'warn' or 'ignore'
+          if-no-files-found: error # or 'warn' or 'ignore'
 
       # Placeholder steps for future implementation for Windows
       # Build the project for Windows OS
@@ -161,7 +161,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           tag_name: ${{ steps.generate_tag.outputs.tag }}
           release_name: Release ${{ steps.generate_tag.outputs.tag }}
@@ -181,10 +181,10 @@ jobs:
       - name: Upload Release Asset (MacOS Silicon)
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.get_filename_silicon.outputs.filename }}  # adjusted path
+          asset_path: ${{ steps.get_filename_silicon.outputs.filename }} # adjusted path
           asset_name: Ollama-Gui-MacOS-Silicon.dmg
           asset_content_type: application/octet-stream
 
@@ -192,7 +192,7 @@ jobs:
       - name: Get Intel file name
         id: get_filename_intel
         run: echo "::set-output name=filename::$(ls /home/runner/work/Ollama-Gui/Ollama-Gui/macos-intel/*.dmg)"
-      
+
       # Print the file name
       - name: Echo the Intel file name
         run: echo "The Intel file name is ${{ steps.get_filename_intel.outputs.filename }}"
@@ -201,7 +201,7 @@ jobs:
       - name: Upload Release Asset (MacOS Intel)
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.get_filename_intel.outputs.filename }} # adjusted path
@@ -212,7 +212,7 @@ jobs:
       - name: Get Universal file name
         id: get_filename_universal
         run: echo "::set-output name=filename::$(ls /home/runner/work/Ollama-Gui/Ollama-Gui/macos-universal/*.dmg)"
-      
+
       # Print the file name
       - name: Echo the Universal file name
         run: echo "The Universal file name is ${{ steps.get_filename_universal.outputs.filename }}"
@@ -221,9 +221,9 @@ jobs:
       - name: Upload Release Asset (MacOS Universal)
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.get_filename_universal.outputs.filename }}  # adjusted path
+          asset_path: ${{ steps.get_filename_universal.outputs.filename }} # adjusted path
           asset_name: Ollama-Gui-MacOS-Universal.dmg
           asset_content_type: application/octet-stream
