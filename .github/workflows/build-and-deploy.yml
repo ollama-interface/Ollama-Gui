@@ -46,18 +46,18 @@ jobs:
       - name: Install dependencies
         run: pnpm i
 
-      # Build the project for MacOS Silicon
-      - name: Build for MacOS Silicon
-        run: pnpm build:app:silicon
+      # # Build the project for MacOS Silicon
+      # - name: Build for MacOS Silicon
+      #   run: pnpm build:app:silicon
       
-      # Archive the MacOS Silicon build artifacts
-      - name: Archive MacOS Silicon artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: macos-silicon
-          # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
-          path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
-          if-no-files-found: error  # or 'warn' or 'ignore'
+      # # Archive the MacOS Silicon build artifacts
+      # - name: Archive MacOS Silicon artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: macos-silicon
+      #     # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
+      #     path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+      #     if-no-files-found: error  # or 'warn' or 'ignore'
 
       # Build the project for MacOS Intel
       - name: Build for MacOS Intel
@@ -72,18 +72,18 @@ jobs:
           path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/*.dmg
           if-no-files-found: error  # or 'warn' or 'ignore'
       
-      # Build the project for MacOS Universal (both Silicon and Intel)
-      - name: Build for MacOS Universal
-        run: pnpm build:app:universal
+      # # Build the project for MacOS Universal (both Silicon and Intel)
+      # - name: Build for MacOS Universal
+      #   run: pnpm build:app:universal
 
-      # Archive the MacOS Universal build artifacts
-      - name: Archive MacOS Universal artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: macos-universal
-          # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
-          path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
-          if-no-files-found: error  # or 'warn' or 'ignore'
+      # # Archive the MacOS Universal build artifacts
+      # - name: Archive MacOS Universal artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: macos-universal
+      #     # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
+      #     path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+      #     if-no-files-found: error  # or 'warn' or 'ignore'
       
       # List the contents of the build directory
       - name: List files in the build directory
@@ -93,13 +93,9 @@ jobs:
           echo "Listing contents of home directory"
           ls -la /home
           echo "Listing contents of user directory"
-          ls -la /home/runner
-          echo "Listing contents of macos-silicon directory"
-          ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/
+          ls -la ~/
           echo "Listing contents of macos-intel directory"
           ls -la src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/
-          echo "Listing contents of macos-universal directory"
-          ls -la src-tauri/target/universal-apple-darwin/release/bundle/dmg/
 
       # Placeholder steps for future implementation for Windows
       # - name: Build for Windows
@@ -152,13 +148,9 @@ jobs:
           echo "Listing contents of home directory"
           ls -la /home
           echo "Listing contents of user directory"
-          ls -la /home/runner
-          echo "Listing contents of macos-silicon directory"
-          ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-silicon
+          ls -la ~/
           echo "Listing contents of macos-intel directory"
           ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-intel
-          echo "Listing contents of macos-universal directory"
-          ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-universal
 
       # Generate the tag
       - name: Generate tag
@@ -189,17 +181,17 @@ jobs:
       #     draft: false
       #     prerelease: false
 
-      # Upload the MacOS Silicon build artifact to the GitHub release
-      - name: Upload Release Asset (MacOS Silicon)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          # asset_path: ./macos-silicon/*.dmg
-          asset_path: /home/runner/work/Ollama-Gui/Ollama-Gui/macos-silicon/*.dmg  # adjusted path
-          asset_name: Ollama-Gui-MacOS-Silicon.dmg
-          asset_content_type: application/octet-stream
+      # # Upload the MacOS Silicon build artifact to the GitHub release
+      # - name: Upload Release Asset (MacOS Silicon)
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     # asset_path: ./macos-silicon/*.dmg
+      #     asset_path: /home/runner/work/Ollama-Gui/Ollama-Gui/macos-silicon/*.dmg  # adjusted path
+      #     asset_name: Ollama-Gui-MacOS-Silicon.dmg
+      #     asset_content_type: application/octet-stream
 
       # Upload the MacOS Intel build artifact to the GitHub release
       - name: Upload Release Asset (MacOS Intel)
@@ -213,14 +205,14 @@ jobs:
           asset_name: Ollama-Gui-MacOS-Intel.dmg
           asset_content_type: application/octet-stream
 
-      # Upload the MacOS Intel build artifact to the GitHub release
-      - name: Upload Release Asset (MacOS Universal)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          # asset_path: ./macos-intel/*.dmg
-          asset_path: /home/runner/work/Ollama-Gui/Ollama-Gui/macos-universal/*.dmg  # adjusted path
-          asset_name: Ollama-Gui-MacOS-Universal.dmg
-          asset_content_type: application/octet-stream
+      # # Upload the MacOS Intel build artifact to the GitHub release
+      # - name: Upload Release Asset (MacOS Universal)
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     # asset_path: ./macos-intel/*.dmg
+      #     asset_path: /home/runner/work/Ollama-Gui/Ollama-Gui/macos-universal/*.dmg  # adjusted path
+      #     asset_name: Ollama-Gui-MacOS-Universal.dmg
+      #     asset_content_type: application/octet-stream
