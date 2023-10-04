@@ -1,7 +1,6 @@
 import { ModeToggle } from '@/components/mode-toggle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
 	Tooltip,
@@ -15,7 +14,6 @@ import {
 	OllamaReturnObj,
 	convertTextToJson,
 	extractTextAndCodeBlocks,
-	formatBytes,
 } from '@/core';
 import { UpdateModelsAvailability, checkIsRunningUpdate } from '@/app/helper';
 import { ConfirmChatClear } from '@/app/parts/ConfirmChatClear';
@@ -28,13 +26,14 @@ import { ReloadIcon, TrashIcon } from '@radix-ui/react-icons';
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { useSimple } from 'simple-core-state';
 import { IsRunningHook } from '@/hooks';
+import { Textarea } from '@/components/ui/textarea';
 
 const HomePage: React.FC = () => {
 	IsRunningHook();
 
 	const { toast } = useToast();
 	const chatRef = useRef<HTMLDivElement>(null);
-	const promptRef = useRef<HTMLInputElement>(null);
+	const promptRef = useRef<HTMLTextAreaElement>(null);
 
 	const model = useSimple(core.model);
 	const visited = useSimple(core.visited);
@@ -47,6 +46,7 @@ const HomePage: React.FC = () => {
 	const [loading, setLoading] = useState(false);
 	const [txt, setTxt] = useState('');
 	const [responseTime, setResponseTime] = useState(0);
+	const [isShifted, setIsShifted] = useState(false);
 
 	const removeConv = useCallback(() => {
 		setShowChatClearDialog(true);
@@ -222,78 +222,83 @@ const HomePage: React.FC = () => {
 				<div className="flex flex-col w-full pb-[5px] mt-2">
 					<div className="flex justify-center">
 						{ollamaConnected && (
-							<Badge
-								className="bg-green-200 hover:bg-green-200 text-green-700"
-								variant="secondary"
-							>
-								Connected
-							</Badge>
+							<div className="h-full flex items-center">
+								<Badge
+									className="bg-green-200 hover:bg-green-200 text-green-700"
+									variant="secondary"
+								>
+									Connected
+								</Badge>
+							</div>
 						)}
 
-						<div className="flex flex-row ml-2">
-							<p className="font-medium text-black dark:text-white mr-1">
-								Conversation size:
-							</p>
-							<p className="text-neutral-600 dark:text-neutral-400">
-								{formatBytes(
-									new Blob([
-										JSON.stringify(
-											conversations[currentConversation]
-										).toString(),
-									]).size
+						<div>
+							<Button
+								variant="secondary"
+								disabled={txt === '' || !ollamaConnected || loading}
+								onClick={() => submitPrompt()}
+								className="flex-shrink-0 ml-2"
+							>
+								{loading && (
+									<ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
 								)}
-							</p>
+								Submit
+							</Button>
+						</div>
+
+						<div className="flex flex-row  items-center">
 							<div className="ml-2 flex flex-row">
 								<p className="font-medium text-black dark:text-white">
 									Time taken:
 								</p>
 								<p className="ml-1 text-neutral-500 ">{responseTime / 1000}s</p>
 							</div>
+
+							<Tooltip>
+								<TooltipTrigger className="">
+									<Button
+										disabled={loading}
+										size="default"
+										className="w-10 p-0 px-2 ml-2 bg-red-400 hover:bg-red-400 dark:bg-red-500 dark:hover:bg-red-500 dark:text-white hover:opacity-60"
+										onClick={removeConv}
+									>
+										<TrashIcon height={21} width={21} />
+									</Button>
+								</TooltipTrigger>
+								<TooltipContent side="bottom">
+									<p>Delete Conversation</p>
+								</TooltipContent>
+							</Tooltip>
+
+							<SelectModel loading={loading} />
+							<SideInfoSheet loading={loading} />
+							<ModeToggle />
 						</div>
 					</div>
-					<div className="flex flex-row ] w-full p-4 pt-2">
-						<Input
+					<div className="flex flex-row w-full p-4 ">
+						<Textarea
 							ref={promptRef}
 							autoFocus
-							value={txt}
 							disabled={!ollamaConnected || loading}
 							placeholder="Prompt"
-							className="mr-2 dark:text-zinc-300  outline-none hold:outline-none"
+							value={txt}
 							onChange={(e) => setTxt(e.currentTarget.value)}
+							className="dark:bg-black dark:text-zinc-300 p-1 px-2 max-h-[300px] flex-grow flex border dark:border-neutral-800"
+							onKeyUp={(e) => {
+								if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+									setIsShifted(false);
+								}
+							}}
 							onKeyDown={(e) => {
-								if (e.key === 'Enter') {
+								if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+									setIsShifted(true);
+								}
+
+								if (e.key === 'Enter' && !isShifted) {
 									submitPrompt();
 								}
 							}}
 						/>
-						<Button
-							disabled={txt === '' || !ollamaConnected || loading}
-							onClick={() => submitPrompt()}
-							className="flex-shrink-0"
-						>
-							{loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-							Submit
-						</Button>
-
-						<Tooltip>
-							<TooltipTrigger className="">
-								<Button
-									disabled={loading}
-									size="default"
-									className="w-10 p-0 px-2 ml-2 bg-red-400 hover:bg-red-400 dark:bg-red-500 dark:hover:bg-red-500 dark:text-white hover:opacity-60"
-									onClick={removeConv}
-								>
-									<TrashIcon height={21} width={21} />
-								</Button>
-							</TooltipTrigger>
-							<TooltipContent side="bottom">
-								<p>Delete Conversation</p>
-							</TooltipContent>
-						</Tooltip>
-
-						<SelectModel loading={loading} />
-						<SideInfoSheet loading={loading} />
-						<ModeToggle />
 					</div>
 				</div>
 
