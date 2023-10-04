@@ -193,6 +193,15 @@ jobs:
       #     asset_name: Ollama-Gui-MacOS-Silicon.dmg
       #     asset_content_type: application/octet-stream
 
+      # Get the file name and assign it to an object
+      - name: Get file name
+        id: get_filename
+        run: echo "::set-output name=filename::$(ls /home/runner/work/Ollama-Gui/Ollama-Gui/macos-intel/*.dmg)"
+      
+      # Print the file name
+      - name: Echo the file name
+        run: echo "The file name is ${{ steps.get_filename.outputs.filename }}"
+
       # Upload the MacOS Intel build artifact to the GitHub release
       - name: Upload Release Asset (MacOS Intel)
         uses: actions/upload-release-asset@v1
@@ -201,7 +210,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           # asset_path: ./macos-intel/*.dmg
-          asset_path: /home/runner/work/Ollama-Gui/Ollama-Gui/macos-intel/ollama-interface_0.1.0_x64.dmg  # adjusted path
+          asset_path: /home/runner/work/Ollama-Gui/Ollama-Gui/macos-intel/${{ steps.get_filename.outputs.filename }} # adjusted path
           asset_name: Ollama-Gui-MacOS-Intel.dmg
           asset_content_type: application/octet-stream
 
