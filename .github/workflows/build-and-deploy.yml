@@ -7,9 +7,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
+      - name: Add target architecture
+        run: rustup target add aarch64-apple-darwin
+        
       - name: Checkout code
         uses: actions/checkout@v4
 
