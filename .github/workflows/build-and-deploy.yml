@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Add target architecture
         run: rustup target add aarch64-apple-darwin
-        
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -41,7 +41,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: macos-silicon
-          path: src-tauri/target/release/bundle/dmg/*.dmg
+          path: src-tauri/target/aarch64-apple-darwin/release/bundle/macos/rw.ollama-interface_0.1.0_aarch64.dmg # paths like this needs to be fixed
+          # path: src-tauri/target/release/bundle/dmg/*.dmg # something like this would be preferable
 
       - name: Build for MacOS Intel
         run: pnpm build:app:intell
@@ -50,25 +51,38 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: macos-intel
-          path: src-tauri/target/release/bundle/dmg/*.dmg
+          path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/ollama-interface_0.1.0_x64.dmg # paths like this needs to be fixed
+          # path: src-tauri/target/release/bundle/dmg/*.dmg # something like this would be preferable
+      
+      - name: Build for MacOS Universal
+        run: pnpm build:app:universal
 
-      - name: Build for Windows
-        run: pnpm build:app:windows
-
-      - name: Archive Windows artifacts
+      - name: Archive MacOS Universal artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: windows
-          path: src-tauri/target/release/bundle/windows/* # Adjust this path if necessary
+          name: macos-universal
+          path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/ollama-interface_0.1.0_universal.dmg # paths like this needs to be fixed
+          # path: src-tauri/target/release/bundle/dmg/*.dmg # something like this would be preferable
 
-      - name: Build for Linux
-        run: pnpm build:app:linux
+      # Future implementation for windows
+      # - name: Build for Windows
+      #   run: pnpm build:app:windows
 
-      - name: Archive Linux artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: linux
-          path: src-tauri/target/release/bundle/linux/* # Adjust this path if necessary
+      # - name: Archive Windows artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: windows
+      #     path: src-tauri/target/release/bundle/windows/* # Adjust this path if necessary
+
+      # Future implementation for linux
+      # - name: Build for Linux
+      #   run: pnpm build:app:linux
+
+      # - name: Archive Linux artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: linux
+      #     path: src-tauri/target/release/bundle/linux/* # Adjust this path if necessary
 
   release:
     needs: build
