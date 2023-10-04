@@ -5,10 +5,11 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc && vite build",
-		"build:app:silicon": "tauri build --target aarch64-apple-darwin",
-		"build:app:intell": "tauri build --target x86_64-apple-darwin",
-		"build:app:universal": "tauri build --target universal-apple-darwin",
+		"clean-target": "rm -rf ./src-tauri/target",
+		"build": "pnpm clean-target && tsc && vite build",
+		"build:app:silicon": "pnpm clean-target && tauri build --target aarch64-apple-darwin",
+		"build:app:intell": "pnpm clean-target && tauri build --target x86_64-apple-darwin",
+		"build:app:universal": "pnpm clean-target && tauri build --target universal-apple-darwin",
 		"preview": "vite preview",
 		"tauri": "tauri"
 	},
