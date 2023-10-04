@@ -14,7 +14,6 @@ import {
 	OllamaReturnObj,
 	convertTextToJson,
 	extractTextAndCodeBlocks,
-	formatBytes,
 } from '@/core';
 import { UpdateModelsAvailability, checkIsRunningUpdate } from '@/app/helper';
 import { ConfirmChatClear } from '@/app/parts/ConfirmChatClear';
