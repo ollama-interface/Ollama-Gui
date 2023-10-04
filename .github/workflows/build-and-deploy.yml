@@ -12,100 +12,98 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
 
-    - name: Setup Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        profile: minimal
-        toolchain: stable
-        override: true
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
 
-    - name: Install pnpm
-      run: npm install -g pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
 
-    - name: Install dependencies
-      run: pnpm i
+      - name: Install dependencies
+        run: pnpm i
 
-    - name: Build for MacOS Silicon
-      run: pnpm build:app:silicon
+      - name: Build for MacOS Silicon
+        run: pnpm build:app:silicon
 
-    - name: Archive MacOS Silicon artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: macos-silicon
-        path: src-tauri/target/release/bundle/dmg/*.dmg
+      - name: Archive MacOS Silicon artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: macos-silicon
+          path: src-tauri/target/release/bundle/dmg/*.dmg
 
-    - name: Build for MacOS Intel
-      run: pnpm build:app:intell
+      - name: Build for MacOS Intel
+        run: pnpm build:app:intell
 
-    - name: Archive MacOS Intel artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: macos-intel
-        path: src-tauri/target/release/bundle/dmg/*.dmg
+      - name: Archive MacOS Intel artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: macos-intel
+          path: src-tauri/target/release/bundle/dmg/*.dmg
 
-    - name: Build for Windows
-      run: pnpm build:app:windows
+      - name: Build for Windows
+        run: pnpm build:app:windows
 
-    - name: Archive Windows artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: windows
-        path: src-tauri/target/release/bundle/windows/*  # Adjust this path if necessary
+      - name: Archive Windows artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: windows
+          path: src-tauri/target/release/bundle/windows/* # Adjust this path if necessary
 
-    - name: Build for Linux
-      run: pnpm build:app:linux
+      - name: Build for Linux
+        run: pnpm build:app:linux
 
-    - name: Archive Linux artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: linux
-        path: src-tauri/target/release/bundle/linux/*  # Adjust this path if necessary
+      - name: Archive Linux artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux
+          path: src-tauri/target/release/bundle/linux/* # Adjust this path if necessary
 
   release:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download artifacts
-      uses: actions/download-artifact@v2
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
 
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
 
-    - name: Upload Release Asset (MacOS Silicon)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./macos-silicon/*.dmg
-        asset_name: Ollama-Gui-MacOS-Silicon.dmg
-        asset_content_type: application/octet-stream
+      - name: Upload Release Asset (MacOS Silicon)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./macos-silicon/*.dmg
+          asset_name: Ollama-Gui-MacOS-Silicon.dmg
+          asset_content_type: application/octet-stream
 
-    - name: Upload Release Asset (MacOS Intel)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./macos-intel/*.dmg
-        asset_name: Ollama-Gui-MacOS-Intel.dmg
-        asset_content_type: application/octet-stream
-
-    # Repeat similar steps for uploading Windows and Linux assets...
+      - name: Upload Release Asset (MacOS Intel)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./macos-intel/*.dmg
+          asset_name: Ollama-Gui-MacOS-Intel.dmg
+          asset_content_type: application/octet-stream
