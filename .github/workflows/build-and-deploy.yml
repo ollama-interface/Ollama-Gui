@@ -54,6 +54,15 @@ jobs:
       - name: List files in the build directory
         run: ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/
 
+      #   ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/
+      #   shell: /bin/bash -e {0}
+      # total 7504
+      # drwxr-xr-x  6 runner  staff      192 Oct  4 13:58 .
+      # drwxr-xr-x  4 runner  staff      128 Oct  4 13:58 ..
+      # -rwxrwxrwx  1 runner  staff    14159 Oct  4 13:58 bundle_dmg.sh
+      # -rw-r--r--  1 runner  staff   155899 Oct  4 13:50 icon.icns
+      # -rw-r--r--@ 1 runner  staff  3664672 Oct  4 13:58 ollama-interface_0.1.0_aarch64.dmg
+      # drwxr-xr-x  4 runner  staff      128 Oct  4 13:58 support
       # Archive the MacOS Silicon build artifacts
       - name: Archive MacOS Silicon artifacts
         uses: actions/upload-artifact@v3
@@ -123,15 +132,30 @@ jobs:
         uses: actions/download-artifact@v3
 
       # List the contents of the directories
+      # - name: List contents of directories
+      #   run: |
+      #     echo "Listing contents of src-tauri/target/"
+      #     ls -la src-tauri/target/
+      #     echo "Listing contents of src-tauri/target/aarch64-apple-darwin/release/bundle/macos"
+      #     ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/macos
+      #     echo "Listing contents of src-tauri/target/aarch64-apple-darwin/release/bundle/dmg"
+      #     ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/dmg
+
+      # List the contents of the directories
       - name: List contents of directories
         run: |
-          echo "Listing contents of src-tauri/target/"
-          ls -la src-tauri/target/
-          echo "Listing contents of src-tauri/target/aarch64-apple-darwin/release/bundle/macos"
-          ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/macos
-          echo "Listing contents of src-tauri/target/aarch64-apple-darwin/release/bundle/dmg"
-          ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/dmg
-
+          echo "Listing contents of root directory"
+          ls -la /
+          echo "Listing contents of home directory"
+          ls -la /home
+          echo "Listing contents of user directory"
+          ls -la /home/runner
+          echo "Listing contents of macos-silicon directory"
+          ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-silicon
+          echo "Listing contents of macos-intel directory"
+          ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-intel
+          echo "Listing contents of macos-universal directory"
+          ls -la /home/run
 
       # Generate the tag
       - name: Generate tag
