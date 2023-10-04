@@ -60,7 +60,7 @@ jobs:
         with:
           name: macos-silicon
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
-          path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
+          path: src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.dmg
           if-no-files-found: error  # or 'warn' or 'ignore'
 
       # Build the project for MacOS Intel
@@ -159,7 +159,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           # asset_path: ./macos-silicon/*.dmg
-          asset_path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg  # adjusted path
+          asset_path: src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.dmg  # adjusted path
           asset_name: Ollama-Gui-MacOS-Silicon.dmg
           asset_content_type: application/octet-stream
 
