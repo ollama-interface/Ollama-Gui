@@ -60,7 +60,7 @@ jobs:
         with:
           name: macos-silicon
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
-          path: src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.dmg
+          path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
           if-no-files-found: error  # or 'warn' or 'ignore'
 
       # Build the project for MacOS Intel
@@ -121,6 +121,17 @@ jobs:
       # Download the build artifacts from the build job
       - name: Download artifacts
         uses: actions/download-artifact@v3
+
+      # List the contents of the directories
+      - name: List contents of directories
+        run: |
+          echo "Listing contents of src-tauri/target/"
+          ls -la src-tauri/target/
+          echo "Listing contents of src-tauri/target/aarch64-apple-darwin/release/bundle/macos"
+          ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/macos
+          echo "Listing contents of src-tauri/target/aarch64-apple-darwin/release/bundle/dmg"
+          ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/dmg
+
 
       # Generate the tag
       - name: Generate tag
