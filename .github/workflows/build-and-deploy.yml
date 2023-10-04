@@ -1,26 +1,36 @@
+# Name of the GitHub Actions workflow
 name: Build and Deploy
 
+# Trigger the workflow on push to the specified branch
 on:
   push:
     branches:
       - github-actions-setup
 
+# Define the jobs to be run
 jobs:
+  # Define the build job
   build:
+    # Specify the runner environment
     runs-on: macos-latest
 
+    # Define the steps to be performed in the build job
     steps:
+      # Add the target architecture for building MacOS Silicon apps
       - name: Add target architecture
         run: rustup target add aarch64-apple-darwin
 
+      # Check out the repository code to the runner
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Set up the required Node.js version
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
 
+      # Set up the Rust toolchain
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -28,43 +38,51 @@ jobs:
           toolchain: stable
           override: true
 
+      # Install pnpm (a fast, disk space efficient package manager)
       - name: Install pnpm
         run: npm install -g pnpm
 
+      # Install project dependencies
       - name: Install dependencies
         run: pnpm i
 
+      # Build the project for MacOS Silicon
       - name: Build for MacOS Silicon
         run: pnpm build:app:silicon
 
+      # Archive the MacOS Silicon build artifacts
       - name: Archive MacOS Silicon artifacts
         uses: actions/upload-artifact@v3
         with:
           name: macos-silicon
-          path: src-tauri/target/aarch64-apple-darwin/release/bundle/macos/rw.ollama-interface_0.1.0_aarch64.dmg # paths like this needs to be fixed
-          # path: src-tauri/target/release/bundle/dmg/*.dmg # something like this would be preferable
+          # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
+          path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/ollama-interface_0.1.0_aarch64.dmg 
 
+      # Build the project for MacOS Intel
       - name: Build for MacOS Intel
         run: pnpm build:app:intell
 
+      # Archive the MacOS Intel build artifacts
       - name: Archive MacOS Intel artifacts
         uses: actions/upload-artifact@v3
         with:
           name: macos-intel
-          path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/ollama-interface_0.1.0_x64.dmg # paths like this needs to be fixed
-          # path: src-tauri/target/release/bundle/dmg/*.dmg # something like this would be preferable
-      
+          # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
+          path: src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/ollama-interface_0.1.0_x64.dmg
+
+      # Build the project for MacOS Universal (both Silicon and Intel)
       - name: Build for MacOS Universal
         run: pnpm build:app:universal
 
+      # Archive the MacOS Universal build artifacts
       - name: Archive MacOS Universal artifacts
         uses: actions/upload-artifact@v3
         with:
           name: macos-universal
-          path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/ollama-interface_0.1.0_universal.dmg # paths like this needs to be fixed
-          # path: src-tauri/target/release/bundle/dmg/*.dmg # something like this would be preferable
+          # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
+          path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/ollama-interface_0.1.0_universal.dmg
 
-      # Future implementation for windows
+      # Placeholder steps for future implementation for Windows
       # - name: Build for Windows
       #   run: pnpm build:app:windows
 
@@ -74,7 +92,7 @@ jobs:
       #     name: windows
       #     path: src-tauri/target/release/bundle/windows/* # Adjust this path if necessary
 
-      # Future implementation for linux
+      # Placeholder steps for future implementation for Linux
       # - name: Build for Linux
       #   run: pnpm build:app:linux
 
@@ -84,14 +102,20 @@ jobs:
       #     name: linux
       #     path: src-tauri/target/release/bundle/linux/* # Adjust this path if necessary
 
+  # Define the release job which depends on the build job
   release:
+    # Specify that this job needs the build job to complete successfully
     needs: build
+    # Specify the runner environment
     runs-on: ubuntu-latest
 
+    # Define the steps to be performed in the release job
     steps:
+      # Download the build artifacts from the build job
       - name: Download artifacts
         uses: actions/download-artifact@v3
 
+      # Create a new GitHub release
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -103,6 +127,7 @@ jobs:
           draft: false
           prerelease: false
 
+      # Upload the MacOS Silicon build artifact to the GitHub release
       - name: Upload Release Asset (MacOS Silicon)
         uses: actions/upload-release-asset@v1
         env:
@@ -113,6 +138,7 @@ jobs:
           asset_name: Ollama-Gui-MacOS-Silicon.dmg
           asset_content_type: application/octet-stream
 
+      # Upload the MacOS Intel build artifact to the GitHub release
       - name: Upload Release Asset (MacOS Intel)
         uses: actions/upload-release-asset@v1
         env:
