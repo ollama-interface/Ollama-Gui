@@ -233,27 +233,9 @@ const HomePage: React.FC = () => {
 							</div>
 						)}
 
-						<div className="flex flex-row ml-2 items-center">
-							<p className="font-medium text-black dark:text-white mr-1">
-								Conversation size:
-							</p>
-							<p className="text-neutral-600 dark:text-neutral-400">
-								{formatBytes(
-									new Blob([
-										JSON.stringify(
-											conversations[currentConversation]
-										).toString(),
-									]).size
-								)}
-							</p>
-							<div className="ml-2 flex flex-row">
-								<p className="font-medium text-black dark:text-white">
-									Time taken:
-								</p>
-								<p className="ml-1 text-neutral-500 ">{responseTime / 1000}s</p>
-							</div>
-
+						<div>
 							<Button
+								variant="secondary"
 								disabled={txt === '' || !ollamaConnected || loading}
 								onClick={() => submitPrompt()}
 								className="flex-shrink-0 ml-2"
@@ -263,6 +245,15 @@ const HomePage: React.FC = () => {
 								)}
 								Submit
 							</Button>
+						</div>
+
+						<div className="flex flex-row  items-center">
+							<div className="ml-2 flex flex-row">
+								<p className="font-medium text-black dark:text-white">
+									Time taken:
+								</p>
+								<p className="ml-1 text-neutral-500 ">{responseTime / 1000}s</p>
+							</div>
 
 							<Tooltip>
 								<TooltipTrigger className="">
@@ -285,7 +276,7 @@ const HomePage: React.FC = () => {
 							<ModeToggle />
 						</div>
 					</div>
-					<div className="flex flex-row w-full p-4 pt-2">
+					<div className="flex flex-row w-full p-4 ">
 						<Textarea
 							ref={promptRef}
 							autoFocus

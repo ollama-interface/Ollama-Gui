@@ -19,7 +19,7 @@ export const Sidebar: React.FC<ISidebarProps> = (props) => {
 	};
 
 	return (
-		<div className="p-4 pt-3 w-[350px] bg-neutral-50 dark:bg-stone-950">
+		<div className="flex flex-col shrink-0 p-4 pt-3 w-[280px] bg-neutral-50 dark:bg-stone-950">
 			<Button
 				disabled={props.loading}
 				className="w-full dark:text-white"
