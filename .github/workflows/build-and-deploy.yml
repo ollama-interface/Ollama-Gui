@@ -5,7 +5,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - github-actions-setup
+      - main
 
 # Define the jobs to be run
 jobs:
@@ -37,6 +37,15 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+      
+      # Check if there is a cache of the pnpm modules and restore it
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
 
       # Install pnpm (a fast, disk space efficient package manager)
       - name: Install pnpm
@@ -84,14 +93,6 @@ jobs:
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
           path: src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
           if-no-files-found: error  # or 'warn' or 'ignore'
-      
-      # List the contents of the build directory
-      - name: List files in the build directory
-        run: |
-          echo "Listing contents of macos-silicon directory"
-          ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/
-          echo "Listing contents of macos-universal directory"
-          ls -la src-tauri/target/universal-apple-darwin/release/bundle/dmg/
 
       # Placeholder steps for future implementation for Windows
       # Build the project for Windows OS
@@ -115,6 +116,17 @@ jobs:
       #     name: linux
       #     path: src-tauri/target/release/bundle/linux/* # Adjust this path if necessary
 
+      # # List the contents of the build directory
+      # # For Debugging purposes
+      # - name: List files in the build directory
+      #   run: |
+      #     echo "Listing contents of macos-silicon directory"
+      #     ls -la src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/
+      #     echo "Listing contents of macos-intel directory"
+      #     ls -la src-tauri/target/x86_64-apple-darwin/release/bundle/dmg/
+      #     echo "Listing contents of macos-universal directory"
+      #     ls -la src-tauri/target/universal-apple-darwin/release/bundle/dmg/
+
   # Define the release job which depends on the build job
   release:
     # Specify that this job needs the build job to complete successfully
@@ -128,14 +140,16 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
 
-      # List the contents of the directories
-      - name: List contents of directories
-        run: |
-          echo "Listing contents of macos-silicon directory"
-          ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-silicon
-          echo "Listing contents of macos-universal directory"
-          ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-universal
-
+      # # List the contents of the directories
+      # # For debugging purposes
+      # - name: List contents of directories
+      #   run: |
+      #     echo "Listing contents of macos-silicon directory"
+      #     ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-silicon
+      #     echo "Listing contents of macos-intel directory"
+      #     ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-intel
+      #     echo "Listing contents of macos-universal directory"
+      #     ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-universal
 
       # Needs to be updated to use an adequate generated tag
       # Generate the tag
