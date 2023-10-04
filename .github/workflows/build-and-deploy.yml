@@ -201,7 +201,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           # asset_path: ./macos-intel/*.dmg
-          asset_path: /home/runner/work/Ollama-Gui/Ollama-Gui/macos-intel/*.dmg  # adjusted path
+          asset_path: /home/runner/work/Ollama-Gui/Ollama-Gui/macos-intel/ollama-interface_0.1.0_x64.dmg  # adjusted path
           asset_name: Ollama-Gui-MacOS-Intel.dmg
           asset_content_type: application/octet-stream
 
