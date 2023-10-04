@@ -115,17 +115,34 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
 
-      # Create a new GitHub release
+      # Generate the tag
+      - name: Generate tag
+        id: generate_tag
+        run: echo "::set-output name=tag::release-$(date +'%Y%m%d%H%M%S')"
+
+      # Create a new GitHub release with the generated tag
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ steps.generate_tag.outputs.tag }}
+          release_name: Release ${{ steps.generate_tag.outputs.tag }}
           draft: false
           prerelease: false
+
+      # # Create a new GitHub release
+      # - name: Create GitHub Release
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{ github.ref }}
+      #     release_name: Release ${{ github.ref }}
+      #     draft: false
+      #     prerelease: false
 
       # Upload the MacOS Silicon build artifact to the GitHub release
       - name: Upload Release Asset (MacOS Silicon)
