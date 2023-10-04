@@ -161,7 +161,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.generate_tag.outputs.tag }}
           release_name: Release ${{ steps.generate_tag.outputs.tag }}
@@ -181,7 +181,7 @@ jobs:
       - name: Upload Release Asset (MacOS Silicon)
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.get_filename_silicon.outputs.filename }} # adjusted path
@@ -201,7 +201,7 @@ jobs:
       - name: Upload Release Asset (MacOS Intel)
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.get_filename_intel.outputs.filename }} # adjusted path
@@ -221,7 +221,7 @@ jobs:
       - name: Upload Release Asset (MacOS Universal)
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.get_filename_universal.outputs.filename }} # adjusted path
