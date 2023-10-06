@@ -1,20 +1,31 @@
-# Ollama GUI
+# Ollama Chat App 🐐
 
-Welcome to Ollama GUI, this is interface for ollama cli to make it easier to chat with, this also includes other features such as persisted conversation, switch between conversations and more.
+[![Build and Deploy](https://github.com/ollama-interface/Ollama-Gui/actions/workflows/build-and-deploy.yml/badge.svg?branch=main)](https://github.com/ollama-interface/Ollama-Gui/actions/workflows/build-and-deploy.yml)
+
+Welcome to my Ollama Chat, this is an interface for the Official ollama CLI to make it easier to chat. It includes futures such as:
+
+- Multiple conversations 💬
+- Detech which models are available to use 📋
+- Auto check if ollama is running ⏰
+- Able to change the host where ollama is running at 🖥️
+- Perstistance 📀
+- Import & Export Chats 🚛
+- Light & Dark Theme 🌗
+
+<br />
 
 <img src="./.github/docs/preview-2.png" />
 
 <br />
-<br />
 
-## Create a build to fully self host it and offline use
+## How to build on your machine
 
 ### Requirements
 
 - [Git](https://git-scm.com/)
-- [NodeJS](https://nodejs.org/en)
-- [pnpm](https://pnpm.io/)
-- [rust](https://www.rust-lang.org/)
+- [NodeJS](https://nodejs.org/en) LTS 18
+- [pnpm](https://pnpm.io/) 8.8.0+
+- [rust](https://www.rust-lang.org/) 1.72.1=
 
 <br />
 
@@ -30,7 +41,4 @@ You as well you need to install [Ollama](https://ollama.ai) and after you instal
 <br />
 <br />
 
-This is not affiliated with Ollama.ai but just giving value to the community from me.
-<br />
-
-For any questions, please contact [Twan Luttik (Twitter - X)](twitter.com/twanluttik)
+For any questions, please contact [Twan Luttik (Twitter - X)](https://twitter.com/twanluttik)
