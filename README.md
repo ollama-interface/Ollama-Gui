@@ -2,15 +2,15 @@
 
 [![Build and Deploy](https://github.com/ollama-interface/Ollama-Gui/actions/workflows/build-and-deploy.yml/badge.svg?branch=main)](https://github.com/ollama-interface/Ollama-Gui/actions/workflows/build-and-deploy.yml)
 
-Welcome to my Ollama Chat, this is an interface for the Official ollama CLI to make it easier to chat. It includes futures such as:
+Welcome to Ollama Chat, this is an interface for the official Ollama CLI to make it easier to chat. It includes futures such as:
 
 - Multiple conversations 💬
-- Detech which models are available to use 📋
-- Auto check if ollama is running ⏰
-- Able to change the host where ollama is running at 🖥️
-- Perstistance 📀
-- Import & Export Chats 🚛
-- Light & Dark Theme 🌗
+- Detecting which models are available to use 📋
+- Auto-checking if Ollama is running ⏰
+- Changing the host where Ollama runs 🖥️
+- Persistence 📀
+- Importing & Exporting Chats 🚛
+- Light & Dark Themes 🌗
 
 <br />
 
@@ -36,7 +36,7 @@ Welcome to my Ollama Chat, this is an interface for the Official ollama CLI to m
 
 <br />
 
-You as well you need to install [Ollama](https://ollama.ai) and after you installed it, you can run your local server with this command `OLLAMA_ORIGINS=* OLLAMA_HOST=127.0.0.1:11435 ollama serve`.
+You also need to install [Ollama](https://ollama.ai). After you install it, you can run your local server with this command `OLLAMA_ORIGINS=* OLLAMA_HOST=127.0.0.1:11435 ollama serve`.
 
 <br />
 <br />
