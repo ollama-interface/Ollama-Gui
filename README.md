@@ -2,13 +2,13 @@
 
 [![Build and Deploy](https://github.com/ollama-interface/Ollama-Gui/actions/workflows/build-and-deploy.yml/badge.svg?branch=main)](https://github.com/ollama-interface/Ollama-Gui/actions/workflows/build-and-deploy.yml)
 
-Welcome to my Ollama Chat, this is an interface for the Official ollama CLI to make it easier to chat. It includes futures such as:
+Welcome to my Ollama Chat, this is an interface for the Official ollama CLI to make it easier to chat. It includes features such as:
 
 - Multiple conversations 💬
-- Detech which models are available to use 📋
-- Auto check if ollama is running ⏰
-- Able to change the host where ollama is running at 🖥️
-- Perstistance 📀
+- Detect which models are available to use 📋
+- Auto-check if ollama is running ⏰
+- Able to change the address where ollama is running 🖥️
+- Persistance 📀
 - Import & Export Chats 🚛
 - Light & Dark Theme 🌗
 
@@ -26,6 +26,8 @@ Welcome to my Ollama Chat, this is an interface for the Official ollama CLI to m
 - [NodeJS](https://nodejs.org/en) LTS 18
 - [pnpm](https://pnpm.io/) 8.8.0+
 - [rust](https://www.rust-lang.org/) 1.72.1=
+
+Your machine needs to be set up to build Tauri apps. Follow the [Getting Started](https://tauri.app/v1/guides/getting-started/prerequisites) guide to ensure you system is set up correctly.
 
 <br />
 
