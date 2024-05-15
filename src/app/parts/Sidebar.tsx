@@ -10,11 +10,11 @@ interface ISidebarProps {
 export const Sidebar: React.FC<ISidebarProps> = (props) => {
 	const [currentEdit, setCurrentEdit] = useState('');
 	const convs = useSimple(core.conversations);
-	const currentConv = useSimple(core.current_conversation);
+	const currentConv = useSimple(core.currentConversation);
 
 	const newConv = () => {
 		const id = createNewConversation();
-		core.current_conversation.set(id);
+		core.currentConversation.set(id);
 		setCurrentEdit(id);
 	};
 
@@ -39,7 +39,7 @@ export const Sidebar: React.FC<ISidebarProps> = (props) => {
 										: 'bg-neutral-100 dark:bg-neutral-900'
 								} p-2 hover:bg-neutral-200 mb-2 rounded-md select-none cursor-pointer text-black dark:text-white`}
 								onClick={() => {
-									core.current_conversation.set(item[0]);
+									core.currentConversation.set(item[0]);
 								}}
 								onDoubleClick={() => {
 									setCurrentEdit(item[0]);

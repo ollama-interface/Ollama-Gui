@@ -21,7 +21,7 @@ interface IIntroCardProps {
 export const IntroCard: React.FC<IIntroCardProps> = (p) => {
 	const { toast } = useToast();
 	const ref = useRef<HTMLButtonElement>(null);
-	const server_connected = useSimple(core.server_connected);
+	const serverConnected = useSimple(core.serverConnected);
 
 	useEffect(() => {
 		if (ref.current) ref.current.click();
@@ -73,10 +73,10 @@ export const IntroCard: React.FC<IIntroCardProps> = (p) => {
 						3. Start connecting to your server
 					</DialogDescription>
 					<div>
-						<Button onClick={tryConnect} size="sm" disabled={server_connected}>
+						<Button onClick={tryConnect} size="sm" disabled={serverConnected}>
 							Connect
 						</Button>
-						{server_connected && (
+						{serverConnected && (
 							<Badge
 								className="ml-2 bg-green-200 hover:bg-green-200 text-green-700"
 								variant="secondary"

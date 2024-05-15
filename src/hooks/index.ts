@@ -1,1 +1,1 @@
-export { IsRunningHook } from './IsRunning'
+export { useRunningPoll } from './IsRunning';

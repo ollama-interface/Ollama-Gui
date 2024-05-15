@@ -26,13 +26,13 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
 	const { toast } = useToast();
 	const url = useSimple(core.localAPI);
 	const convs = useSimple(core.conversations);
-	const ollamaConnected = useSimple(core.server_connected);
+	const ollamaConnected = useSimple(core.serverConnected);
 
 	const clearConversations = () => {
 		core.conversations.set({
 			session: { chatHistory: [], ctx: [], model: 'llama2' },
 		});
-		core.current_conversation.set('session');
+		core.currentConversation.set('session');
 
 		toast({
 			title: 'Conversation has been cleared',
@@ -50,7 +50,7 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
 		}
 
 		core.conversations.set(JSON.parse(data));
-		core.current_conversation.set('session');
+		core.currentConversation.set('session');
 
 		toast({
 			title: 'Successfully imported',
@@ -113,7 +113,7 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
 								size="sm"
 								variant="secondary"
 								onClick={() => {
-									core.server_connected.set(false);
+									core.serverConnected.set(false);
 								}}
 								disabled={!ollamaConnected}
 							>

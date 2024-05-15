@@ -4,7 +4,7 @@ import * as React from 'react';
 /**
  * @description This hook will make sure that it will check every 30 seconds if the ollama server is running.
  */
-export const IsRunningHook = () => {
+export function useRunningPoll() {
 	React.useEffect(() => {
 		const timeoutID = setInterval(() => {
 			isRunningUpdate();
@@ -13,4 +13,4 @@ export const IsRunningHook = () => {
 			clearInterval(timeoutID);
 		};
 	}, []);
-};
+}

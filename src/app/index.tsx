@@ -8,13 +8,7 @@ import {
 	TooltipContent,
 } from '@/components/ui/tooltip';
 import { useToast } from '@/components/ui/use-toast';
-import {
-	core,
-	ollamaGenerate,
-	OllamaResult,
-	convertTextToJson,
-	extractTextAndCodeBlocks,
-} from '@/core';
+import { core, ollamaGenerate, OllamaResult, convertTextToJson } from '@/core';
 import { updateModelsAvailability, isRunningUpdate } from '@/app/helper';
 import { ConfirmChatClear } from '@/app/parts/ConfirmChatClear';
 import { ConversationBlock } from '@/app/parts/ConversationBlock';
@@ -25,12 +19,13 @@ import { Sidebar } from '@/app/parts/Sidebar';
 import { ReloadIcon, TrashIcon } from '@radix-ui/react-icons';
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { useSimple } from 'simple-core-state';
-import { IsRunningHook } from '@/hooks';
+import { useRunningPoll } from '@/hooks';
 import { Textarea } from '@/components/ui/textarea';
 import { SendIcon } from 'lucide-react';
+import Header from './header';
 
-const HomePage: React.FC = () => {
-	IsRunningHook();
+function HomePage() {
+	useRunningPoll();
 
 	const { toast } = useToast();
 	const chatRef = useRef<HTMLDivElement>(null);
@@ -38,25 +33,21 @@ const HomePage: React.FC = () => {
 
 	const model = useSimple(core.model);
 	const visited = useSimple(core.visited);
-	const ollamaConnected = useSimple(core.server_connected);
+	const ollamaConnected = useSimple(core.serverConnected);
 	const conversations = useSimple(core.conversations);
-	const currentConversation = useSimple(core.current_conversation);
+	const currentConversation = useSimple(core.currentConversation);
 
 	const [showIntroCard, setShowIntroCard] = useState(false);
-	const [showChatClearDialog, setShowChatClearDialog] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [txt, setTxt] = useState('');
-	const [responseTime, setResponseTime] = useState(0);
 	const [isShifted, setIsShifted] = useState(false);
-
-	const removeConv = useCallback(() => {
-		setShowChatClearDialog(true);
-	}, []);
 
 	const submitPrompt = useCallback(async () => {
 		const startTime = Date.now();
 		try {
-			if (txt === '') return;
+			if (txt === '') {
+				return;
+			}
 			setLoading(true);
 
 			// Push my question to the history
@@ -91,20 +82,6 @@ const HomePage: React.FC = () => {
 				...conversations[currentConversation].chatHistory,
 			];
 
-			// TODO: Make function that converts a piece of string into data blocks of types of text we show, so like code or a ordered list and etc...
-
-			// if (txtMsg.includes('```')) {
-			// 	const codeBlocks = extractTextAndCodeBlocks(txtMsg);
-			// 	if (!codeBlocks) {
-			// 	} else {
-			// 		currentHistory.push({
-			// 			created_at: new Date(),
-			// 			txt: codeBlocks,
-			// 			who: 'ollama',
-			// 		});
-			// 	}
-			// } else {
-			// }
 			currentHistory.push({
 				txt: [{ content: txtMsg, type: 'text' }],
 				who: 'ollama',
@@ -141,7 +118,7 @@ const HomePage: React.FC = () => {
 
 		const endTime = Date.now();
 
-		setResponseTime(endTime - startTime);
+		core.lastResponseTime.set(endTime - startTime);
 	}, [txt, chatRef, promptRef, model, conversations, currentConversation]);
 
 	const initPageLoad = () => {
@@ -151,30 +128,6 @@ const HomePage: React.FC = () => {
 			updateModelsAvailability();
 		}
 	};
-
-	const deleteConversation = useCallback(() => {
-		// shallow copy
-		const cc = { ...conversations };
-
-		// Don't delete the session object but clear instead
-		if (currentConversation === 'session') {
-			cc['session'] = {
-				chatHistory: [],
-				ctx: [],
-				model: model,
-			};
-		} else {
-			// all other conversations will be removed
-			delete cc[currentConversation];
-		}
-
-		// Update the core
-		core.conversations.set(cc);
-
-		// Select a new conversation
-		const nextId = Object.entries(cc)[0][0] || 'session';
-		core.current_conversation.set(nextId);
-	}, [currentConversation, conversations, model]);
 
 	useEffect(() => {
 		if (ollamaConnected) {
@@ -188,7 +141,7 @@ const HomePage: React.FC = () => {
 				});
 			}
 		} else {
-			core.installed_models.reset();
+			core.installedModels.reset();
 		}
 	}, [ollamaConnected]);
 
@@ -209,60 +162,8 @@ const HomePage: React.FC = () => {
 						}}
 					/>
 				)}
-				{showChatClearDialog && (
-					<ConfirmChatClear
-						onClose={(e) => {
-							setShowChatClearDialog(false);
-							if (e) {
-								deleteConversation();
-							}
-						}}
-					/>
-				)}
 
-				<div className="flex flex-col w-full pb-[5px] mt-2">
-					<div className="flex justify-center">
-						{ollamaConnected && (
-							<div className="h-full flex items-center">
-								<Badge
-									className="bg-green-200 hover:bg-green-200 text-green-700"
-									variant="secondary"
-								>
-									Connected
-								</Badge>
-							</div>
-						)}
-
-						<div className="flex flex-row  items-center">
-							<div className="ml-2 flex flex-row">
-								<p className="font-medium text-black dark:text-white">
-									Time taken:
-								</p>
-								<p className="ml-1 text-neutral-500 ">{responseTime / 1000}s</p>
-							</div>
-
-							<Tooltip>
-								<TooltipTrigger className="">
-									<Button
-										disabled={loading}
-										size="default"
-										className="w-10 p-0 px-2 ml-2 bg-red-400 hover:bg-red-400 dark:bg-red-500 dark:hover:bg-red-500 dark:text-white hover:opacity-60"
-										onClick={removeConv}
-									>
-										<TrashIcon height={21} width={21} />
-									</Button>
-								</TooltipTrigger>
-								<TooltipContent side="bottom">
-									<p>Delete Conversation</p>
-								</TooltipContent>
-							</Tooltip>
-
-							<SelectModel loading={loading} />
-							<SideInfoSheet loading={loading} />
-							<ModeToggle />
-						</div>
-					</div>
-				</div>
+				<Header />
 
 				<div className="h-full w-full flex flex-row overflow-hidden">
 					<div ref={chatRef} className="w-full overflow-y-scroll px-4">
@@ -320,6 +221,6 @@ const HomePage: React.FC = () => {
 			</div>
 		</div>
 	);
-};
+}
 
 export default HomePage;

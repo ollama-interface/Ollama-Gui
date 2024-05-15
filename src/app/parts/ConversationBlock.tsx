@@ -1,11 +1,11 @@
 import { memo } from 'react';
 import dayjs from 'dayjs';
-import { IConversations } from '@/core/types';
+import { Conversations } from '@/core/types';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { Markdown } from '@/components/markdown';
 
 export interface Props {
-	conversations: IConversations;
+	conversations: Conversations;
 	currentConversation: string;
 	loading: boolean;
 }

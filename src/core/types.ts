@@ -1,4 +1,5 @@
 export type ModelTypes =
+	| 'llama3'
 	| 'llama2'
 	| 'llama2:13b'
 	| 'llama2:70b'
@@ -6,7 +7,7 @@ export type ModelTypes =
 	| 'codellama'
 	| 'orca-mini';
 
-export interface IConversationType {
+export interface Conversation {
 	model: ModelTypes;
 	ctx: number[];
 	chatHistory: {
@@ -18,7 +19,7 @@ export interface IConversationType {
 	name?: string;
 }
 
-export type IConversations = { [index: string]: IConversationType };
+export type Conversations = { [index: string]: Conversation };
 
 export type IModelType = {
 	digest: string;
@@ -27,14 +28,16 @@ export type IModelType = {
 	size: number;
 };
 
-export type ICoreType = {
+export type CoreStore = {
 	conversations: {
-		[index: string]: IConversationType;
+		[index: string]: Conversation;
 	};
-	current_conversation: string;
+	currentConversation: string;
 	model: ModelTypes;
 	localAPI: string;
-	server_connected: boolean;
-	installed_models: IModelType[];
+	serverConnected: boolean;
+	installedModels: IModelType[];
 	visited: boolean;
+	generating: boolean;
+	lastResponseTime: number | undefined;
 };
