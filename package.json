@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "vite",
 		"clean-target": "rm -rf ./src-tauri/target",
-		"build": "pnpm clean-target && tsc && vite build",
+		"build": "tsc && vite build",
+		"build:app:windows": "tauri build --target x86_64-pc-windows-msvc",
 		"build:app:silicon": "pnpm clean-target && tauri build --target aarch64-apple-darwin",
 		"build:app:intell": "pnpm clean-target && tauri build --target x86_64-apple-darwin",
 		"build:app:universal": "pnpm clean-target && tauri build --target universal-apple-darwin",
@@ -36,6 +37,8 @@
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-helmet": "^6.1.0",
+		"react-markdown": "^9.0.1",
+		"react-syntax-highlighter": "^15.5.0",
 		"simple-core-state": "^0.0.16",
 		"tailwind-merge": "^1.14.0",
 		"tailwindcss-animate": "^1.0.7"

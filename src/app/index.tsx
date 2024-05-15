@@ -27,6 +27,7 @@ import { useRef, useState, useCallback, useEffect } from 'react';
 import { useSimple } from 'simple-core-state';
 import { IsRunningHook } from '@/hooks';
 import { Textarea } from '@/components/ui/textarea';
+import { SendIcon } from 'lucide-react';
 
 const HomePage: React.FC = () => {
 	IsRunningHook();
@@ -92,23 +93,23 @@ const HomePage: React.FC = () => {
 
 			// TODO: Make function that converts a piece of string into data blocks of types of text we show, so like code or a ordered list and etc...
 
-			if (txtMsg.includes('```')) {
-				const codeBlocks = extractTextAndCodeBlocks(txtMsg);
-				if (!codeBlocks) {
-				} else {
-					currentHistory.push({
-						created_at: new Date(),
-						txt: codeBlocks,
-						who: 'ollama',
-					});
-				}
-			} else {
-				currentHistory.push({
-					txt: [{ content: txtMsg, type: 'text' }],
-					who: 'ollama',
-					created_at: new Date(),
-				});
-			}
+			// if (txtMsg.includes('```')) {
+			// 	const codeBlocks = extractTextAndCodeBlocks(txtMsg);
+			// 	if (!codeBlocks) {
+			// 	} else {
+			// 		currentHistory.push({
+			// 			created_at: new Date(),
+			// 			txt: codeBlocks,
+			// 			who: 'ollama',
+			// 		});
+			// 	}
+			// } else {
+			// }
+			currentHistory.push({
+				txt: [{ content: txtMsg, type: 'text' }],
+				who: 'ollama',
+				created_at: new Date(),
+			});
 
 			if (chatRef.current) {
 				chatRef.current.scrollTo(0, chatRef.current.scrollHeight * 2);
@@ -232,20 +233,6 @@ const HomePage: React.FC = () => {
 							</div>
 						)}
 
-						<div>
-							<Button
-								variant="secondary"
-								disabled={txt === '' || !ollamaConnected || loading}
-								onClick={() => submitPrompt()}
-								className="flex-shrink-0 ml-2"
-							>
-								{loading && (
-									<ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-								)}
-								Submit
-							</Button>
-						</div>
-
 						<div className="flex flex-row  items-center">
 							<div className="ml-2 flex flex-row">
 								<p className="font-medium text-black dark:text-white">
@@ -275,12 +262,28 @@ const HomePage: React.FC = () => {
 							<ModeToggle />
 						</div>
 					</div>
+				</div>
+
+				<div className="h-full w-full flex flex-row overflow-hidden">
+					<div ref={chatRef} className="w-full overflow-y-scroll px-4">
+						<ConversationBlock
+							conversations={conversations}
+							currentConversation={currentConversation}
+							loading={loading}
+						/>
+						{loading && (
+							<Skeleton className="w-full h-[20px] rounded-full mt-2" />
+						)}
+					</div>
+				</div>
+				<div className="flex flex-col w-full pb-[5px] mt-2">
 					<div className="flex flex-row w-full p-4 ">
 						<Textarea
 							ref={promptRef}
 							autoFocus
+							rows={4}
 							disabled={!ollamaConnected || loading}
-							placeholder="Prompt"
+							placeholder="Your message..."
 							value={txt}
 							onChange={(e) => setTxt(e.currentTarget.value)}
 							className="dark:bg-black dark:text-zinc-300 p-1 px-2 max-h-[300px] flex-grow flex border dark:border-neutral-800"
@@ -299,19 +302,19 @@ const HomePage: React.FC = () => {
 								}
 							}}
 						/>
-					</div>
-				</div>
 
-				<div className="h-full w-full flex flex-row overflow-hidden">
-					<div ref={chatRef} className="w-full overflow-y-scroll px-4">
-						<ConversationBlock
-							conversations={conversations}
-							currentConversation={currentConversation}
-							loading={loading}
-						/>
-						{loading && (
-							<Skeleton className="w-full h-[20px] rounded-full mt-2" />
-						)}
+						<Button
+							variant="secondary"
+							disabled={txt === '' || !ollamaConnected || loading}
+							onClick={() => submitPrompt()}
+							className="flex-shrink-0 ml-2 h-full w-20"
+						>
+							{loading ? (
+								<ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+							) : (
+								<SendIcon className="mr-2 h-4 w-4" />
+							)}
+						</Button>
 					</div>
 				</div>
 			</div>
