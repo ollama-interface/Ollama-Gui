@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,6 +19,10 @@ export default memo(function InputPrompt() {
 	const generating = useSimple(core.generating);
 	const disabled = !connected || generating;
 
+	useLayoutEffect(() => {
+		drafts.set(currentConversation, txt);
+	}, [txt]);
+
 	useEffect(() => {
 		setTxt(drafts.get(currentConversation) ?? '');
 	}, [currentConversation]);
@@ -29,11 +33,14 @@ export default memo(function InputPrompt() {
 			if (txt === '') {
 				return;
 			}
+
+			setTxt('');
+
 			core.generating.set(true);
 
 			// Push my question to the history
-			const ch = conversations[currentConversation].chatHistory;
-			ch.push({
+			const history = conversations[currentConversation].chatHistory;
+			history.push({
 				created_at: new Date(),
 				txt: [{ content: txt, type: 'text' }],
 				who: 'me',
@@ -41,10 +48,8 @@ export default memo(function InputPrompt() {
 
 			core.conversations.updatePiece(currentConversation, {
 				...conversations[currentConversation],
-				chatHistory: ch,
+				chatHistory: history,
 			});
-
-			setTxt('');
 
 			// request the prompt
 			const res = await ollamaGenerate(
@@ -68,10 +73,6 @@ export default memo(function InputPrompt() {
 				who: 'ollama',
 				created_at: new Date(),
 			});
-
-			// if (chatRef.current) {
-			//   chatRef.current.scrollTo(0, chatRef.current.scrollHeight * 2);
-			// }
 
 			core.conversations.updatePiece(currentConversation, {
 				model: model,
@@ -112,7 +113,6 @@ export default memo(function InputPrompt() {
 				value={txt}
 				onChange={(e) => {
 					const value = e.currentTarget.value;
-					drafts.set(currentConversation, value);
 					setTxt(value);
 				}}
 				className="dark:bg-black dark:text-zinc-300 p-1 px-2 max-h-[300px] flex-grow flex border dark:border-neutral-800"
@@ -132,7 +132,7 @@ export default memo(function InputPrompt() {
 				{false ? (
 					<ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
 				) : (
-					<SendIcon className="mr-2 h-4 w-4" />
+					<SendIcon className="h-4 w-4" />
 				)}
 			</Button>
 		</div>

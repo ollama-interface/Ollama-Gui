@@ -34,7 +34,6 @@ export const ConversationBlock = memo(function ConversationBlock(p: Props) {
 											className="text-left text-neutral-700 dark:text-neutral-300"
 											components={{
 												code(props) {
-													console.log(props);
 													const { children, className, key } = props;
 													const match = /language-(\w+)/.exec(className || '');
 													return (
