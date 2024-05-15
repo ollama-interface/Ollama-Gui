@@ -43,7 +43,7 @@ export async function ollamaGenerate(
 	}
 }
 
-export interface OllamaReturnObj {
+export interface OllamaResult {
 	model: string;
 	created_at: string;
 	response: string;
@@ -57,7 +57,7 @@ export interface OllamaReturnObj {
 	eval_duration?: number;
 }
 
-export function convertTextToJson(inputText: string): OllamaReturnObj[] {
+export function convertTextToJson(inputText: string): OllamaResult[] {
 	const lines = inputText.trim().split('\n');
 	const jsonArray = [];
 

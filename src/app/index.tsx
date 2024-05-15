@@ -11,7 +11,7 @@ import { useToast } from '@/components/ui/use-toast';
 import {
 	core,
 	ollamaGenerate,
-	OllamaReturnObj,
+	OllamaResult,
 	convertTextToJson,
 	extractTextAndCodeBlocks,
 } from '@/core';
@@ -82,7 +82,7 @@ const HomePage: React.FC = () => {
 			);
 
 			// We neet to convert the NDJSOn to json format
-			const convertedToJson: OllamaReturnObj[] = convertTextToJson(res);
+			const convertedToJson: OllamaResult[] = convertTextToJson(res);
 
 			// we need to convert our data set into one string
 			const txtMsg = convertedToJson.map((item) => item.response).join('');
