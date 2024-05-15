@@ -129,7 +129,7 @@ export default memo(function InputPrompt() {
 				onClick={() => submitPrompt()}
 				className="flex-shrink-0 ml-2 h-full w-20"
 			>
-				{false ? (
+				{generating ? (
 					<ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
 				) : (
 					<SendIcon className="h-4 w-4" />
