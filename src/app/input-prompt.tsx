@@ -1,36 +1,29 @@
+import { memo, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
-import { core, ollamaGenerate, OllamaResult, convertTextToJson } from '@/core';
-import { ConversationBlock } from '@/app/parts/ConversationBlock';
-import { IntroCard } from '@/app/parts/IntroCard';
-import Sidebar from '@/app/parts/Sidebar';
 import { ReloadIcon } from '@radix-ui/react-icons';
-import { useRef, useState, useCallback, useEffect } from 'react';
-import { useSimple } from 'simple-core-state';
-import { useRunningPoll } from '@/hooks';
 import { Textarea } from '@/components/ui/textarea';
 import { SendIcon } from 'lucide-react';
-import Header from './header';
-import InputPrompt from './input-prompt';
+import { OllamaResult, convertTextToJson, core, ollamaGenerate } from '@/core';
+import { useSimple } from 'simple-core-state';
+import { toast } from '@/components/ui/use-toast';
 
-function HomePage() {
-	useRunningPoll();
+const drafts = new Map<string, string>();
 
-	const { toast } = useToast();
-	const chatRef = useRef<HTMLDivElement>(null);
+export default memo(function InputPrompt() {
 	const promptRef = useRef<HTMLTextAreaElement>(null);
-
-	const model = useSimple(core.model);
-	const visited = useSimple(core.visited);
-	const ollamaConnected = useSimple(core.serverConnected);
+	const connected = useSimple(core.serverConnected);
 	const conversations = useSimple(core.conversations);
 	const currentConversation = useSimple(core.currentConversation);
+	const [txt, setTxt] = useState(() => drafts.get(currentConversation) ?? '');
+	const model = useSimple(core.model);
+	const generating = useSimple(core.generating);
+	const disabled = !connected || generating;
 
-	const [showIntroCard, setShowIntroCard] = useState(false);
-	const [txt, setTxt] = useState('');
-	const [isShifted, setIsShifted] = useState(false);
+	useEffect(() => {
+		setTxt(drafts.get(currentConversation) ?? '');
+	}, [currentConversation]);
 
-	const submitPrompt = useCallback(async () => {
+	async function submitPrompt() {
 		const startTime = Date.now();
 		try {
 			if (txt === '') {
@@ -76,9 +69,9 @@ function HomePage() {
 				created_at: new Date(),
 			});
 
-			if (chatRef.current) {
-				chatRef.current.scrollTo(0, chatRef.current.scrollHeight * 2);
-			}
+			// if (chatRef.current) {
+			//   chatRef.current.scrollTo(0, chatRef.current.scrollHeight * 2);
+			// }
 
 			core.conversations.updatePiece(currentConversation, {
 				model: model,
@@ -106,46 +99,42 @@ function HomePage() {
 		const endTime = Date.now();
 
 		core.lastResponseTime.set(endTime - startTime);
-	}, [txt, chatRef, promptRef, model, conversations, currentConversation]);
-
-	useEffect(() => {
-		if (visited === false) {
-			setShowIntroCard(true);
-		}
-	}, [visited]);
+	}
 
 	return (
-		<div className="flex flex-row h-full">
-			<Sidebar />
-			<div className="dark:bg-black h-full w-full flex flex-col justify-center items-center">
-				{showIntroCard && (
-					<IntroCard
-						onClose={(e) => {
-							if (e) core.visited.set(true);
-							setShowIntroCard(false);
-						}}
-					/>
+		<div className="flex flex-row w-full p-4 ">
+			<Textarea
+				ref={promptRef}
+				autoFocus
+				rows={4}
+				disabled={!connected}
+				placeholder="Your message..."
+				value={txt}
+				onChange={(e) => {
+					const value = e.currentTarget.value;
+					drafts.set(currentConversation, value);
+					setTxt(value);
+				}}
+				className="dark:bg-black dark:text-zinc-300 p-1 px-2 max-h-[300px] flex-grow flex border dark:border-neutral-800"
+				onKeyDown={(e) => {
+					if (e.key === 'Enter' && e.ctrlKey) {
+						submitPrompt();
+					}
+				}}
+			/>
+
+			<Button
+				variant="secondary"
+				disabled={txt === '' || !disabled}
+				onClick={() => submitPrompt()}
+				className="flex-shrink-0 ml-2 h-full w-20"
+			>
+				{false ? (
+					<ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+				) : (
+					<SendIcon className="mr-2 h-4 w-4" />
 				)}
-
-				<Header />
-
-				<div className="h-full w-full flex flex-row overflow-hidden">
-					<div ref={chatRef} className="w-full overflow-y-scroll px-4">
-						<ConversationBlock
-							conversations={conversations}
-							currentConversation={currentConversation}
-						/>
-						{/* {loading && (
-							<Skeleton className="w-full h-[20px] rounded-full mt-2" />
-						)} */}
-					</div>
-				</div>
-				<div className="flex flex-col w-full pb-[5px] mt-2">
-					<InputPrompt />
-				</div>
-			</div>
+			</Button>
 		</div>
 	);
-}
-
-export default HomePage;
+});
