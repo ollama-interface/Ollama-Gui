@@ -1,22 +1,12 @@
-import { ModeToggle } from '@/components/mode-toggle';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-	Tooltip,
-	TooltipTrigger,
-	TooltipContent,
-} from '@/components/ui/tooltip';
 import { useToast } from '@/components/ui/use-toast';
 import { core, ollamaGenerate, OllamaResult, convertTextToJson } from '@/core';
 import { updateModelsAvailability, isRunningUpdate } from '@/app/helper';
-import { ConfirmChatClear } from '@/app/parts/ConfirmChatClear';
 import { ConversationBlock } from '@/app/parts/ConversationBlock';
 import { IntroCard } from '@/app/parts/IntroCard';
-import { SelectModel } from '@/app/parts/SelectModel';
-import { SideInfoSheet } from '@/app/parts/SideInfoSheet';
-import { Sidebar } from '@/app/parts/Sidebar';
-import { ReloadIcon, TrashIcon } from '@radix-ui/react-icons';
+import Sidebar from '@/app/parts/Sidebar';
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { useSimple } from 'simple-core-state';
 import { useRunningPoll } from '@/hooks';
@@ -38,7 +28,6 @@ function HomePage() {
 	const currentConversation = useSimple(core.currentConversation);
 
 	const [showIntroCard, setShowIntroCard] = useState(false);
-	const [loading, setLoading] = useState(false);
 	const [txt, setTxt] = useState('');
 	const [isShifted, setIsShifted] = useState(false);
 
@@ -48,7 +37,7 @@ function HomePage() {
 			if (txt === '') {
 				return;
 			}
-			setLoading(true);
+			core.generating.set(true);
 
 			// Push my question to the history
 			const ch = conversations[currentConversation].chatHistory;
@@ -92,7 +81,6 @@ function HomePage() {
 				chatRef.current.scrollTo(0, chatRef.current.scrollHeight * 2);
 			}
 
-			setLoading(false);
 			core.conversations.updatePiece(currentConversation, {
 				model: model,
 				chatHistory: currentHistory,
@@ -105,8 +93,8 @@ function HomePage() {
 				description:
 					'Something went wrong sending the promt, Check Info & Help',
 			});
-
-			setLoading(false);
+		} finally {
+			core.generating.set(false);
 		}
 
 		// After its done, we need to auto focus since we disable the input whole its processing the request.
@@ -121,38 +109,15 @@ function HomePage() {
 		core.lastResponseTime.set(endTime - startTime);
 	}, [txt, chatRef, promptRef, model, conversations, currentConversation]);
 
-	const initPageLoad = () => {
+	useEffect(() => {
 		if (visited === false) {
 			setShowIntroCard(true);
-		} else {
-			updateModelsAvailability();
 		}
-	};
-
-	useEffect(() => {
-		if (ollamaConnected) {
-			try {
-				updateModelsAvailability();
-			} catch (error) {
-				toast({
-					variant: 'destructive',
-					title: 'Something went wrong',
-					description: error as string,
-				});
-			}
-		} else {
-			core.installedModels.reset();
-		}
-	}, [ollamaConnected]);
-
-	useEffect(() => {
-		isRunningUpdate();
-		initPageLoad();
-	}, []);
+	}, [visited]);
 
 	return (
 		<div className="flex flex-row h-full">
-			<Sidebar loading={loading} />
+			<Sidebar />
 			<div className="dark:bg-black h-full w-full flex flex-col justify-center items-center">
 				{showIntroCard && (
 					<IntroCard
@@ -170,11 +135,10 @@ function HomePage() {
 						<ConversationBlock
 							conversations={conversations}
 							currentConversation={currentConversation}
-							loading={loading}
 						/>
-						{loading && (
+						{/* {loading && (
 							<Skeleton className="w-full h-[20px] rounded-full mt-2" />
-						)}
+						)} */}
 					</div>
 				</div>
 				<div className="flex flex-col w-full pb-[5px] mt-2">
@@ -183,7 +147,7 @@ function HomePage() {
 							ref={promptRef}
 							autoFocus
 							rows={4}
-							disabled={!ollamaConnected || loading}
+							disabled={!ollamaConnected}
 							placeholder="Your message..."
 							value={txt}
 							onChange={(e) => setTxt(e.currentTarget.value)}
@@ -206,11 +170,11 @@ function HomePage() {
 
 						<Button
 							variant="secondary"
-							disabled={txt === '' || !ollamaConnected || loading}
+							disabled={txt === '' || !ollamaConnected}
 							onClick={() => submitPrompt()}
 							className="flex-shrink-0 ml-2 h-full w-20"
 						>
-							{loading ? (
+							{false ? (
 								<ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
 							) : (
 								<SendIcon className="mr-2 h-4 w-4" />

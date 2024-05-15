@@ -7,7 +7,6 @@ import { Markdown } from '@/components/markdown';
 export interface Props {
 	conversations: Conversations;
 	currentConversation: string;
-	loading: boolean;
 }
 
 export const ConversationBlock = memo(function ConversationBlock(p: Props) {
@@ -73,12 +72,11 @@ export const ConversationBlock = memo(function ConversationBlock(p: Props) {
 					</div>
 				)
 			)}
-			{p.conversations[p.currentConversation].chatHistory?.length === 0 &&
-				!p.loading && (
-					<p className="text-neutral-400 dark:text-neutral-600 text-center mt-10">
-						No message
-					</p>
-				)}
+			{p.conversations[p.currentConversation].chatHistory?.length === 0 && (
+				<p className="text-neutral-400 dark:text-neutral-600 text-center mt-10">
+					No message
+				</p>
+			)}
 		</>
 	);
 });

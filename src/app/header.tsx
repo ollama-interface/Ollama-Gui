@@ -9,7 +9,9 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { core } from '@/core';
 import { useSimple } from 'simple-core-state';
 import { ConfirmChatClear } from './parts/ConfirmChatClear';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
+import { updateModelsAvailability } from './helper';
+import { toast } from '@/components/ui/use-toast';
 
 export default memo(function Header() {
 	const connected = useSimple(core.serverConnected);
@@ -17,7 +19,23 @@ export default memo(function Header() {
 	const lastResponseTime = useSimple(core.lastResponseTime);
 	const [showChatClearDialog, setShowChatClearDialog] = useState(false);
 
-	const deleteConversation = () => {
+	useEffect(() => {
+		if (connected) {
+			try {
+				updateModelsAvailability();
+			} catch (error) {
+				toast({
+					variant: 'destructive',
+					title: 'Something went wrong',
+					description: String(error),
+				});
+			}
+		} else {
+			core.installedModels.reset();
+		}
+	}, [connected]);
+
+	function deleteConversation() {
 		const conversations = { ...core.conversations._value };
 
 		const currentConversation = core.currentConversation._value;
@@ -39,7 +57,7 @@ export default memo(function Header() {
 		// Select a new conversation
 		const nextId = Object.entries(conversations)?.[0]?.[0] || 'session';
 		core.currentConversation.set(nextId);
-	};
+	}
 
 	return (
 		<div className="flex items-center justify-between w-full p-2">

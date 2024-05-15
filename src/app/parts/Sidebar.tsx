@@ -1,18 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { core, createNewConversation } from '@/core';
-import React, { useState } from 'react';
+import { memo, useState } from 'react';
 import { useSimple } from 'simple-core-state';
 
-interface ISidebarProps {
-	loading: boolean;
-}
-
-export const Sidebar: React.FC<ISidebarProps> = (props) => {
+export default memo(function Sidebar() {
 	const [currentEdit, setCurrentEdit] = useState('');
-	const convs = useSimple(core.conversations);
-	const currentConv = useSimple(core.currentConversation);
+	const conversations = useSimple(core.conversations);
+	const currentConversation = useSimple(core.currentConversation);
+	const loading = useSimple(core.generating);
 
-	const newConv = () => {
+	const newConversation = () => {
 		const id = createNewConversation();
 		core.currentConversation.set(id);
 		setCurrentEdit(id);
@@ -21,20 +18,20 @@ export const Sidebar: React.FC<ISidebarProps> = (props) => {
 	return (
 		<div className="flex flex-col shrink-0 p-4 pt-3 w-[280px] bg-neutral-50 dark:bg-stone-950">
 			<Button
-				disabled={props.loading}
+				disabled={loading}
 				className="w-full dark:text-white"
 				variant="outline"
-				onClick={newConv}
+				onClick={newConversation}
 			>
 				Create new conversation
 			</Button>
 			<div className="mt-2 overflow-y-auto h-[calc(100%-30px)]">
 				<div>
-					{Object.entries(convs).map((item, index) => {
+					{Object.entries(conversations).map((item, index) => {
 						return (
 							<div
 								className={`${
-									currentConv === item[0]
+									currentConversation === item[0]
 										? 'bg-neutral-200 dark:bg-neutral-800'
 										: 'bg-neutral-100 dark:bg-neutral-900'
 								} p-2 hover:bg-neutral-200 mb-2 rounded-md select-none cursor-pointer text-black dark:text-white`}
@@ -79,4 +76,4 @@ export const Sidebar: React.FC<ISidebarProps> = (props) => {
 			</div>
 		</div>
 	);
-};
+});
