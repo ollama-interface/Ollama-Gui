@@ -10,12 +10,12 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import {
 	core,
-	allomaGenerate,
+	ollamaGenerate,
 	OllamaReturnObj,
 	convertTextToJson,
 	extractTextAndCodeBlocks,
 } from '@/core';
-import { UpdateModelsAvailability, checkIsRunningUpdate } from '@/app/helper';
+import { updateModelsAvailability, isRunningUpdate } from '@/app/helper';
 import { ConfirmChatClear } from '@/app/parts/ConfirmChatClear';
 import { ConversationBlock } from '@/app/parts/ConversationBlock';
 import { IntroCard } from '@/app/parts/IntroCard';
@@ -75,7 +75,7 @@ const HomePage: React.FC = () => {
 			setTxt('');
 
 			// request the prompt
-			const res = await allomaGenerate(
+			const res = await ollamaGenerate(
 				txt,
 				model,
 				conversations[currentConversation].ctx
@@ -148,7 +148,7 @@ const HomePage: React.FC = () => {
 		if (visited === false) {
 			setShowIntroCard(true);
 		} else {
-			UpdateModelsAvailability();
+			updateModelsAvailability();
 		}
 	};
 
@@ -179,7 +179,7 @@ const HomePage: React.FC = () => {
 	useEffect(() => {
 		if (ollamaConnected) {
 			try {
-				UpdateModelsAvailability();
+				updateModelsAvailability();
 			} catch (error) {
 				toast({
 					variant: 'destructive',
@@ -193,7 +193,7 @@ const HomePage: React.FC = () => {
 	}, [ollamaConnected]);
 
 	useEffect(() => {
-		checkIsRunningUpdate();
+		isRunningUpdate();
 		initPageLoad();
 	}, []);
 

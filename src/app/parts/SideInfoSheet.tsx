@@ -12,7 +12,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { OLLAMA_COMMAND, core } from '@/core';
 import { useSimple } from 'simple-core-state';
-import { TryConnect } from '../helper';
+import { tryConnect } from '../helper';
 import { Badge } from '@/components/ui/badge';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { useRef, useState } from 'react';
@@ -105,7 +105,7 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
 							onChange={(e) => core.localAPI.set(e.currentTarget.value)}
 						/>
 						<div className="mb-4 mt-2 fkex">
-							<Button size="sm" onClick={TryConnect} disabled={ollamaConnected}>
+							<Button size="sm" onClick={tryConnect} disabled={ollamaConnected}>
 								Connect
 							</Button>
 							<Button

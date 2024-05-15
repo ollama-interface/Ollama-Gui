@@ -12,7 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { OLLAMA_COMMAND, core } from '@/core';
 import React, { useEffect, useRef } from 'react';
 import { useSimple } from 'simple-core-state';
-import { TryConnect } from '../helper';
+import { tryConnect } from '../helper';
 
 interface IIntroCardProps {
 	onClose: (e?: boolean) => void;
@@ -73,7 +73,7 @@ export const IntroCard: React.FC<IIntroCardProps> = (p) => {
 						3. Start connecting to your server
 					</DialogDescription>
 					<div>
-						<Button onClick={TryConnect} size="sm" disabled={server_connected}>
+						<Button onClick={tryConnect} size="sm" disabled={server_connected}>
 							Connect
 						</Button>
 						{server_connected && (
