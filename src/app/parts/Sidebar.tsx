@@ -27,42 +27,42 @@ export default memo(function Sidebar() {
 			</Button>
 			<div className="mt-2 overflow-y-auto h-[calc(100%-30px)]">
 				<div>
-					{Object.entries(conversations).map((item, index) => {
+					{Object.entries(conversations).map(([id, conversation], index) => {
+						const name = conversation.name ?? id;
 						return (
 							<div
 								className={`${
-									currentConversation === item[0]
+									currentConversation === id
 										? 'bg-neutral-200 dark:bg-neutral-800'
 										: 'bg-neutral-100 dark:bg-neutral-900'
 								} p-2 hover:bg-neutral-200 mb-2 rounded-md select-none cursor-pointer text-black dark:text-white`}
 								onClick={() => {
-									core.currentConversation.set(item[0]);
+									core.currentConversation.set(id);
 								}}
 								onDoubleClick={() => {
-									setCurrentEdit(item[0]);
+									setCurrentEdit(id);
 								}}
 								key={index}
 							>
-								{currentEdit !== item[0] ? (
-									<p>{item[1]?.name || item[0]}</p>
+								{currentEdit !== id ? (
+									<p>{name}</p>
 								) : (
 									<input
 										onKeyDown={(e) => {
 											if (e.code === 'Escape') {
 												setCurrentEdit('');
-											}
-
-											if (e.code === 'Enter') {
+											} else if (e.code === 'Enter') {
 												setCurrentEdit('');
 											}
 										}}
 										autoFocus
+										onBlur={() => setCurrentEdit('')}
 										className="bg-transparent"
-										value={item[1]?.name || ''}
+										value={conversation.name || ''}
 										onChange={(e) => {
 											core.conversations.patchObject({
-												[item[0] as any]: {
-													...item[1],
+												[id as any]: {
+													...conversation,
 													name: e.currentTarget.value,
 												},
 											});
