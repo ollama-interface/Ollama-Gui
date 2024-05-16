@@ -6,6 +6,8 @@ import { SendIcon } from 'lucide-react';
 import { convertTextToJson, core, ollamaGenerate } from '@/core';
 import { useSimple } from 'simple-core-state';
 import { toast } from '@/components/ui/use-toast';
+import { state } from './state';
+import { useAtom } from 'jotai';
 
 const drafts = new Map<string, string>();
 
@@ -16,7 +18,7 @@ export default memo(function InputPrompt() {
 	const currentConversationId = useSimple(core.currentConversation);
 	const [txt, setTxt] = useState(() => drafts.get(currentConversationId) ?? '');
 	const model = useSimple(core.model);
-	const generating = useSimple(core.generating);
+	const [generating, setGenerating] = useAtom(state.app.generating);
 	const disabled = !connected || generating;
 
 	useLayoutEffect(() => {
@@ -36,8 +38,7 @@ export default memo(function InputPrompt() {
 			}
 
 			setTxt('');
-
-			core.generating.set(true);
+			setGenerating(true);
 
 			// Push my question to the history
 			const history = conversations[currentConversationId].chatHistory;
@@ -88,7 +89,7 @@ export default memo(function InputPrompt() {
 					'Something went wrong sending the promt, Check Info & Help',
 			});
 		} finally {
-			core.generating.set(false);
+			setGenerating(false);
 		}
 
 		// After its done, we need to auto focus since we disable the input whole its processing the request.
@@ -130,7 +131,7 @@ export default memo(function InputPrompt() {
 				className="flex-shrink-0 ml-2 h-full w-20"
 			>
 				{generating ? (
-					<ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+					<ReloadIcon className="h-4 w-4 animate-spin" />
 				) : (
 					<SendIcon className="h-4 w-4" />
 				)}

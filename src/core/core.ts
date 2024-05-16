@@ -4,7 +4,13 @@ import { CoreStore } from './types';
 const instance = new SimpleCore<CoreStore>(
 	{
 		conversations: {
-			session: { chatHistory: [], ctx: [], model: 'llama3', name: 'Session' },
+			session: {
+				id: 'session',
+				chatHistory: [],
+				ctx: [],
+				model: 'llama3',
+				name: 'Session',
+			},
 		},
 		currentConversation: 'session',
 		model: 'llama3',
@@ -12,7 +18,6 @@ const instance = new SimpleCore<CoreStore>(
 		serverConnected: false,
 		installedModels: [],
 		visited: false,
-		generating: false,
 		lastResponseTime: undefined,
 	},
 	{ storage: { prefix: 'ollama_web_ui_' } },

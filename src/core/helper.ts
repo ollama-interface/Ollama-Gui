@@ -1,3 +1,4 @@
+import { state } from '@/app/state';
 import { trimWhitespace } from '.';
 import { core } from './core';
 import { ModelTypes } from './types';
@@ -18,7 +19,7 @@ export function generateRandomString(length: number): string {
 export const createNewConversation = (model?: ModelTypes) => {
 	const id = generateRandomString(8);
 	core.conversations.patchObject({
-		[id]: { chatHistory: [], ctx: [], model: model ?? 'llama2' },
+		[id]: { id, chatHistory: [], ctx: [], model: model ?? 'llama2' },
 	});
 	return id;
 };

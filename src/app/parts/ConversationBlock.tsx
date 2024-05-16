@@ -1,8 +1,8 @@
 import { memo } from 'react';
 import dayjs from 'dayjs';
-import { Conversation } from '@/core/types';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { Markdown } from '@/components/markdown';
+import { Conversation } from '../state/conversation';
 
 export interface Props {
 	conversation: Conversation;

@@ -12,10 +12,12 @@ import { ConfirmChatClear } from './parts/ConfirmChatClear';
 import { memo, useEffect, useState } from 'react';
 import { updateModelsAvailability } from './helper';
 import { toast } from '@/components/ui/use-toast';
+import { useAtomValue } from 'jotai';
+import { state } from './state';
 
 export default memo(function Header() {
 	const connected = useSimple(core.serverConnected);
-	const generating = useSimple(core.generating);
+	const generating = useAtomValue(state.app.generating);
 	const lastResponseTime = useSimple(core.lastResponseTime);
 	const [showChatClearDialog, setShowChatClearDialog] = useState(false);
 
@@ -39,9 +41,11 @@ export default memo(function Header() {
 		const conversations = { ...core.conversations._value };
 
 		const currentConversation = core.currentConversation._value;
+		// TODO: Add able to delete all conversations
 		// Don't delete the session object but clear instead
 		if (currentConversation === 'session') {
 			conversations['session'] = {
+				id: 'session',
 				chatHistory: [],
 				ctx: [],
 				model: core.model._value,
