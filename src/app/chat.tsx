@@ -1,9 +1,29 @@
 import { memo, useEffect, useRef } from 'react';
 import { ConversationBlock } from './parts/ConversationBlock';
 import { useSimple } from 'simple-core-state';
-import { core } from '@/core';
+import { convertTextToJson, core, ollamaGenerate } from '@/core';
 import { Skeleton } from '@/components/ui/skeleton';
 import dayjs from 'dayjs';
+import { Conversation } from '@/core/types';
+
+const states: Record<string, { state: 'loading' }> = {};
+
+async function updateName(id: string, conversation: Conversation) {
+	const res = await ollamaGenerate(
+		"Please give name for the dialogue. Don't use markdown. Without prefix.",
+		conversation.model,
+		conversation.ctx,
+	);
+
+	const convertedToJson = convertTextToJson(res);
+	const txtMsg = convertedToJson.map((item) => item.response).join('');
+	core.conversations.patchObject({
+		[id]: {
+			...conversation,
+			name: txtMsg,
+		},
+	});
+}
 
 export default memo(function Chat() {
 	const chatRef = useRef<HTMLDivElement>(null);
@@ -17,6 +37,19 @@ export default memo(function Chat() {
 			top: chatRef.current.scrollHeight,
 		});
 	}, [conversations, currentConversationId]);
+
+	useEffect(() => {
+		if (
+			currentConversation?.name === undefined &&
+			states[currentConversationId]?.state !== 'loading' &&
+			currentConversation.chatHistory.length > 0
+		) {
+			states[currentConversationId] = { state: 'loading' };
+			updateName(currentConversationId, currentConversation).finally(() => {
+				delete states[currentConversationId];
+			});
+		}
+	}, [currentConversationId, currentConversation.chatHistory.length]);
 
 	return (
 		<div

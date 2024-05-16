@@ -53,7 +53,7 @@ export default memo(function Sidebar() {
 											core.conversations.patchObject({
 												[id]: {
 													...conversation,
-													name: newName.length > 0 ? newName : id,
+													name: newName.length > 0 ? newName : undefined,
 												},
 											});
 											setCurrentEdit('');

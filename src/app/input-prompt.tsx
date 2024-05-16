@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { Textarea } from '@/components/ui/textarea';
 import { SendIcon } from 'lucide-react';
-import { OllamaResult, convertTextToJson, core, ollamaGenerate } from '@/core';
+import { convertTextToJson, core, ollamaGenerate } from '@/core';
 import { useSimple } from 'simple-core-state';
 import { toast } from '@/components/ui/use-toast';
 
@@ -58,10 +58,10 @@ export default memo(function InputPrompt() {
 				conversations[currentConversation].ctx,
 			);
 
-			// We neet to convert the NDJSOn to json format
-			const convertedToJson: OllamaResult[] = convertTextToJson(res);
+			// Requires to convert the NDJSOn to json format
+			const convertedToJson = convertTextToJson(res);
 
-			// we need to convert our data set into one string
+			// Requires to convert our data set into one string
 			const txtMsg = convertedToJson.map((item) => item.response).join('');
 
 			const currentHistory = [
