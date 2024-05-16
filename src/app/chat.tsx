@@ -8,14 +8,15 @@ import dayjs from 'dayjs';
 export default memo(function Chat() {
 	const chatRef = useRef<HTMLDivElement>(null);
 	const conversations = useSimple(core.conversations);
-	const currentConversation = useSimple(core.currentConversation);
+	const currentConversationId = useSimple(core.currentConversation);
 	const generating = useSimple(core.generating);
+	const currentConversation = conversations[currentConversationId];
 
 	useEffect(() => {
 		chatRef.current?.scrollTo({
 			top: chatRef.current.scrollHeight,
 		});
-	}, [conversations, currentConversation]);
+	}, [conversations, currentConversationId]);
 
 	return (
 		<div
@@ -23,10 +24,13 @@ export default memo(function Chat() {
 			className="h-full w-full overflow-hidden overflow-y-scroll"
 		>
 			<div className="flex flex-col min-h-full justify-end w-full px-4">
-				<ConversationBlock
-					conversations={conversations}
-					currentConversation={currentConversation}
-				/>
+				{currentConversation?.chatHistory.length > 0 ? (
+					<ConversationBlock conversation={currentConversation} />
+				) : (
+					<p className="text-neutral-400 dark:text-neutral-600 text-center mt-10">
+						No message
+					</p>
+				)}
 				{generating && (
 					<div className={`relative w-full flex justify-end`}>
 						<div

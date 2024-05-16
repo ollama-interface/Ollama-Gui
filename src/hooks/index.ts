@@ -1,1 +1,1 @@
-export { useRunningPoll } from './IsRunning';
+export { useRunningPoll } from './useRunningPoll';
