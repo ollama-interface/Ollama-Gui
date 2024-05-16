@@ -6,12 +6,12 @@ import { useSimple } from 'simple-core-state';
 import { state } from '../state';
 import { match, P } from 'ts-pattern';
 import { ReloadIcon } from '@radix-ui/react-icons';
+import { updateConversation } from '../state/conversation';
 
 export default memo(function Sidebar() {
 	const [currentEdit, setCurrentEdit] = useState('');
 	const [conversations, setConversations] = useAtom(state.conversation.record);
 	const [currentId, setCurrentId] = useAtom(state.conversation.current.id);
-	const _conversations = useSimple(core.conversations);
 	const loading = useAtomValue(state.app.generating);
 	const model = useSimple(core.model);
 
@@ -78,12 +78,10 @@ export default memo(function Sidebar() {
 												<RenameInput
 													initialName={name}
 													onFinish={(newName) => {
-														core.conversations.patchObject({
-															[id]: {
-																...conversation,
-																name: newName.length > 0 ? newName : undefined,
-															},
-														});
+														updateConversation(id, (prev) => ({
+															...prev,
+															name: newName.length > 0 ? newName : undefined,
+														}));
 														setCurrentEdit('');
 													}}
 												/>

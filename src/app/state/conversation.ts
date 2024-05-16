@@ -1,6 +1,8 @@
 import { atom } from 'jotai';
 import Immutable from 'immutable';
 import { atomPersist, atomWithAsyncStorage, db } from './persist';
+import { store } from './store';
+
 export interface Conversation {
 	id: string;
 	model: string;
@@ -54,3 +56,17 @@ export const current = {
 		return { status: 'loaded' as const, value: undefined };
 	}),
 };
+
+export function updateConversation(
+	id: string,
+	onUpdateItem: (item: Conversation) => Conversation,
+) {
+	store.set(record, (rec) => {
+		const item = rec.get(id);
+		if (!item) {
+			return rec;
+		}
+
+		return rec.set(id, onUpdateItem(item));
+	});
+}
