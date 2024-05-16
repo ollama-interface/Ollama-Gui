@@ -45,7 +45,7 @@ export default memo(function Sidebar() {
 								key={index}
 							>
 								{currentEdit !== id ? (
-									<p>{name}</p>
+									<p className="truncate">{name}</p>
 								) : (
 									<RenameInput
 										initialName={name}
