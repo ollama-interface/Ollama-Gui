@@ -12,7 +12,6 @@ export default memo(function Sidebar() {
 	const newConversation = () => {
 		const id = createNewConversation();
 		core.currentConversation.set(id);
-		setCurrentEdit(id);
 	};
 
 	return (

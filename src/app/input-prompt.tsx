@@ -13,19 +13,20 @@ export default memo(function InputPrompt() {
 	const promptRef = useRef<HTMLTextAreaElement>(null);
 	const connected = useSimple(core.serverConnected);
 	const conversations = useSimple(core.conversations);
-	const currentConversation = useSimple(core.currentConversation);
-	const [txt, setTxt] = useState(() => drafts.get(currentConversation) ?? '');
+	const currentConversationId = useSimple(core.currentConversation);
+	const [txt, setTxt] = useState(() => drafts.get(currentConversationId) ?? '');
 	const model = useSimple(core.model);
 	const generating = useSimple(core.generating);
 	const disabled = !connected || generating;
 
 	useLayoutEffect(() => {
-		drafts.set(currentConversation, txt);
+		drafts.set(currentConversationId, txt);
 	}, [txt]);
 
 	useEffect(() => {
-		setTxt(drafts.get(currentConversation) ?? '');
-	}, [currentConversation]);
+		setTxt(drafts.get(currentConversationId) ?? '');
+		promptRef.current?.focus();
+	}, [currentConversationId]);
 
 	async function submitPrompt() {
 		const startTime = Date.now();
@@ -39,15 +40,15 @@ export default memo(function InputPrompt() {
 			core.generating.set(true);
 
 			// Push my question to the history
-			const history = conversations[currentConversation].chatHistory;
+			const history = conversations[currentConversationId].chatHistory;
 			history.push({
 				created_at: new Date(),
 				txt: [{ content: txt, type: 'text' }],
 				who: 'me',
 			});
 
-			core.conversations.updatePiece(currentConversation, {
-				...conversations[currentConversation],
+			core.conversations.updatePiece(currentConversationId, {
+				...conversations[currentConversationId],
 				chatHistory: history,
 			});
 
@@ -55,7 +56,7 @@ export default memo(function InputPrompt() {
 			const res = await ollamaGenerate(
 				txt,
 				model,
-				conversations[currentConversation].ctx,
+				conversations[currentConversationId].ctx,
 			);
 
 			// Requires to convert the NDJSOn to json format
@@ -65,7 +66,7 @@ export default memo(function InputPrompt() {
 			const txtMsg = convertedToJson.map((item) => item.response).join('');
 
 			const currentHistory = [
-				...conversations[currentConversation].chatHistory,
+				...conversations[currentConversationId].chatHistory,
 			];
 
 			currentHistory.push({
@@ -74,7 +75,7 @@ export default memo(function InputPrompt() {
 				created_at: new Date(),
 			});
 
-			core.conversations.updatePiece(currentConversation, {
+			core.conversations.updatePiece(currentConversationId, {
 				model: model,
 				chatHistory: currentHistory,
 				ctx: convertedToJson[convertedToJson.length - 1].context,
