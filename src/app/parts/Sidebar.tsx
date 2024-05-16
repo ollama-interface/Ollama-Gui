@@ -47,25 +47,16 @@ export default memo(function Sidebar() {
 								{currentEdit !== id ? (
 									<p>{name}</p>
 								) : (
-									<input
-										onKeyDown={(e) => {
-											if (e.code === 'Escape') {
-												setCurrentEdit('');
-											} else if (e.code === 'Enter') {
-												setCurrentEdit('');
-											}
-										}}
-										autoFocus
-										onBlur={() => setCurrentEdit('')}
-										className="bg-transparent"
-										value={conversation.name || ''}
-										onChange={(e) => {
+									<RenameInput
+										initialName={name}
+										onFinish={(newName) => {
 											core.conversations.patchObject({
-												[id as any]: {
+												[id]: {
 													...conversation,
-													name: e.currentTarget.value,
+													name: newName.length > 0 ? newName : id,
 												},
 											});
+											setCurrentEdit('');
 										}}
 									/>
 								)}
@@ -77,3 +68,25 @@ export default memo(function Sidebar() {
 		</div>
 	);
 });
+
+function RenameInput({
+	onFinish,
+	initialName,
+}: {
+	initialName: string;
+	onFinish: (name: string) => void;
+}) {
+	return (
+		<input
+			onKeyDown={(e) => {
+				if (e.code === 'Escape' || e.code === 'Enter') {
+					e.currentTarget.blur();
+				}
+			}}
+			autoFocus
+			onBlur={(e) => onFinish(e.currentTarget.value)}
+			className="bg-transparent"
+			defaultValue={initialName}
+		/>
+	);
+}
