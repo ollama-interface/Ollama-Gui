@@ -4,7 +4,7 @@ import { core } from '.';
 export async function ollamaRequest(
 	method: 'GET' | 'POST',
 	path: string,
-	c?: { data?: any }
+	c?: { data?: any },
 ) {
 	try {
 		const res = await axios({
@@ -26,7 +26,7 @@ export async function ollamaRequest(
 export async function ollamaGenerate(
 	prompt: string,
 	model: string,
-	context?: number[]
+	context?: number[],
 ) {
 	try {
 		const res = await ollamaRequest('POST', 'api/generate', {

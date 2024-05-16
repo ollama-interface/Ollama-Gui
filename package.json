@@ -12,6 +12,7 @@
 		"build:app:intell": "pnpm clean-target && tauri build --target x86_64-apple-darwin",
 		"build:app:universal": "pnpm clean-target && tauri build --target universal-apple-darwin",
 		"preview": "vite preview",
+		"format": "prettier --write \"src/**/*.{ts,tsx,md,css,scss}\"",
 		"tauri": "tauri"
 	},
 	"dependencies": {
@@ -44,6 +45,7 @@
 		"tailwindcss-animate": "^1.0.7"
 	},
 	"devDependencies": {
+		"prettier": "3.2.5",
 		"@tauri-apps/cli": "^1.4.0",
 		"@types/ndjson": "^2.0.1",
 		"@types/node": "^20.6.2",

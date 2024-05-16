@@ -14,6 +14,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 			</ThemeProvider>
 			<Toaster />
 		</TooltipProvider>
-	</>
+	</>,
 	// </React.StrictMode>
 );

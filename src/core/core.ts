@@ -15,7 +15,7 @@ const instance = new SimpleCore<CoreStore>(
 		generating: false,
 		lastResponseTime: undefined,
 	},
-	{ storage: { prefix: 'ollama_web_ui_' } }
+	{ storage: { prefix: 'ollama_web_ui_' } },
 );
 
 instance.persist([

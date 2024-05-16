@@ -69,7 +69,7 @@ export const ConversationBlock = memo(function ConversationBlock(p: Props) {
 							<p className="ml-2 mt-2.5 text-neutral-400">Ollama</p>
 						)}
 					</div>
-				)
+				),
 			)}
 			{p.conversations[p.currentConversation].chatHistory?.length === 0 && (
 				<p className="text-neutral-400 dark:text-neutral-600 text-center mt-10">

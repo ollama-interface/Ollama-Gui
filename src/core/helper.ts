@@ -24,7 +24,7 @@ export const createNewConversation = (model?: ModelTypes) => {
 };
 
 export function extractTextAndCodeBlocks(
-	inputString: string
+	inputString: string,
 ): { content: string; type: 'text' | 'code' }[] {
 	const codeBlockRegex = /```([\s\S]*?)```/g;
 	const matches = [];

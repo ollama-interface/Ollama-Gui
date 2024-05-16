@@ -55,7 +55,7 @@ export default memo(function InputPrompt() {
 			const res = await ollamaGenerate(
 				txt,
 				model,
-				conversations[currentConversation].ctx
+				conversations[currentConversation].ctx,
 			);
 
 			// We neet to convert the NDJSOn to json format

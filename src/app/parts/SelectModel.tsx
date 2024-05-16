@@ -46,7 +46,7 @@ export const SelectModel: React.FC<ISelectConversationProps> = ({
 
 			setShowWarning(false);
 		},
-		[model, currentConv, currentConv]
+		[model, currentConv, currentConv],
 	);
 
 	return (
