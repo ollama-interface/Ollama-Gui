@@ -113,8 +113,7 @@ export default memo(function InputPrompt() {
 				placeholder="Your message..."
 				value={txt}
 				onChange={(e) => {
-					const value = e.currentTarget.value;
-					setTxt(value);
+					setTxt(e.currentTarget.value);
 				}}
 				className="dark:bg-black dark:text-zinc-300 p-1 px-2 max-h-[300px] flex-grow flex border dark:border-neutral-800"
 				onKeyDown={(e) => {
@@ -126,7 +125,7 @@ export default memo(function InputPrompt() {
 
 			<Button
 				variant="secondary"
-				disabled={txt === '' || !disabled}
+				disabled={txt === '' || disabled}
 				onClick={() => submitPrompt()}
 				className="flex-shrink-0 ml-2 h-full w-20"
 			>
