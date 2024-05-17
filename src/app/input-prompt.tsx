@@ -3,27 +3,26 @@ import { Button } from '@/components/ui/button';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { Textarea } from '@/components/ui/textarea';
 import { SendIcon } from 'lucide-react';
-import { convertTextToJson, core, ollamaGenerate } from '@/core';
-import { useSimple } from 'simple-core-state';
+import { convertTextToJson, ollamaGenerate } from '@/core';
 import { toast } from '@/components/ui/use-toast';
 import { state } from './state';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import {
+	appendHistoryConversation,
+	updateConversation,
+} from './state/conversation';
 
 const drafts = new Map<string, string>();
 
 export default memo(function InputPrompt() {
 	const promptRef = useRef<HTMLTextAreaElement>(null);
-	const connected = useSimple(core.serverConnected);
-	const conversations = useSimple(core.conversations);
+	const connected = useAtomValue(state.app.connected);
 	const setLastResponseTime = useSetAtom(state.app.lastResponseTime);
-	const [currentChat, updateCurrentChat] = useAtom(
-		state.conversation.current.chat,
-	);
+	const currentChat = useAtomValue(state.conversation.current.chat);
 	const currentConversationId = useAtomValue(state.conversation.current.id);
 	const [txt, setTxt] = useState(
 		() => drafts.get(currentConversationId ?? '') ?? '',
 	);
-	const model = useSimple(core.model);
 	const [generating, setGenerating] = useAtom(state.app.generating);
 	const disabled =
 		!connected ||
@@ -57,37 +56,32 @@ export default memo(function InputPrompt() {
 			setTxt('');
 			setGenerating(chat.id);
 
-			const history = conversations[chat.id].chatHistory;
-			history.push({
+			appendHistoryConversation(chat.id, {
 				created_at: new Date(),
 				txt: [{ content: txt, type: 'text' }],
 				who: 'me',
 			});
-
-			updateCurrentChat({
-				...chat,
-				chatHistory: history,
-			});
-			const res = await ollamaGenerate(txt, model, chat.ctx);
+			const res = await ollamaGenerate(txt, chat.model, chat.ctx);
 			const convertedToJson = convertTextToJson(res);
 			const txtMsg = convertedToJson.map((item) => item.response).join('');
 
-			const currentHistory = [...chat.chatHistory];
-
-			currentHistory.push({
-				txt: [{ content: txtMsg, type: 'text' }],
-				who: 'ollama',
-				created_at: new Date(),
-			});
 			const updatedCtx = convertedToJson[convertedToJson.length - 1].context;
 			if (!updatedCtx) {
 				throw new Error('No context found');
 			}
-			updateCurrentChat({
+
+			updateConversation(chat.id, (chat) => ({
 				...chat,
-				chatHistory: currentHistory,
 				ctx: updatedCtx,
-			});
+				chatHistory: [
+					...chat.chatHistory,
+					{
+						txt: [{ content: txtMsg, type: 'text' }],
+						who: 'ollama',
+						created_at: new Date(),
+					},
+				],
+			}));
 		} catch (error) {
 			toast({
 				variant: 'destructive',

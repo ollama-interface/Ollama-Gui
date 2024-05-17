@@ -9,6 +9,7 @@ export interface Props {
 }
 
 export const ConversationBlock = memo(function ConversationBlock(p: Props) {
+	console.log(p);
 	return (
 		<>
 			{p.conversation.chatHistory.map((item, index) => (

@@ -3,16 +3,21 @@ import Immutable from 'immutable';
 import { atomPersist, atomWithAsyncStorage, db } from './persist';
 import { store } from './store';
 
+export type Message = {
+	created_at: Date;
+	txt: {
+		content: string;
+		type: 'text';
+	}[];
+	who: 'ollama' | 'me';
+	name?: string;
+};
+
 export interface Conversation {
 	id: string;
 	model: string;
 	ctx: number[];
-	chatHistory: {
-		created_at: Date;
-		txt: { content: string; type: 'text' }[];
-		who: 'ollama' | 'me';
-		name?: string;
-	}[];
+	chatHistory: Message[];
 	name?: string;
 }
 
@@ -38,30 +43,23 @@ export const record = atomWithAsyncStorage(
 
 export const current = {
 	id: currentId,
-	chat: atom(
-		(get) => {
-			const id = get(currentId);
-			const recordResult = get(record);
-			if (!id) {
-				return { status: 'loaded' as const, value: undefined };
-			}
-			if (recordResult.status === 'loading') {
-				return { status: 'loading' as const };
-			}
-			if (recordResult.status === 'loaded') {
-				return {
-					status: 'loaded' as const,
-					value: recordResult.value.get(id),
-				};
-			}
+	chat: atom((get) => {
+		const id = get(currentId);
+		const recordResult = get(record);
+		if (!id) {
 			return { status: 'loaded' as const, value: undefined };
-		},
-		(_get, set, update: Conversation) => {
-			set(record, (rec) => {
-				return rec.set(update.id, update);
-			});
-		},
-	),
+		}
+		if (recordResult.status === 'loading') {
+			return { status: 'loading' as const };
+		}
+		if (recordResult.status === 'loaded') {
+			return {
+				status: 'loaded' as const,
+				value: recordResult.value.get(id),
+			};
+		}
+		return { status: 'loaded' as const, value: undefined };
+	}),
 };
 
 export function updateConversation(
@@ -75,5 +73,20 @@ export function updateConversation(
 		}
 
 		return rec.set(id, onUpdateItem(item));
+	});
+}
+
+export function appendHistoryConversation(id: string, msg: Message) {
+	store.set(record, (rec) => {
+		const item = rec.get(id);
+		if (!item) {
+			console.error(`No conversation found ${id}`);
+			return rec;
+		}
+
+		return rec.set(id, {
+			...item,
+			chatHistory: [...item.chatHistory, msg],
+		});
 	});
 }

@@ -1,17 +1,17 @@
-import { core } from '@/core';
 import { IntroCard } from '@/app/parts/IntroCard';
 import Sidebar from '@/app/parts/Sidebar';
 import { useState, useEffect } from 'react';
-import { useSimple } from 'simple-core-state';
 import { useRunningPoll } from '@/hooks';
 import Header from './header';
 import InputPrompt from './input-prompt';
 import Chat from './chat';
+import { useAtom } from 'jotai';
+import { state } from './state';
 
 function HomePage() {
 	useRunningPoll();
 
-	const visited = useSimple(core.visited);
+	const [visited, setVisited] = useAtom(state.app.visited);
 	const [showIntroCard, setShowIntroCard] = useState(false);
 
 	useEffect(() => {
@@ -26,8 +26,10 @@ function HomePage() {
 			<div className="dark:bg-black h-full w-full flex flex-col justify-center items-center">
 				{showIntroCard && (
 					<IntroCard
-						onClose={(e) => {
-							if (e) core.visited.set(true);
+						onClose={(agreed) => {
+							if (agreed) {
+								setVisited(true);
+							}
 							setShowIntroCard(false);
 						}}
 					/>
