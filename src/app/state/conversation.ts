@@ -21,9 +21,9 @@ export interface Conversation {
 	name?: string;
 }
 
-export async function loadConversationsFromDB(): Promise<
-	Immutable.Map<string, Conversation>
-> {
+export type Conversations = Immutable.Map<string, Conversation>;
+
+export async function loadConversationsFromDB(): Promise<Conversations> {
 	const storedConversations = await db.load('conversations');
 	try {
 		return Immutable.Map(JSON.parse(storedConversations ?? '[]'));
@@ -32,6 +32,7 @@ export async function loadConversationsFromDB(): Promise<
 		return Immutable.Map();
 	}
 }
+export const migrated = atomPersist('MIGRATED_FROM_LS', false, String, Boolean);
 
 const currentId = atomPersist('CURRENT_CHAT_ID', undefined, String, String);
 export const record = atomWithAsyncStorage(

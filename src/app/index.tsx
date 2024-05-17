@@ -7,9 +7,11 @@ import InputPrompt from './input-prompt';
 import Chat from './chat';
 import { useAtom } from 'jotai';
 import { state } from './state';
+import { useMigration } from '@/hooks/use-migration';
 
 function HomePage() {
 	useRunningPoll();
+	useMigration();
 
 	const [visited, setVisited] = useAtom(state.app.visited);
 	const [showIntroCard, setShowIntroCard] = useState(false);
