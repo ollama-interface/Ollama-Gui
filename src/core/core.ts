@@ -18,6 +18,8 @@ const instance = new SimpleCore<CoreStore>(
 		serverConnected: false,
 		installedModels: [],
 		visited: false,
+		generating: false,
+		migrated: false,
 		lastResponseTime: undefined,
 	},
 	{ storage: { prefix: 'ollama_web_ui_' } },
@@ -29,6 +31,7 @@ instance.persist([
 	'visited',
 	'conversations',
 	'currentConversation',
+	'migrated',
 ]);
 
 export const core = instance.core();

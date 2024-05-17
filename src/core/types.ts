@@ -39,5 +39,7 @@ export type CoreStore = {
 	serverConnected: boolean;
 	installedModels: IModelType[];
 	visited: boolean;
+	generating: boolean;
+	migrated: boolean;
 	lastResponseTime: number | undefined;
 };
