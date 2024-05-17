@@ -105,6 +105,10 @@ export default memo(function InputPrompt() {
 		setLastResponseTime(endTime - startTime);
 	}
 
+	if (!currentChat.value) {
+		return null;
+	}
+
 	return (
 		<div className="flex flex-row w-full p-4 ">
 			<Textarea

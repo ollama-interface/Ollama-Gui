@@ -81,6 +81,20 @@ export default memo(function Chat() {
 					)
 					.with(
 						{
+							status: 'loaded',
+							value: P.when((v) => v === undefined),
+						},
+						() => {
+							return (
+								<p className="text-neutral-600 dark:text-neutral-400 text-center text-xl p-16 max-w-lg flex self-center">
+									Chat is not selected. Please select a chat from the sidebar,
+									or create a new one.
+								</p>
+							);
+						},
+					)
+					.with(
+						{
 							status: 'loading',
 						},
 						() => {

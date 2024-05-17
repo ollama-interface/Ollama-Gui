@@ -11,14 +11,19 @@ import { ConfirmChatClear } from './parts/ConfirmChatClear';
 import { memo, useEffect, useState } from 'react';
 import { updateModelsAvailability } from './helper';
 import { toast } from '@/components/ui/use-toast';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { state } from './state';
 
 export default memo(function Header() {
 	const connected = useAtomValue(state.app.connected);
-	const generating = useAtomValue(state.app.generating) !== undefined;
+	const generating = useAtomValue(state.app.generating);
+	const [currentChatId, setCurrentChatId] = useAtom(
+		state.conversation.current.id,
+	);
 	const lastResponseTime = useAtomValue(state.app.lastResponseTime);
+	const updateConversations = useSetAtom(state.conversation.record);
 	const [showChatClearDialog, setShowChatClearDialog] = useState(false);
+	const disabled = generating ? generating === currentChatId : false;
 
 	useEffect(() => {
 		if (connected) {
@@ -37,29 +42,11 @@ export default memo(function Header() {
 	}, [connected]);
 
 	function deleteConversation() {
-		const conversations = { ...core.conversations._value };
-
-		const currentConversation = core.currentConversation._value;
-		// TODO: Add able to delete all conversations
-		// Don't delete the session object but clear instead
-		if (currentConversation === 'session') {
-			conversations['session'] = {
-				id: 'session',
-				chatHistory: [],
-				ctx: [],
-				model: core.model._value,
-			};
-		} else {
-			// all other conversations will be removed
-			delete conversations[currentConversation];
+		if (!currentChatId) {
+			return;
 		}
-
-		// Update the core
-		core.conversations.set(conversations);
-
-		// Select a new conversation
-		const nextId = Object.entries(conversations)?.[0]?.[0] || 'session';
-		core.currentConversation.set(nextId);
+		updateConversations((prev) => prev.delete(currentChatId));
+		setCurrentChatId(undefined);
 	}
 
 	return (
@@ -85,7 +72,7 @@ export default memo(function Header() {
 				<Tooltip>
 					<TooltipTrigger>
 						<Button
-							disabled={generating}
+							disabled={disabled || !currentChatId}
 							size="default"
 							className="w-10 p-0 px-2 ml-2 bg-red-400 hover:bg-red-400 dark:bg-red-500 dark:hover:bg-red-500 dark:text-white hover:opacity-60"
 							onClick={() => setShowChatClearDialog(true)}
@@ -98,8 +85,8 @@ export default memo(function Header() {
 					</TooltipContent>
 				</Tooltip>
 
-				<SelectModel loading={generating} />
-				<SideInfoSheet loading={generating} />
+				<SelectModel loading={disabled} />
+				<SideInfoSheet loading={disabled} />
 				<ModeToggle />
 			</div>
 			{showChatClearDialog && (
