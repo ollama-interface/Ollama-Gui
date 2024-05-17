@@ -7,7 +7,6 @@ import { SelectModel } from './parts/SelectModel';
 import { SideInfoSheet } from './parts/SideInfoSheet';
 import { ModeToggle } from '@/components/mode-toggle';
 import { core } from '@/core';
-import { useSimple } from 'simple-core-state';
 import { ConfirmChatClear } from './parts/ConfirmChatClear';
 import { memo, useEffect, useState } from 'react';
 import { updateModelsAvailability } from './helper';
@@ -16,9 +15,9 @@ import { useAtomValue } from 'jotai';
 import { state } from './state';
 
 export default memo(function Header() {
-	const connected = useSimple(core.serverConnected);
-	const generating = useAtomValue(state.app.generating);
-	const lastResponseTime = useSimple(core.lastResponseTime);
+	const connected = useAtomValue(state.app.connected);
+	const generating = useAtomValue(state.app.generating) !== undefined;
+	const lastResponseTime = useAtomValue(state.app.lastResponseTime);
 	const [showChatClearDialog, setShowChatClearDialog] = useState(false);
 
 	useEffect(() => {

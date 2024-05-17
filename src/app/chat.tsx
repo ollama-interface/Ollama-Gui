@@ -1,8 +1,7 @@
 import { memo, useEffect, useRef } from 'react';
 import { P, match } from 'ts-pattern';
 import { ConversationBlock } from './parts/ConversationBlock';
-import { useSimple } from 'simple-core-state';
-import { convertTextToJson, core, ollamaGenerate } from '@/core';
+import { convertTextToJson, ollamaGenerate } from '@/core';
 import { Skeleton } from '@/components/ui/skeleton';
 import dayjs from 'dayjs';
 import { useAtomValue, useSetAtom } from 'jotai';

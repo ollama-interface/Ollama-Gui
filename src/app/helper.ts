@@ -12,10 +12,9 @@ export async function tryConnect() {
 export async function isRunningUpdate() {
 	try {
 		await ollamaRequest('GET', '');
-		core.serverConnected.set(true);
+		return true;
 	} catch (error) {
-		core.serverConnected.set(false);
-		throw error;
+		return false;
 	}
 }
 
