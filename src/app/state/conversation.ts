@@ -38,23 +38,30 @@ export const record = atomWithAsyncStorage(
 
 export const current = {
 	id: currentId,
-	chat: atom((get) => {
-		const id = get(currentId);
-		const recordResult = get(record);
-		if (!id) {
+	chat: atom(
+		(get) => {
+			const id = get(currentId);
+			const recordResult = get(record);
+			if (!id) {
+				return { status: 'loaded' as const, value: undefined };
+			}
+			if (recordResult.status === 'loading') {
+				return { status: 'loading' as const };
+			}
+			if (recordResult.status === 'loaded') {
+				return {
+					status: 'loaded' as const,
+					value: recordResult.value.get(id),
+				};
+			}
 			return { status: 'loaded' as const, value: undefined };
-		}
-		if (recordResult.status === 'loading') {
-			return { status: 'loading' as const };
-		}
-		if (recordResult.status === 'loaded') {
-			return {
-				status: 'loaded' as const,
-				value: recordResult.value.get(id),
-			};
-		}
-		return { status: 'loaded' as const, value: undefined };
-	}),
+		},
+		(_get, set, update: Conversation) => {
+			set(record, (rec) => {
+				return rec.set(update.id, update);
+			});
+		},
+	),
 };
 
 export function updateConversation(

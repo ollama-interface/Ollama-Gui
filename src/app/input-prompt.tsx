@@ -7,7 +7,7 @@ import { convertTextToJson, core, ollamaGenerate } from '@/core';
 import { useSimple } from 'simple-core-state';
 import { toast } from '@/components/ui/use-toast';
 import { state } from './state';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 
 const drafts = new Map<string, string>();
 
@@ -15,17 +15,30 @@ export default memo(function InputPrompt() {
 	const promptRef = useRef<HTMLTextAreaElement>(null);
 	const connected = useSimple(core.serverConnected);
 	const conversations = useSimple(core.conversations);
-	const currentConversationId = useSimple(core.currentConversation);
-	const [txt, setTxt] = useState(() => drafts.get(currentConversationId) ?? '');
+	const setLastResponseTime = useSetAtom(state.app.lastResponseTime);
+	const [currentChat, updateCurrentChat] = useAtom(
+		state.conversation.current.chat,
+	);
+	const currentConversationId = useAtomValue(state.conversation.current.id);
+	const [txt, setTxt] = useState(
+		() => drafts.get(currentConversationId ?? '') ?? '',
+	);
 	const model = useSimple(core.model);
 	const [generating, setGenerating] = useAtom(state.app.generating);
-	const disabled = !connected || generating;
+	const disabled =
+		!connected ||
+		(generating === currentConversationId && generating !== undefined);
 
 	useLayoutEffect(() => {
-		drafts.set(currentConversationId, txt);
+		if (currentConversationId) {
+			drafts.set(currentConversationId, txt);
+		}
 	}, [txt]);
 
 	useEffect(() => {
+		if (currentConversationId === undefined) {
+			return;
+		}
 		setTxt(drafts.get(currentConversationId) ?? '');
 		promptRef.current?.focus();
 	}, [currentConversationId]);
@@ -33,53 +46,47 @@ export default memo(function InputPrompt() {
 	async function submitPrompt() {
 		const startTime = Date.now();
 		try {
-			if (txt === '') {
+			if (txt === '' || currentChat.status !== 'loaded') {
+				return;
+			}
+			const chat = currentChat.value;
+			if (!chat) {
 				return;
 			}
 
 			setTxt('');
-			setGenerating(true);
+			setGenerating(chat.id);
 
-			// Push my question to the history
-			const history = conversations[currentConversationId].chatHistory;
+			const history = conversations[chat.id].chatHistory;
 			history.push({
 				created_at: new Date(),
 				txt: [{ content: txt, type: 'text' }],
 				who: 'me',
 			});
 
-			core.conversations.updatePiece(currentConversationId, {
-				...conversations[currentConversationId],
+			updateCurrentChat({
+				...chat,
 				chatHistory: history,
 			});
-
-			// request the prompt
-			const res = await ollamaGenerate(
-				txt,
-				model,
-				conversations[currentConversationId].ctx,
-			);
-
-			// Requires to convert the NDJSOn to json format
+			const res = await ollamaGenerate(txt, model, chat.ctx);
 			const convertedToJson = convertTextToJson(res);
-
-			// Requires to convert our data set into one string
 			const txtMsg = convertedToJson.map((item) => item.response).join('');
 
-			const currentHistory = [
-				...conversations[currentConversationId].chatHistory,
-			];
+			const currentHistory = [...chat.chatHistory];
 
 			currentHistory.push({
 				txt: [{ content: txtMsg, type: 'text' }],
 				who: 'ollama',
 				created_at: new Date(),
 			});
-
-			core.conversations.updatePiece(currentConversationId, {
-				model: model,
+			const updatedCtx = convertedToJson[convertedToJson.length - 1].context;
+			if (!updatedCtx) {
+				throw new Error('No context found');
+			}
+			updateCurrentChat({
+				...chat,
 				chatHistory: currentHistory,
-				ctx: convertedToJson[convertedToJson.length - 1].context,
+				ctx: updatedCtx,
 			});
 		} catch (error) {
 			toast({
@@ -89,19 +96,19 @@ export default memo(function InputPrompt() {
 					'Something went wrong sending the promt, Check Info & Help',
 			});
 		} finally {
-			setGenerating(false);
+			setGenerating(undefined);
 		}
 
 		// After its done, we need to auto focus since we disable the input whole its processing the request.
-		if (promptRef?.current !== null) {
-			setTimeout(() => {
-				promptRef.current?.focus();
-			}, 0);
-		}
+		setTimeout(() => {
+			if (promptRef?.current) {
+				promptRef.current.focus();
+			}
+		}, 0);
 
 		const endTime = Date.now();
 
-		core.lastResponseTime.set(endTime - startTime);
+		setLastResponseTime(endTime - startTime);
 	}
 
 	return (

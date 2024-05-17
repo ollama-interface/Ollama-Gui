@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { state } from './state';
 import { Conversation } from './state/conversation';
+import { ReloadIcon } from '@radix-ui/react-icons';
 
 const states: Record<string, { state: 'loading' }> = {};
 
@@ -25,7 +26,7 @@ async function requestName(conversation: Conversation) {
 
 export default memo(function Chat() {
 	const chatRef = useRef<HTMLDivElement>(null);
-	const currentConversationId = useSimple(core.currentConversation);
+	const currentConversationId = useAtomValue(state.conversation.current.id);
 	const generating = useAtomValue(state.app.generating);
 	const setConversations = useSetAtom(state.conversation.record);
 	const currentConversation = useAtomValue(state.conversation.current.chat);
@@ -39,7 +40,8 @@ export default memo(function Chat() {
 	useEffect(() => {
 		if (
 			currentConversation.status === 'loading' ||
-			!currentConversation.value
+			!currentConversation.value ||
+			!currentConversationId
 		) {
 			return;
 		}
@@ -76,6 +78,18 @@ export default memo(function Chat() {
 						},
 						({ value }) => {
 							return <ConversationBlock conversation={value!} />;
+						},
+					)
+					.with(
+						{
+							status: 'loading',
+						},
+						() => {
+							return (
+								<p>
+									<ReloadIcon className="h-16 w-16 animate-spin" />
+								</p>
+							);
 						},
 					)
 					.otherwise(() => (
