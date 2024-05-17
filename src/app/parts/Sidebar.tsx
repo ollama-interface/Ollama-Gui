@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import { core, generateRandomString } from '@/core';
 import { useAtom, useAtomValue } from 'jotai';
 import { memo, useState } from 'react';
-import { useSimple } from 'simple-core-state';
 import { state } from '../state';
 import { match, P } from 'ts-pattern';
 import { ReloadIcon } from '@radix-ui/react-icons';
@@ -12,8 +11,7 @@ export default memo(function Sidebar() {
 	const [currentEdit, setCurrentEdit] = useState('');
 	const [conversations, setConversations] = useAtom(state.conversation.record);
 	const [currentId, setCurrentId] = useAtom(state.conversation.current.id);
-	const loading = useAtomValue(state.app.generating);
-	const model = useSimple(core.model);
+	const model = useAtomValue(state.app.model);
 
 	function newConversation() {
 		if (conversations.status !== 'loaded') {
@@ -21,9 +19,6 @@ export default memo(function Sidebar() {
 		}
 
 		const id = generateRandomString(8);
-		core.conversations.patchObject({
-			[id]: { id, chatHistory: [], ctx: [], model: model ?? 'llama3' },
-		});
 		core.currentConversation.set(id);
 		setConversations((c) =>
 			c.set(id, {
@@ -39,7 +34,6 @@ export default memo(function Sidebar() {
 	return (
 		<div className="flex flex-col shrink-0 p-4 pt-3 w-[280px] dark:text-white bg-neutral-50 dark:bg-stone-950">
 			<Button
-				disabled={loading}
 				className="w-full dark:text-white"
 				variant="outline"
 				onClick={newConversation}

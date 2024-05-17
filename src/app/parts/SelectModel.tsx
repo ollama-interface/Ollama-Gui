@@ -13,6 +13,8 @@ import React, { useCallback, useState } from 'react';
 import { useSimple } from 'simple-core-state';
 import { ConfirmSwitchModel } from './ConfirmSwitchModel';
 import { ModelTypes } from '@/core/types';
+import { useAtom } from 'jotai';
+import { state } from '../state';
 
 interface ISelectConversationProps {
 	loading: boolean;
@@ -21,24 +23,24 @@ interface ISelectConversationProps {
 export const SelectModel: React.FC<ISelectConversationProps> = ({
 	loading,
 }) => {
-	const model = useSimple(core.model);
+	const [model, setModel] = useAtom(state.app.model);
 	const installedModels = useSimple(core.installedModels);
 	const currentConv = useSimple(core.currentConversation);
 	const conversations = useSimple(core.conversations);
 
 	const [showWarning, setShowWarning] = useState(false);
 
-	const onConfirmHandler = useCallback(
-		(s: boolean, r?: boolean) => {
-			if (s) {
-				if (r) {
-					core.conversations.patchObject({
-						[currentConv]: { chatHistory: [], ctx: [], model: model },
-					});
+	const handleConfirm = useCallback(
+		(switchModel: boolean, resetChat?: boolean) => {
+			if (switchModel) {
+				if (resetChat) {
+					// core.conversations.patchObject({
+					// 	[currentConv]: { chatHistory: [], ctx: [], model: model },
+					// });
 				} else {
-					core.conversations.patchObject({
-						[currentConv]: { ...conversations[currentConv], model: model },
-					});
+					// core.conversations.patchObject({
+					// 	[currentConv]: { ...conversations[currentConv], model: model },
+					// });
 				}
 			} else {
 				core.model.revert();
@@ -51,13 +53,13 @@ export const SelectModel: React.FC<ISelectConversationProps> = ({
 
 	return (
 		<div className="mx-2">
-			{showWarning && <ConfirmSwitchModel onClose={onConfirmHandler} />}
+			{showWarning && <ConfirmSwitchModel onClose={handleConfirm} />}
 			<Select
 				disabled={loading}
 				value={model}
-				onValueChange={(e) => {
+				onValueChange={(newModel) => {
 					setShowWarning(true);
-					core.model.set(e as ModelTypes);
+					setModel(newModel);
 				}}
 			>
 				<SelectTrigger className="w-fit whitespace-nowrap dark:text-white">

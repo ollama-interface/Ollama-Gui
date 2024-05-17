@@ -18,6 +18,7 @@ export async function isRunningUpdate() {
 	}
 }
 
+// TODO: Work on it
 export async function updateModelsAvailability(): Promise<boolean> {
 	const res = await ollamaRequest('GET', 'api/tags');
 	if (res?.data?.models) {

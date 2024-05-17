@@ -10,4 +10,4 @@ export const visited = atomPersist(
 	String,
 	(x) => x === 'true',
 );
-// export const model = atom<string>('llama3');
+export const model = atomPersist('OLLAMA_MODEL', undefined, String, String);
