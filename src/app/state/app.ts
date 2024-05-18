@@ -11,3 +11,9 @@ export const visited = atomPersist(
 	(x) => x === 'true',
 );
 export const model = atomPersist('OLLAMA_MODEL', undefined, String, String);
+export const localAPI = atomPersist(
+	'OLLAMA_LOCAL_API',
+	'http://127.0.0.1:11435',
+	String,
+	String,
+);
