@@ -7,9 +7,9 @@ import Chat from './chat';
 import { useAtom } from 'jotai';
 import { state } from './state';
 import Migrator from './migrator';
-import Sidebar from './Sidebar';
 import { ErrorBoundary } from '@/components/error-boundry';
 import { AlertError } from '@/components/ui/alert';
+import Sidebar from './sidebar';
 
 function HomePage() {
 	useRunningPoll();
@@ -26,7 +26,16 @@ function HomePage() {
 	return (
 		<div className="flex flex-row h-full">
 			<Migrator />
-			<Sidebar />
+
+			<ErrorBoundary
+				fallback={
+					<AlertError>
+						Sidebar has been crashed, please refresh the page
+					</AlertError>
+				}
+			>
+				<Sidebar />
+			</ErrorBoundary>
 			<div className="dark:bg-black h-full w-full flex flex-col justify-center items-center">
 				{showIntroCard && (
 					<IntroCard
