@@ -7,8 +7,7 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { core } from '@/core';
 import { ConfirmChatClear } from './parts/ConfirmChatClear';
 import { memo, useEffect } from 'react';
-import { updateModelsAvailability } from './helper';
-import { toast } from '@/components/ui/use-toast';
+import { useRequestUpdateModels } from './helper';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { state } from './state';
 import { AlertDialog, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -22,19 +21,21 @@ export default memo(function Header() {
 	);
 	const lastResponseTime = useAtomValue(state.app.lastResponseTime);
 	const updateConversations = useSetAtom(state.conversation.record);
+	const requestUpdateModels = useRequestUpdateModels();
 	const disabled = generating ? generating === currentChatId : false;
 
 	useEffect(() => {
 		if (connected) {
-			try {
-				updateModelsAvailability();
-			} catch (error) {
-				toast({
-					variant: 'destructive',
-					title: 'Something went wrong',
-					description: String(error),
-				});
-			}
+			requestUpdateModels();
+			// try {
+			// 	updateModelsAvailability();
+			// } catch (error) {
+			// 	toast({
+			// 		variant: 'destructive',
+			// 		title: 'Something went wrong',
+			// 		description: String(error),
+			// 	});
+			// }
 		} else {
 			core.installedModels.reset();
 		}

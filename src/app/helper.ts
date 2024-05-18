@@ -1,4 +1,10 @@
 import { core, ollamaRequest } from '@/core';
+import { useSetAtom } from 'jotai';
+import { state } from './state';
+import { useCallback } from 'react';
+import { ResultAsync } from 'neverthrow';
+import Immutable from 'immutable';
+import { toast } from '@/components/ui/use-toast';
 
 export async function tryConnect() {
 	try {
@@ -18,7 +24,6 @@ export async function isRunningUpdate() {
 	}
 }
 
-// TODO: Work on it
 export async function updateModelsAvailability(): Promise<boolean> {
 	const res = await ollamaRequest('GET', 'api/tags');
 	if (res?.data?.models) {
@@ -28,4 +33,31 @@ export async function updateModelsAvailability(): Promise<boolean> {
 	} else {
 		throw 'No models has been found';
 	}
+}
+
+export function useRequestUpdateModels() {
+	const setModels = useSetAtom(state.app.models);
+	return useCallback(async () => {
+		const res = await ResultAsync.fromPromise(
+			ollamaRequest<{
+				models: string[];
+			}>('GET', 'api/tags'),
+			(e) => {
+				console.error(e);
+				return 'Failed to fetch models';
+			},
+		);
+		res.match(
+			({ data }) =>
+				setModels({ status: 'loaded', value: Immutable.List(data.models) }),
+			(error) => {
+				setModels({ status: 'loaded', value: Immutable.List() });
+				toast({
+					variant: 'destructive',
+					title: 'Error',
+					description: error,
+				});
+			},
+		);
+	}, [setModels]);
 }
