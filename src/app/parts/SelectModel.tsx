@@ -9,12 +9,12 @@ import {
 } from '@/components/ui/select';
 import { core } from '@/core';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import React, { useCallback, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import { useSimple } from 'simple-core-state';
 import { ConfirmSwitchModel } from './ConfirmSwitchModel';
-import { ModelTypes } from '@/core/types';
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { state } from '../state';
+import { updateConversation } from '../state/conversation';
 
 interface ISelectConversationProps {
 	loading: boolean;
@@ -23,33 +23,38 @@ interface ISelectConversationProps {
 export const SelectModel: React.FC<ISelectConversationProps> = ({
 	loading,
 }) => {
-	const [model, setModel] = useAtom(state.app.model);
+	const currentModel = useAtomValue(state.conversation.current.model);
+	const [model, setModel] = useState(currentModel);
 	const installedModels = useSimple(core.installedModels);
-	const currentConv = useSimple(core.currentConversation);
-	const conversations = useSimple(core.conversations);
+	const currentId = useAtomValue(state.conversation.current.id);
 
 	const [showWarning, setShowWarning] = useState(false);
 
-	const handleConfirm = useCallback(
-		(switchModel: boolean, resetChat?: boolean) => {
-			if (switchModel) {
-				if (resetChat) {
-					// core.conversations.patchObject({
-					// 	[currentConv]: { chatHistory: [], ctx: [], model: model },
-					// });
-				} else {
-					// core.conversations.patchObject({
-					// 	[currentConv]: { ...conversations[currentConv], model: model },
-					// });
-				}
-			} else {
-				core.model.revert();
-			}
+	useLayoutEffect(() => {
+		setModel(currentModel);
+	}, [currentModel]);
 
-			setShowWarning(false);
-		},
-		[model, currentConv, currentConv],
-	);
+	function handleConfirm(switchModel: boolean, resetChat?: boolean) {
+		if (!currentId || !model) {
+			return;
+		}
+		if (switchModel) {
+			if (resetChat) {
+				updateConversation(currentId, (chat) => ({
+					...chat,
+					model,
+					chatHistory: [],
+					ctx: [],
+				}));
+			} else {
+				updateConversation(currentId, (chat) => ({ ...chat, model }));
+			}
+		} else {
+			setModel(currentModel);
+		}
+
+		setShowWarning(false);
+	}
 
 	return (
 		<div className="mx-2">
@@ -58,7 +63,9 @@ export const SelectModel: React.FC<ISelectConversationProps> = ({
 				disabled={loading}
 				value={model}
 				onValueChange={(newModel) => {
-					setShowWarning(true);
+					if (currentId) {
+						setShowWarning(true);
+					}
 					setModel(newModel);
 				}}
 			>

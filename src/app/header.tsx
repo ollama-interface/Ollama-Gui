@@ -1,18 +1,18 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent } from '@/components/ui/tooltip';
 import { TrashIcon } from '@radix-ui/react-icons';
-import { TooltipTrigger } from '@radix-ui/react-tooltip';
 import { SelectModel } from './parts/SelectModel';
 import { SideInfoSheet } from './parts/SideInfoSheet';
 import { ModeToggle } from '@/components/mode-toggle';
 import { core } from '@/core';
 import { ConfirmChatClear } from './parts/ConfirmChatClear';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect } from 'react';
 import { updateModelsAvailability } from './helper';
 import { toast } from '@/components/ui/use-toast';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { state } from './state';
+import { AlertDialog, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useEvent } from '@/hooks/use-event';
 
 export default memo(function Header() {
 	const connected = useAtomValue(state.app.connected);
@@ -22,7 +22,6 @@ export default memo(function Header() {
 	);
 	const lastResponseTime = useAtomValue(state.app.lastResponseTime);
 	const updateConversations = useSetAtom(state.conversation.record);
-	const [showChatClearDialog, setShowChatClearDialog] = useState(false);
 	const disabled = generating ? generating === currentChatId : false;
 
 	useEffect(() => {
@@ -41,13 +40,13 @@ export default memo(function Header() {
 		}
 	}, [connected]);
 
-	function deleteConversation() {
+	const deleteChat = useEvent(function deleteConversation() {
 		if (!currentChatId) {
 			return;
 		}
 		updateConversations((prev) => prev.delete(currentChatId));
 		setCurrentChatId(undefined);
-	}
+	});
 
 	return (
 		<div className="flex items-center justify-between w-full p-2">
@@ -69,36 +68,28 @@ export default memo(function Header() {
 			</div>
 
 			<div className="flex items-center">
-				<Tooltip>
-					<TooltipTrigger>
-						<Button
-							disabled={disabled || !currentChatId}
-							size="default"
-							className="w-10 p-0 px-2 ml-2 bg-red-400 hover:bg-red-400 dark:bg-red-500 dark:hover:bg-red-500 dark:text-white hover:opacity-60"
-							onClick={() => setShowChatClearDialog(true)}
-						>
-							<TrashIcon height={21} width={21} />
-						</Button>
-					</TooltipTrigger>
-					<TooltipContent side="bottom">
-						<p>Delete Conversation</p>
-					</TooltipContent>
-				</Tooltip>
+				{currentChatId && (
+					<>
+						<AlertDialog>
+							<AlertDialogTrigger asChild>
+								<Button
+									disabled={disabled || !currentChatId}
+									size="default"
+									className="w-10 p-0 px-2 ml-2 bg-red-400 hover:bg-red-400 dark:bg-red-500 dark:hover:bg-red-500 dark:text-white hover:opacity-60"
+								>
+									<TrashIcon height={21} width={21} />
+								</Button>
+							</AlertDialogTrigger>
+							<ConfirmChatClear onAgree={deleteChat} />
+						</AlertDialog>
 
-				<SelectModel loading={disabled} />
+						<SelectModel loading={disabled} />
+					</>
+				)}
 				<SideInfoSheet loading={disabled} />
+
 				<ModeToggle />
 			</div>
-			{showChatClearDialog && (
-				<ConfirmChatClear
-					onClose={(e) => {
-						setShowChatClearDialog(false);
-						if (e) {
-							deleteConversation();
-						}
-					}}
-				/>
-			)}
 		</div>
 	);
 });

@@ -2,10 +2,10 @@ import { Button } from '@/components/ui/button';
 import { core, generateRandomString } from '@/core';
 import { useAtom, useAtomValue } from 'jotai';
 import { memo, useState } from 'react';
-import { state } from '../state';
+import { state } from './state';
 import { match, P } from 'ts-pattern';
 import { ReloadIcon } from '@radix-ui/react-icons';
-import { Message, updateConversation } from '../state/conversation';
+import { Message, updateConversation } from './state/conversation';
 
 function takeLastTime(chatHistory: Message[]) {
 	const lastCreatedAt = chatHistory.at(-1)?.created_at;

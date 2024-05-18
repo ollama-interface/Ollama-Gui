@@ -1,5 +1,4 @@
 import { IntroCard } from '@/app/parts/IntroCard';
-import Sidebar from '@/app/parts/Sidebar';
 import { useState, useEffect } from 'react';
 import { useRunningPoll } from '@/hooks';
 import Header from './header';
@@ -8,6 +7,9 @@ import Chat from './chat';
 import { useAtom } from 'jotai';
 import { state } from './state';
 import Migrator from './migrator';
+import Sidebar from './Sidebar';
+import { ErrorBoundary } from '@/components/error-boundry';
+import { AlertError } from '@/components/ui/alert';
 
 function HomePage() {
 	useRunningPoll();
@@ -37,8 +39,25 @@ function HomePage() {
 					/>
 				)}
 
-				<Header />
-				<Chat />
+				<ErrorBoundary
+					fallback={
+						<AlertError>
+							Header has been crashed, please refresh the page
+						</AlertError>
+					}
+				>
+					<Header />
+				</ErrorBoundary>
+
+				<ErrorBoundary
+					fallback={
+						<AlertError>
+							Chat has been crashed, please refresh the page
+						</AlertError>
+					}
+				>
+					<Chat />
+				</ErrorBoundary>
 				<div className="flex flex-col w-full pb-[5px] mt-2">
 					<InputPrompt />
 				</div>

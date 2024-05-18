@@ -1,4 +1,3 @@
-import { state } from '@/app/state';
 import { trimWhitespace } from '.';
 import { core } from './core';
 import { ModelTypes } from './types';

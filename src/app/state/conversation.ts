@@ -1,4 +1,5 @@
 import { atom } from 'jotai';
+import { selectAtom } from 'jotai/utils';
 import Immutable from 'immutable';
 import { atomPersist, atomWithAsyncStorage, db } from './persist';
 import { store } from './store';
@@ -46,25 +47,28 @@ export const record = atomWithAsyncStorage(
 	},
 );
 
+const currentChat = atom((get) => {
+	const id = get(currentId);
+	const recordResult = get(record);
+	if (!id) {
+		return { status: 'loaded' as const, value: undefined };
+	}
+	if (recordResult.status === 'loading') {
+		return { status: 'loading' as const };
+	}
+	if (recordResult.status === 'loaded') {
+		return {
+			status: 'loaded' as const,
+			value: recordResult.value.get(id),
+		};
+	}
+	return { status: 'loaded' as const, value: undefined };
+});
+
 export const current = {
 	id: currentId,
-	chat: atom((get) => {
-		const id = get(currentId);
-		const recordResult = get(record);
-		if (!id) {
-			return { status: 'loaded' as const, value: undefined };
-		}
-		if (recordResult.status === 'loading') {
-			return { status: 'loading' as const };
-		}
-		if (recordResult.status === 'loaded') {
-			return {
-				status: 'loaded' as const,
-				value: recordResult.value.get(id),
-			};
-		}
-		return { status: 'loaded' as const, value: undefined };
-	}),
+	model: selectAtom(currentChat, (chat) => chat.value?.model),
+	chat: currentChat,
 };
 
 export function updateConversation(

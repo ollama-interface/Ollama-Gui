@@ -22,28 +22,24 @@ interface ISideInfoSheetProps {
 }
 
 export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
-	const SheetRef = useRef<HTMLButtonElement>(null);
+	const sheetRef = useRef<HTMLButtonElement>(null);
 	const { toast } = useToast();
 	const url = useSimple(core.localAPI);
 	const convs = useSimple(core.conversations);
 	const ollamaConnected = useSimple(core.serverConnected);
 
-	const clearConversations = () => {
-		core.conversations.set({
-			session: { chatHistory: [], ctx: [], model: 'llama2' },
-		});
-		core.currentConversation.set('session');
-
+	function resetConversations() {
+		//TODO: 'Implement this function';
 		toast({
 			title: 'Conversation has been cleared',
 			description:
 				'All conversations has been cleared and you can start from fresh.',
 		});
 
-		SheetRef.current?.click();
-	};
+		sheetRef.current?.click();
+	}
 
-	const importConversations = async () => {
+	async function importConversations() {
 		const data = await navigator.clipboard.readText();
 		if (!data) {
 			return;
@@ -56,18 +52,20 @@ export const SideInfoSheet: React.FC<ISideInfoSheetProps> = ({ loading }) => {
 			title: 'Successfully imported',
 			description: 'All of your conversation has been imported',
 		});
-	};
+	}
 
 	const [showResetConfirm, setShowResetConfirm] = useState(false);
-	const onResetResponse = (e: boolean) => {
-		if (e) clearConversations();
+	function handleResetResponse(confirmed: boolean) {
+		if (confirmed) {
+			resetConversations();
+		}
 		setShowResetConfirm(false);
-	};
+	}
 
 	return (
 		<Sheet>
-			{showResetConfirm && <ConfirmModal onResponse={onResetResponse} />}
-			<SheetTrigger asChild ref={SheetRef}>
+			{showResetConfirm && <ConfirmModal onResponse={handleResetResponse} />}
+			<SheetTrigger asChild ref={sheetRef}>
 				<Button variant="outline" className="whitespace-nowrap dark:text-white">
 					Settings & Info
 				</Button>
