@@ -19,13 +19,17 @@ export interface Conversation {
 	ctx: number[];
 	chatHistory: Message[];
 	name?: string;
+	createdAt: number;
 }
 
 export type Conversations = Immutable.Map<string, Conversation>;
 
 export async function loadConversationsFromDB(): Promise<Conversations> {
-	const storedConversations = await db.load('conversations');
 	try {
+		const storedConversations = await db.load('conversations');
+		if (!storedConversations) {
+			return Immutable.Map();
+		}
 		return Immutable.Map(JSON.parse(storedConversations ?? '[]'));
 	} catch (error) {
 		console.error(error);

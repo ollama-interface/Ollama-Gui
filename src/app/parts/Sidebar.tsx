@@ -5,7 +5,12 @@ import { memo, useState } from 'react';
 import { state } from '../state';
 import { match, P } from 'ts-pattern';
 import { ReloadIcon } from '@radix-ui/react-icons';
-import { updateConversation } from '../state/conversation';
+import { Message, updateConversation } from '../state/conversation';
+
+function takeLastTime(chatHistory: Message[]) {
+	const lastCreatedAt = chatHistory.at(-1)?.created_at;
+	return lastCreatedAt ? new Date(lastCreatedAt).getTime() : undefined;
+}
 
 export default memo(function Sidebar() {
 	const [currentEdit, setCurrentEdit] = useState('');
@@ -26,6 +31,7 @@ export default memo(function Sidebar() {
 				chatHistory: [],
 				ctx: [],
 				model: model ?? 'llama3',
+				createdAt: Date.now(),
 			}),
 		);
 		setCurrentId(id);
@@ -46,42 +52,49 @@ export default memo(function Sidebar() {
 						.with(
 							{ status: 'loaded', value: P.when((x) => x.count() > 0) },
 							(result) =>
-								result.value.valueSeq().map((conversation) => {
-									const id = conversation.id;
-									const name = conversation.name ?? id;
-									return (
-										<div
-											className={`
+								result.value
+									.valueSeq()
+									.sort((a, b) => {
+										const aTime = takeLastTime(a.chatHistory) ?? a.createdAt;
+										const bTime = takeLastTime(b.chatHistory) ?? b.createdAt;
+										return bTime - aTime;
+									})
+									.map((conversation) => {
+										const id = conversation.id;
+										const name = conversation.name ?? id;
+										return (
+											<div
+												className={`
 											${
 												currentId === id
 													? 'bg-neutral-200 dark:bg-neutral-800'
 													: 'bg-neutral-100 dark:bg-neutral-900'
 											} flex-1 w-full p-2 hover:bg-neutral-200 mb-2 rounded-md select-none cursor-pointer text-black dark:text-white`}
-											onClick={() => {
-												setCurrentId(id);
-											}}
-											onDoubleClick={() => {
-												setCurrentEdit(id);
-											}}
-											key={id}
-										>
-											{currentEdit !== id ? (
-												<p className="truncate">{name}</p>
-											) : (
-												<RenameInput
-													initialName={name}
-													onFinish={(newName) => {
-														updateConversation(id, (prev) => ({
-															...prev,
-															name: newName.length > 0 ? newName : undefined,
-														}));
-														setCurrentEdit('');
-													}}
-												/>
-											)}
-										</div>
-									);
-								}),
+												onClick={() => {
+													setCurrentId(id);
+												}}
+												onDoubleClick={() => {
+													setCurrentEdit(id);
+												}}
+												key={id}
+											>
+												{currentEdit !== id ? (
+													<p className="truncate">{name}</p>
+												) : (
+													<RenameInput
+														initialName={name}
+														onFinish={(newName) => {
+															updateConversation(id, (prev) => ({
+																...prev,
+																name: newName.length > 0 ? newName : undefined,
+															}));
+															setCurrentEdit('');
+														}}
+													/>
+												)}
+											</div>
+										);
+									}),
 						)
 						.with({ status: 'loading' }, () => (
 							<ReloadIcon className="h-8 w-8 animate-spin" />

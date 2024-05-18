@@ -64,3 +64,24 @@ export function extractTextAndCodeBlocks(
 
 	return matches as any;
 }
+
+export type ResolvingPromise<T> = Promise<T> & {
+	resolve: (a: T) => void;
+	reject: (e: unknown) => void;
+};
+
+export function createResolvingPromise<T = void>() {
+	let resolve: ResolvingPromise<T>['resolve'];
+	let reject: ResolvingPromise<T>['reject'];
+	const promise = new Promise<T>((res, rej) => {
+		resolve = res;
+		reject = rej;
+	}) as ResolvingPromise<T>;
+
+	// @ts-ignore Variable is used before being assigned (wrong error)
+	promise.resolve = resolve;
+	// @ts-ignore Variable is used before being assigned (wrong error)
+	promise.reject = reject;
+
+	return promise;
+}

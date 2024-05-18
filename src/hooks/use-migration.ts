@@ -16,7 +16,17 @@ export function useMigration() {
 
 		const conversations: Conversations = Immutable.Map(
 			Object.entries(core.conversations._value).map(([id, conversation]) => {
-				return [id, { ...conversation, id }];
+				const lastMsg = conversation.chatHistory.at(-1);
+				return [
+					id,
+					{
+						...conversation,
+						id,
+						createdAt: lastMsg
+							? new Date(lastMsg.created_at).getTime()
+							: Date.now(),
+					},
+				];
 			}),
 		);
 

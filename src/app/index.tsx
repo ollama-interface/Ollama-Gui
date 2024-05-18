@@ -7,11 +7,10 @@ import InputPrompt from './input-prompt';
 import Chat from './chat';
 import { useAtom } from 'jotai';
 import { state } from './state';
-import { useMigration } from '@/hooks/use-migration';
+import Migrator from './migrator';
 
 function HomePage() {
 	useRunningPoll();
-	useMigration();
 
 	const [visited, setVisited] = useAtom(state.app.visited);
 	const [showIntroCard, setShowIntroCard] = useState(false);
@@ -24,6 +23,7 @@ function HomePage() {
 
 	return (
 		<div className="flex flex-row h-full">
+			<Migrator />
 			<Sidebar />
 			<div className="dark:bg-black h-full w-full flex flex-col justify-center items-center">
 				{showIntroCard && (

@@ -1,3 +1,4 @@
+import { createResolvingPromise } from '@/core/helper';
 import * as idb from 'idb';
 import { atom } from 'jotai';
 
@@ -42,6 +43,8 @@ export function atomWithAsyncStorage<T>(
 	onSave: (value: T) => void,
 ) {
 	const baseAtom = atom<AsyncAtomValue<T>>({ status: 'loading' });
+	const mounted = createResolvingPromise();
+
 	baseAtom.onMount = (setValue) => {
 		(async () => {
 			try {
@@ -50,6 +53,7 @@ export function atomWithAsyncStorage<T>(
 					status: 'loaded',
 					value: item,
 				});
+				mounted.resolve();
 			} catch (error) {
 				setValue({
 					status: 'error',
@@ -61,17 +65,20 @@ export function atomWithAsyncStorage<T>(
 	const derivedAtom = atom(
 		(get) => get(baseAtom),
 		(get, set, update: (value: T) => T) => {
-			const value = get(baseAtom);
-			if (value.status !== 'loaded') {
-				console.error('Tried to update an atom that is still loading');
-				return;
-			}
-			const nextValue = update(value.value);
-			set(baseAtom, {
-				status: 'loaded',
-				value: nextValue,
+			console.log('updating');
+			mounted.then(() => {
+				const value = get(baseAtom);
+				if (value.status !== 'loaded') {
+					console.error('Tried to update an atom that is still loading');
+					return;
+				}
+				const nextValue = update(value.value);
+				set(baseAtom, {
+					status: 'loaded',
+					value: nextValue,
+				});
+				onSave(nextValue);
 			});
-			onSave(nextValue);
 		},
 	);
 	return derivedAtom;
