@@ -1,6 +1,9 @@
 import { memo, useEffect, useRef } from 'react';
 import { P, match } from 'ts-pattern';
-import { ConversationBlock } from './parts/ConversationBlock';
+import {
+	ConversationBlock,
+	OllamaAvatarPrerender,
+} from './parts/ConversationBlock';
 import { convertTextToJson, ollamaGenerate } from '@/core';
 import { Skeleton } from '@/components/ui/skeleton';
 import dayjs from 'dayjs';
@@ -110,10 +113,11 @@ export default memo(function Chat() {
 							No message
 						</p>
 					))}
-				{generating && (
-					<div className={`relative w-full flex justify-end`}>
+				{generating && generating === currentConversationId && (
+					<div className={`relative w-full flex`}>
+						<p className="mt-2.5 text-neutral-400">{OllamaAvatarPrerender}</p>
 						<div
-							className={`right-0 flex flex-col mb-10 bg-zinc-100 dark:bg-zinc-900 border-solid border-neutral-200 dark:border-neutral-800 border rounded-xl p-2 w-[80%]`}
+							className={`flex flex-col mb-10 bg-zinc-100 dark:bg-zinc-900 border-solid border-neutral-200 dark:border-neutral-800 border rounded-xl p-2 w-[80%]`}
 						>
 							<Skeleton className="w-full h-10 animate-pulse" />
 
@@ -121,7 +125,6 @@ export default memo(function Chat() {
 								{dayjs(Date.now()).format('HH:MM:ss')}
 							</p>
 						</div>
-						<p className="ml-2 mt-2.5 text-neutral-400">Ollama</p>
 					</div>
 				)}
 			</div>

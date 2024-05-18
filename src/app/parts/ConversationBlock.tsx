@@ -3,10 +3,21 @@ import dayjs from 'dayjs';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { Markdown } from '@/components/markdown';
 import { Conversation } from '../state/conversation';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import ollamaAvatar from '../assets/ollama_avatar.png';
 
 export interface Props {
 	conversation: Conversation;
 }
+
+export const OllamaAvatarPrerender = (
+	<div className="p-2">
+		<Avatar>
+			<AvatarImage src={ollamaAvatar} />
+			<AvatarFallback>OL</AvatarFallback>
+		</Avatar>
+	</div>
+);
 
 export const ConversationBlock = memo(function ConversationBlock(p: Props) {
 	return (
@@ -15,12 +26,10 @@ export const ConversationBlock = memo(function ConversationBlock(p: Props) {
 				<div
 					key={index}
 					className={` relative w-full flex ${
-						item.who === 'ollama' ? 'justify-end' : ''
+						item.who === 'me' ? 'justify-end' : ''
 					}`}
 				>
-					{item.who === 'me' && (
-						<p className="mr-2 mt-2.5 text-neutral-400">You</p>
-					)}
+					{item.who === 'ollama' && OllamaAvatarPrerender}
 					<div
 						className={`right-0 flex flex-col mb-10 bg-zinc-100 dark:bg-zinc-900 border-solid border-neutral-200 dark:border-neutral-800  border rounded-xl p-2 w-[80%]`}
 					>
@@ -63,8 +72,8 @@ export const ConversationBlock = memo(function ConversationBlock(p: Props) {
 							{dayjs(item.created_at).format('HH:MM:ss')}
 						</p>
 					</div>
-					{item.who === 'ollama' && (
-						<p className="ml-2 mt-2.5 text-neutral-400">Ollama</p>
+					{item.who === 'me' && (
+						<p className="ml-2 mt-2.5 text-neutral-400">You</p>
 					)}
 				</div>
 			))}
