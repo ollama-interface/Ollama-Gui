@@ -124,7 +124,12 @@ export function SideInfoSheet({ loading }: Props) {
 										className="absolute bottom-0 right-0"
 										variant="link"
 										onClick={() => {
-											navigator.clipboard.writeText(OLLAMA_COMMAND);
+											navigator.clipboard.writeText(OLLAMA_COMMAND).then(() => {
+												toast({
+													title: 'Command copied',
+													description: 'Command has been copied to clipboard.',
+												});
+											});
 										}}
 									>
 										Copy

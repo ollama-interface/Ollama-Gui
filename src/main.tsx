@@ -9,15 +9,13 @@ import { store } from './app/state/store.ts';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	// <React.StrictMode>
-	<>
-		<TooltipProvider>
-			<JotaiProvider store={store}>
-				<ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-					<App />
-				</ThemeProvider>
-				<Toaster />
-			</JotaiProvider>
-		</TooltipProvider>
-	</>,
+	<TooltipProvider>
+		<JotaiProvider store={store}>
+			<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+				<App />
+			</ThemeProvider>
+			<Toaster />
+		</JotaiProvider>
+	</TooltipProvider>,
 	// </React.StrictMode>
 );
