@@ -7,7 +7,7 @@ import {
 import { convertTextToJson, ollamaGenerate } from '@/core';
 import { Skeleton } from '@/components/ui/skeleton';
 import dayjs from 'dayjs';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { state } from './state';
 import { Conversation, updateConversation } from './state/conversation';
 import { ReloadIcon } from '@radix-ui/react-icons';
@@ -28,7 +28,9 @@ async function requestName(conversation: Conversation) {
 
 export default memo(function Chat() {
 	const chatRef = useRef<HTMLDivElement>(null);
-	const currentConversationId = useAtomValue(state.conversation.current.id);
+	const [currentConversationId, setCurrentConversationId] = useAtom(
+		state.conversation.current.id,
+	);
 	const generating = useAtomValue(state.app.generating);
 	const currentConversation = useAtomValue(state.conversation.current.chat);
 
@@ -37,6 +39,18 @@ export default memo(function Chat() {
 			top: chatRef.current.scrollHeight,
 		});
 	}, [currentConversationId]);
+
+	useEffect(() => {
+		function handleEcs(event: KeyboardEvent) {
+			if (event.code === 'Escape') {
+				setCurrentConversationId(undefined);
+			}
+		}
+		document.addEventListener('keydown', handleEcs);
+		return () => {
+			document.removeEventListener('keydown', handleEcs);
+		};
+	}, []);
 
 	useEffect(() => {
 		if (
