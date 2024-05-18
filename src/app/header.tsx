@@ -84,7 +84,7 @@ export default memo(function Header() {
 							<ConfirmChatClear onAgree={deleteChat} />
 						</AlertDialog>
 
-						<SelectModel loading={disabled} />
+						<SelectModel />
 					</>
 				)}
 				<SideInfoSheet loading={disabled} />

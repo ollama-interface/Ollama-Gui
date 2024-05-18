@@ -6,6 +6,7 @@ import { state } from './state';
 import { match, P } from 'ts-pattern';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { Message, updateConversation } from './state/conversation';
+import { toast } from '@/components/ui/use-toast';
 
 function takeLastTime(chatHistory: Message[]) {
 	const lastCreatedAt = chatHistory.at(-1)?.created_at;
@@ -23,6 +24,14 @@ export default memo(function Sidebar() {
 			return;
 		}
 
+		if (!model) {
+			toast({
+				title: 'Please select a model first',
+				variant: 'destructive',
+			});
+			return;
+		}
+
 		const id = generateRandomString(8);
 		core.currentConversation.set(id);
 		setConversations((c) =>
@@ -30,7 +39,7 @@ export default memo(function Sidebar() {
 				id,
 				chatHistory: [],
 				ctx: [],
-				model: model ?? 'llama3',
+				model,
 				createdAt: Date.now(),
 			}),
 		);

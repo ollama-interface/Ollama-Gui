@@ -18,6 +18,7 @@ import { memo, useRef, useState } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { state } from '../state';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
+import { SelectDefaultModel } from './select-default-model';
 
 const LocalAPIInput = memo(function LocalAPIInput({
 	loading,
@@ -37,6 +38,28 @@ const LocalAPIInput = memo(function LocalAPIInput({
 	);
 });
 
+const Connection = memo(function Connection({ loading }: { loading: boolean }) {
+	const connected = useAtomValue(state.app.connected);
+	return (
+		<>
+			<LocalAPIInput loading={loading} />
+			<div className="mb-4 mt-2 fkex">
+				<Button size="sm" onClick={tryConnect}>
+					Connect
+				</Button>
+				{connected && (
+					<Badge
+						className="ml-2 bg-green-200 hover:bg-green-200 text-green-700"
+						variant="secondary"
+					>
+						Connected
+					</Badge>
+				)}
+			</div>
+		</>
+	);
+});
+
 export interface Props {
 	loading: boolean;
 }
@@ -44,7 +67,7 @@ export interface Props {
 export function SideInfoSheet({ loading }: Props) {
 	const sheetRef = useRef<HTMLButtonElement>(null);
 	const { toast } = useToast();
-	const connected = useAtomValue(state.app.connected);
+
 	const setConversations = useSetAtom(state.conversation.record);
 
 	function resetConversations() {
@@ -74,7 +97,7 @@ export function SideInfoSheet({ loading }: Props) {
 					Settings & Info
 				</Button>
 			</SheetTrigger>
-			<SheetContent className="border-neutral-100 dark:border-neutral-900 overflow-auto">
+			<SheetContent className="border-neutral-100 dark:border-neutral-900 overflow-auto text-neutral-900 dark:text-neutral-100">
 				<div className="flex flex-col h-full">
 					<SheetHeader>
 						<SheetTitle>Welcome to Ollama Web Interface</SheetTitle>
@@ -86,38 +109,19 @@ export function SideInfoSheet({ loading }: Props) {
 
 					<div className="flex flex-col flex-1 justify-between">
 						<div>
-							<Label className="mb-1 font-medium text-neutral-900 dark:text-neutral-100 mr-1">
-								Ollama:
-							</Label>
+							<Label className="mb-1 font-medium mr-1">Ollama:</Label>
 							<a
 								href="https://ollama.ai/"
-								className="text-sm  underline underline-offset-4 dark:text-white"
+								className="text-sm  underline underline-offset-4 "
 							>
 								https://ollama.ai/
 							</a>
 							<div className="flex flex-col mt-4">
-								<Label className="mb-1 font-medium text-neutral-900 dark:text-neutral-100">
-									Ollama remote address:
-								</Label>
-
-								<LocalAPIInput loading={loading} />
-								<div className="mb-4 mt-2 fkex">
-									<Button size="sm" onClick={tryConnect}>
-										Connect
-									</Button>
-									{connected && (
-										<Badge
-											className="ml-2 bg-green-200 hover:bg-green-200 text-green-700"
-											variant="secondary"
-										>
-											Connected
-										</Badge>
-									)}
-								</div>
-								<Label className="mt-6 mb-1 font-medium text-neutral-900 dark:text-neutral-100">
+								<Connection loading={loading} />
+								<Label className="mt-6 mb-1 font-medium ">
 									Serve command for ollama:
 								</Label>
-								<code className="relative rounded bg-neutral-200 dark:text-white dark:bg-neutral-800 px-[0.5rem] py-[0.5rem] font-mono text-sm font-semibold pb-8">
+								<code className="relative rounded bg-neutral-200  dark:bg-neutral-800 px-[0.5rem] py-[0.5rem] font-mono text-sm font-semibold pb-8">
 									<p className="break-words">{OLLAMA_COMMAND}</p>
 									<Button
 										size="sm"
@@ -135,6 +139,10 @@ export function SideInfoSheet({ loading }: Props) {
 										Copy
 									</Button>
 								</code>
+							</div>
+							<div className="mt-2 w-full flex items-center">
+								<Label className="shrink-0 pr-2">Default Model:</Label>
+								<SelectDefaultModel />
 							</div>
 						</div>
 						<div className="flex flex-col justify-self-end">

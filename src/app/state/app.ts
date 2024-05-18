@@ -1,6 +1,7 @@
 import { atom } from 'jotai';
 import { atomPersist } from './persist';
 import Immutable from 'immutable';
+import { Model } from '@/core';
 
 export const lastResponseTime = atom<number | undefined>(undefined);
 export const generating = atom<string | undefined>(undefined);
@@ -12,7 +13,7 @@ export const visited = atomPersist(
 	(x) => x === 'true',
 );
 export const models = atom<
-	{ status: 'loading' } | { status: 'loaded'; value: Immutable.List<string> }
+	{ status: 'loading' } | { status: 'loaded'; value: Immutable.List<Model> }
 >({ status: 'loading' });
 export const model = atomPersist('OLLAMA_MODEL', undefined, String, String);
 export const localAPI = atomPersist(

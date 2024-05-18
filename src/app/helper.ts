@@ -1,4 +1,4 @@
-import { core, ollamaRequest } from '@/core';
+import { Model, core, ollamaRequest } from '@/core';
 import { useSetAtom } from 'jotai';
 import { state } from './state';
 import { useCallback } from 'react';
@@ -40,7 +40,7 @@ export function useRequestUpdateModels() {
 	return useCallback(async () => {
 		const res = await ResultAsync.fromPromise(
 			ollamaRequest<{
-				models: string[];
+				models: Model[];
 			}>('GET', 'api/tags'),
 			(e) => {
 				console.error(e);

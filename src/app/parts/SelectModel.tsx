@@ -1,31 +1,15 @@
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
-import { core } from '@/core';
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import React, { useLayoutEffect, useState } from 'react';
-import { useSimple } from 'simple-core-state';
+import { Select, SelectTrigger } from '@/components/ui/select';
+import { useLayoutEffect, useState } from 'react';
 import { ConfirmSwitchModel } from './ConfirmSwitchModel';
 import { useAtomValue } from 'jotai';
 import { state } from '../state';
 import { updateConversation } from '../state/conversation';
+import { SelectModelsContent } from './select-default-model';
+import { useEvent } from '@/hooks/use-event';
 
-interface ISelectConversationProps {
-	loading: boolean;
-}
-
-export const SelectModel: React.FC<ISelectConversationProps> = ({
-	loading,
-}) => {
+export function SelectModel() {
 	const currentModel = useAtomValue(state.conversation.current.model);
 	const [model, setModel] = useState(currentModel);
-	const installedModels = useSimple(core.installedModels);
 	const currentId = useAtomValue(state.conversation.current.id);
 
 	const [showWarning, setShowWarning] = useState(false);
@@ -56,39 +40,22 @@ export const SelectModel: React.FC<ISelectConversationProps> = ({
 		setShowWarning(false);
 	}
 
+	const handleChange = useEvent((newModel: string) => {
+		if (currentId) {
+			setShowWarning(true);
+		}
+		setModel(newModel);
+	});
+
 	return (
-		<div className="mx-2">
+		<div className="mx-2 text-neutral-900 dark:text-neutral-100">
 			{showWarning && <ConfirmSwitchModel onClose={handleConfirm} />}
-			<Select
-				disabled={loading}
-				value={model}
-				onValueChange={(newModel) => {
-					if (currentId) {
-						setShowWarning(true);
-					}
-					setModel(newModel);
-				}}
-			>
-				<SelectTrigger className="w-fit whitespace-nowrap dark:text-white">
-					<SelectValue placeholder="Select a Model" />
+			<Select value={model} onValueChange={handleChange}>
+				<SelectTrigger className="w-full whitespace-nowrap ">
+					{model ?? 'Select a Model'}
 				</SelectTrigger>
-				<SelectContent>
-					<SelectGroup>
-						<SelectLabel>Models</SelectLabel>
-						{installedModels.map((item, index) => (
-							<SelectItem key={index} value={item.name}>
-								<div className="flex flex-row items-center">
-									<a>{item.name}</a>
-									{!installedModels.filter((e) => e.name.includes(item.name))
-										?.length && (
-										<ExclamationTriangleIcon className="ml-2" color="#e94646" />
-									)}
-								</div>
-							</SelectItem>
-						))}
-					</SelectGroup>
-				</SelectContent>
+				<SelectModelsContent />
 			</Select>
 		</div>
 	);
-};
+}
