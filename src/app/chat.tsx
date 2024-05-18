@@ -7,9 +7,9 @@ import {
 import { convertTextToJson, ollamaGenerate } from '@/core';
 import { Skeleton } from '@/components/ui/skeleton';
 import dayjs from 'dayjs';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { state } from './state';
-import { Conversation } from './state/conversation';
+import { Conversation, updateConversation } from './state/conversation';
 import { ReloadIcon } from '@radix-ui/react-icons';
 
 const states: Record<string, { state: 'loading' }> = {};
@@ -23,14 +23,13 @@ async function requestName(conversation: Conversation) {
 
 	const convertedToJson = convertTextToJson(res);
 	const txtMsg = convertedToJson.map((item) => item.response).join('');
-	return { ...conversation, name: txtMsg };
+	return txtMsg;
 }
 
 export default memo(function Chat() {
 	const chatRef = useRef<HTMLDivElement>(null);
 	const currentConversationId = useAtomValue(state.conversation.current.id);
 	const generating = useAtomValue(state.app.generating);
-	const setConversations = useSetAtom(state.conversation.record);
 	const currentConversation = useAtomValue(state.conversation.current.chat);
 
 	useEffect(() => {
@@ -51,14 +50,15 @@ export default memo(function Chat() {
 		if (
 			current.name === undefined &&
 			states[currentConversationId]?.state !== 'loading' &&
-			current.chatHistory.length > 0
+			current.chatHistory.length > 1
 		) {
 			states[currentConversationId] = { state: 'loading' };
 			requestName(current)
-				.then((updated) => {
-					setConversations((prev) => {
-						return prev.set(currentConversationId, updated);
-					});
+				.then((updatedName) => {
+					updateConversation(currentConversationId, (chat) => ({
+						...chat,
+						name: updatedName,
+					}));
 				})
 				.finally(() => {
 					delete states[currentConversationId];
