@@ -25,16 +25,20 @@ export interface Conversation {
 
 export type Conversations = Immutable.Map<string, Conversation>;
 
+export function emptyConversations(): Conversations {
+	return Immutable.Map();
+}
+
 export async function loadConversationsFromDB(): Promise<Conversations> {
 	try {
 		const storedConversations = await db.load('conversations');
 		if (!storedConversations) {
-			return Immutable.Map();
+			return emptyConversations();
 		}
 		return Immutable.Map(JSON.parse(storedConversations ?? '[]'));
 	} catch (error) {
 		console.error(error);
-		return Immutable.Map();
+		return emptyConversations();
 	}
 }
 export const migrated = atomPersist('MIGRATED_FROM_LS', false, String, Boolean);

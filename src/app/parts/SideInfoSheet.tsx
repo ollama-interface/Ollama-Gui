@@ -10,13 +10,12 @@ import {
 	SheetTrigger,
 } from '@/components/ui/sheet';
 import { useToast } from '@/components/ui/use-toast';
-import { OLLAMA_COMMAND, core } from '@/core';
-import { useSimple } from 'simple-core-state';
+import { OLLAMA_COMMAND } from '@/core';
 import { tryConnect } from '../helper';
 import { Badge } from '@/components/ui/badge';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { memo, useRef, useState } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { state } from '../state';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 
@@ -45,12 +44,11 @@ export interface Props {
 export function SideInfoSheet({ loading }: Props) {
 	const sheetRef = useRef<HTMLButtonElement>(null);
 	const { toast } = useToast();
-	const url = useSimple(core.localAPI);
-	const convs = useSimple(core.conversations);
 	const connected = useAtomValue(state.app.connected);
+	const setConversations = useSetAtom(state.conversation.record);
 
 	function resetConversations() {
-		//TODO: 'Implement this function';
+		setConversations((r) => r.clear());
 		toast({
 			title: 'Conversation has been cleared',
 			description:
@@ -58,21 +56,6 @@ export function SideInfoSheet({ loading }: Props) {
 		});
 
 		sheetRef.current?.click();
-	}
-
-	async function importConversations() {
-		const data = await navigator.clipboard.readText();
-		if (!data) {
-			return;
-		}
-
-		core.conversations.set(JSON.parse(data));
-		core.currentConversation.set('session');
-
-		toast({
-			title: 'Successfully imported',
-			description: 'All of your conversation has been imported',
-		});
 	}
 
 	const [showResetConfirm, setShowResetConfirm] = useState(false);
