@@ -16,10 +16,7 @@ export function useMigration() {
 
 		const conversations: Conversations = Immutable.Map(
 			Object.entries(core.conversations._value).map(([id, conversation]) => {
-				if (conversation.name === undefined) {
-					return [id, { ...conversation, id }];
-				}
-				return [id, conversation];
+				return [id, { ...conversation, id }];
 			}),
 		);
 

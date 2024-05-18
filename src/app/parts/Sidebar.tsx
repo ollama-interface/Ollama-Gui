@@ -58,7 +58,6 @@ export default memo(function Sidebar() {
 													: 'bg-neutral-100 dark:bg-neutral-900'
 											} flex-1 w-full p-2 hover:bg-neutral-200 mb-2 rounded-md select-none cursor-pointer text-black dark:text-white`}
 											onClick={() => {
-												core.currentConversation.set(id);
 												setCurrentId(id);
 											}}
 											onDoubleClick={() => {
