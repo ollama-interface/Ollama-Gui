@@ -1,18 +1,18 @@
 export type ModelTypes =
-  | 'llama2'
-  | 'llama2:13b'
-  | 'llama2:70b'
-  | 'llama2:uncensored'
-  | 'codellama'
-  | 'orca-mini';
+  | "llama2"
+  | "llama2:13b"
+  | "llama2:70b"
+  | "llama2:uncensored"
+  | "codellama"
+  | "orca-mini";
 
 export interface IConversationType {
   model: ModelTypes;
   ctx: number[];
   chatHistory: {
     created_at: Date;
-    txt: { content: string; type: 'text' | 'code' }[];
-    who: 'ollama' | 'me';
+    txt: { content: string; type: "text" | "code" }[];
+    who: "ollama" | "me";
     name?: string;
   }[];
   name?: string;
@@ -28,6 +28,9 @@ export type IModelType = {
 };
 
 export type ICoreType = {
+  database: {
+    ready: boolean;
+  };
   conversations: {
     [index: string]: IConversationType;
   };

@@ -1,49 +1,39 @@
 {
-	"build": {
-		"beforeDevCommand": "pnpm dev",
-		"beforeBuildCommand": "pnpm build",
-		"devPath": "http://localhost:1420",
-		"distDir": "../dist",
-		"withGlobalTauri": false
-	},
-	"package": {
-		"productName": "Ollama Chat",
-		"version": "0.1.0"
-	},
-	"tauri": {
-		"allowlist": {
-			"window": {
-				"all": true
-			},
-			"http": {
-				"all": true,
-				"request": true
-			},
-			"all": false
-		},
-		"bundle": {
-			"active": true,
-			"targets": "all",
-			"identifier": "com.twanluttik.ollama-interface",
-			"icon": [
-				"icons/32x32.png",
-				"icons/128x128.png",
-				"icons/128x128@2x.png",
-				"icons/icon.icns",
-				"icons/icon.ico"
-			]
-		},
-		"security": {
-			"csp": null
-		},
-		"windows": [
-			{
-				"fullscreen": false,
-				"resizable": true,
-				"title": "Ollama Chat",
-				"width": 1050,
-				"height": 750
-			}
-		]
-	}
+  "productName": "ollama-chat",
+  "version": "0.0.0",
+  "identifier": "com.tauri.dev",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "ollama-chat",
+        "width": 800,
+        "height": 600
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "node": {
+      "enabled": true
+    }
+  }
 }
