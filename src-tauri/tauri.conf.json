@@ -11,9 +11,9 @@
   "app": {
     "windows": [
       {
-        "title": "ollama-chat",
-        "width": 800,
-        "height": 600
+        "title": "Ollama Chat",
+        "width": 1050,
+        "height": 750
       }
     ],
     "security": {
@@ -21,6 +21,28 @@
     }
   },
   "bundle": {
+    "android": {
+      "minSdkVersion": 24
+    },
+    "macOS": {
+      "dmg": {
+        "appPosition": {
+          "x": 180,
+          "y": 170
+        },
+        "applicationFolderPosition": {
+          "x": 480,
+          "y": 170
+        },
+        "windowSize": {
+          "height": 400,
+          "width": 660
+        }
+      },
+      "files": {},
+      "hardenedRuntime": true,
+      "minimumSystemVersion": "10.13"
+    },
     "active": true,
     "targets": "all",
     "icon": [

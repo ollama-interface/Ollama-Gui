@@ -6,12 +6,12 @@ const instance = new SimpleCore<ICoreType>(
     database: {
       ready: false,
     },
-    conversations: {
-      session: { chatHistory: [], ctx: [], model: "llama2", name: "Session" },
-    },
-    current_conversation: "session",
+    conversations: [],
+    focused_conv_data: [],
+    focused_conv_id: "",
+    focused_conv_meta: {} as any,
     model: "llama2",
-    localAPI: "http://127.0.0.1:11434",
+    localAPI: "http://127.0.0.1:11435",
     server_connected: false,
     installed_models: [],
     visited: false,
@@ -19,13 +19,6 @@ const instance = new SimpleCore<ICoreType>(
   { storage: { prefix: "ollama_web_ui_" } }
 );
 
-instance.persist([
-  "database",
-  "model",
-  "localAPI",
-  "visited",
-  "conversations",
-  "current_conversation",
-]);
+instance.persist(["model", "visited"]);
 
 export const core = instance.core();

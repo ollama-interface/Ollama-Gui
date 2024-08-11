@@ -1,42 +1,12 @@
-import "../index.css";
-import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 import { actions, core } from "@/core";
-import { ChatHeader } from "@/parts/chat-header";
-import { Sidebar } from "@/parts/sidebar";
+import { loadDB } from "@/core/local-database";
+import { Sidebar } from "@/app/parts/sidebar";
 import { Command } from "@tauri-apps/plugin-shell";
-import Axios from "axios";
-import { useCallback, useEffect } from "react";
-import { useSimple } from "simple-core-state";
+import { ChatWindow } from "./parts/chat-window";
 
-export const sendPrompt = async (prompt: string) => {
-  try {
-    await Axios({
-      method: "POST",
-      url: `${core.localAPI._value}/api/generate`,
-      data: {
-        model: "llama3",
-        prompt: prompt,
-        stream: true,
-      },
-    })
-      .then((response) => {
-        // Log each chunk of the stream
-        response?.data?.on("data", (chunk) => {
-          console.log("New chunk:", chunk?.toString());
-        });
-
-        // Handle the end of the stream
-        response?.data?.on("end", () => {
-          console.log("Stream ended");
-        });
-      })
-      .catch((error) => {
-        console.error("Error:", error.message);
-      });
-  } catch (error) {
-    throw error;
-  }
-};
+// Load the database on the app frame
+loadDB();
 
 export const AppFrame = () => {
   async function startServer() {
@@ -47,34 +17,21 @@ export const AppFrame = () => {
     console.log(result);
   }
 
-  const sendPromptMessage = async () => {
-    // request the prompt
-    const res = await sendPrompt("Hey, my name is twan. What are you?");
-    console.log(res);
+  const loadAppData = async () => {
+    // TODO: Load conversations
+    const res = await actions.getConversations();
+    core.conversations.set(res as any);
   };
 
-  const database = useSimple(core.database);
-
-  const checkDatabase = useCallback(() => {
-    if (!database.ready) {
-      // actions.prepareDatabase();
-      core.database.patchObject({ ready: true });
-    }
-  }, [database]);
-
   useEffect(() => {
-    checkDatabase();
+    loadAppData();
   }, []);
 
   return (
-    <div className="flex flex-row h-full w-full">
+    <div className="flex flex-row h-full w-full overflow-hidden">
       <Sidebar />
       <div className="flex flex-col w-full">
-        <ChatHeader />
-        <div className="h-full w-full bg-neutral-100 p-4">
-          <Button onClick={startServer}>start server</Button>
-          <Button onClick={sendPromptMessage}>Send message</Button>
-        </div>
+        <ChatWindow />
       </div>
     </div>
   );

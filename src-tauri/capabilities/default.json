@@ -6,6 +6,10 @@
     "main"
   ],
   "permissions": [
+    "sql:default",
+    "sql:allow-select",
+    "sql:allow-load",
+    "sql:allow-execute",
     "core:app:default",
     "shell:allow-open",
     "shell:default",

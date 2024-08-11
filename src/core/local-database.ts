@@ -1,5 +1,15 @@
 import Database from "@tauri-apps/plugin-sql";
+import { core } from "./core";
 
-export const db = new Database("");
+export let db: Database;
+
+export const loadDB = async () => {
+  try {
+    db = await Database.load("sqlite:ollama-chat.db");
+    core.database.patchObject({ ready: true });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 // TODO: Doc says it improves the performance, enable this

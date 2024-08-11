@@ -7,18 +7,23 @@ export type ModelTypes =
   | "orca-mini";
 
 export interface IConversationType {
-  model: ModelTypes;
-  ctx: number[];
-  chatHistory: {
-    created_at: Date;
-    txt: { content: string; type: "text" | "code" }[];
-    who: "ollama" | "me";
-    name?: string;
-  }[];
-  name?: string;
+  id: string;
+  created_at: Date;
+  model: string;
+  title: string;
 }
 
-export type IConversations = { [index: string]: IConversationType };
+export type IConversations = IConversationType[];
+export type ConversationMessages = ConversationMessage[];
+
+export type ConversationMessage = {
+  id: string;
+  conversation_id: string;
+  created_at: string;
+  ai_replied: boolean;
+  message: string;
+  ctx?: string;
+};
 
 export type IModelType = {
   digest: string;
@@ -31,10 +36,11 @@ export type ICoreType = {
   database: {
     ready: boolean;
   };
-  conversations: {
-    [index: string]: IConversationType;
-  };
-  current_conversation: string;
+  conversations: IConversations;
+  focused_conv_id: string;
+  focused_conv_data: ConversationMessages;
+  focused_conv_meta: IConversationType;
+
   model: ModelTypes;
   localAPI: string;
   server_connected: boolean;

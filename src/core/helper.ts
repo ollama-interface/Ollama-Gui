@@ -1,6 +1,4 @@
 import { trimWhitespace } from ".";
-import { core } from "./core";
-import { ModelTypes } from "./types";
 
 export function generateRandomString(length: number): string {
   let randomString = "";
@@ -10,14 +8,6 @@ export function generateRandomString(length: number): string {
   }
   return randomString;
 }
-
-export const createNewConversation = (m?: ModelTypes) => {
-  const id = generateRandomString(5);
-  core.conversations.patchObject({
-    [id]: { chatHistory: [], ctx: [], model: m || "llama2" },
-  });
-  return id;
-};
 
 export function extractTextAndCodeBlocks(
   inputString: string
