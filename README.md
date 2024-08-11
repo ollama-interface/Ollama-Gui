@@ -8,6 +8,15 @@ This is a re write of the first version of Ollama chat, The new update will incl
 Stay in touch for upcoming updates
 
 <br />
+
+Todo list:
+
+- Add server auto start
+- Add dark mode
+- fix some minor bugs
+- Improve settings page
+
+<br />
 <br />
 
 Welcome to my Ollama Chat, this is an interface for the Official ollama CLI to make it easier to chat. It includes futures such as:
