@@ -4,6 +4,7 @@ import { loadDB } from "@/core/local-database";
 import { Sidebar } from "@/app/parts/sidebar";
 import { Command } from "@tauri-apps/plugin-shell";
 import { ChatWindow } from "./parts/chat-window";
+import { SettingsWrapper } from "./parts/settings-wrapper";
 
 // Load the database on the app frame
 loadDB();
@@ -28,11 +29,13 @@ export const AppFrame = () => {
   }, []);
 
   return (
-    <div className="flex flex-row h-full w-full overflow-hidden">
-      <Sidebar />
-      <div className="flex flex-col w-full">
-        <ChatWindow />
+    <SettingsWrapper>
+      <div className="flex flex-row h-full w-full overflow-hidden">
+        <Sidebar />
+        <div className="flex flex-col w-full">
+          <ChatWindow />
+        </div>
       </div>
-    </div>
+    </SettingsWrapper>
   );
 };

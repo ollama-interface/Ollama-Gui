@@ -6,6 +6,7 @@ import {
   ConversationMessages,
   IConversationType,
 } from "@/core/types";
+import { GearIcon } from "@radix-ui/react-icons";
 import dayjs from "dayjs";
 import { produce } from "immer";
 import { useSimple } from "simple-core-state";
@@ -48,10 +49,17 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="flex flex-col w-[300px] border-r-[1px] border-solid border-r-neutral-200">
-      <div className="p-4 w-full">
-        <Button onClick={newConversation} variant="outline">
+    <div className="flex flex-col w-[340px] border-r-[1px] border-solid border-r-neutral-200">
+      <div className="p-4 w-full flex-row flex">
+        <Button className="w-full" onClick={newConversation} variant="outline">
           New Conversation
+        </Button>
+        <Button
+          variant="outline"
+          className="ml-2"
+          onClick={() => core._events.trigger_settings.send()}
+        >
+          <GearIcon />
         </Button>
       </div>
       <div className="flex flex-1 overflow-hidden w-full">

@@ -20,5 +20,6 @@ const instance = new SimpleCore<ICoreType>(
 );
 
 instance.persist(["model", "visited"]);
+instance.events.create(["trigger_settings"]);
 
 export const core = instance.core();
