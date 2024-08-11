@@ -6,6 +6,8 @@
   "scripts": {
     "clean-target": "rm -rf ./src-tauri/target",
     "build:app:silicon": "pnpm clean-target && tauri build --target aarch64-apple-darwin",
+    "build:app:intell": "pnpm clean-target && tauri build --target x86_64-apple-darwin",
+    "build:app:universal": "pnpm clean-target && tauri build --target universal-apple-darwin",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
