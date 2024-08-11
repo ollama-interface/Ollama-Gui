@@ -1,5 +1,4 @@
 import { ChatHeader } from "./chat-header";
-import { Command } from "@tauri-apps/plugin-shell";
 import { Input } from "@/components/ui/input";
 import { useCallback, useState } from "react";
 import {
@@ -38,13 +37,13 @@ export const ChatWindow = () => {
   }, [messages, conv_id]);
 
   // TODO: We need to move this function to a life cycle for auto restart feature
-  async function startServer() {
-    let result = await Command.create("ollama-server", [
-      "-c",
-      "OLLAMA_ORIGINS=* OLLAMA_HOST=127.0.0.1:11434 ollama serve",
-    ]).execute();
-    console.log(result);
-  }
+  // async function startServer() {
+  //   let result = await Command.create("ollama-server", [
+  //     "-c",
+  //     "OLLAMA_ORIGINS=* OLLAMA_HOST=127.0.0.1:11434 ollama serve",
+  //   ]).execute();
+  //   console.log(result);
+  // }
 
   const changeModel = (model_name: string) => {
     // Update last used
@@ -89,7 +88,7 @@ export const ChatWindow = () => {
       message: m,
       created_at: dayjs().toDate(),
       ai_replied: false,
-      ctx: null,
+      ctx: "",
     };
 
     // save the send prompt in db
@@ -105,7 +104,7 @@ export const ChatWindow = () => {
 
     let lastCtx = [];
     if (messages.length > 1) {
-      lastCtx = JSON.parse(messages[1].ctx);
+      lastCtx = JSON.parse((messages[1].ctx as string) || "");
     }
 
     if (messages?.length === 0) {

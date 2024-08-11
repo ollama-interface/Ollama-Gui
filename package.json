@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "clean-target": "rm -rf ./src-tauri/target",
+    "build:app:silicon": "pnpm clean-target && tauri build --target aarch64-apple-darwin",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",

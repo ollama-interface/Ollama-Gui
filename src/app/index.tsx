@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { actions, core, syncModels } from "@/core";
 import { loadDB } from "@/core/local-database";
 import { Sidebar } from "@/app/parts/sidebar";
-import { Command } from "@tauri-apps/plugin-shell";
 import { ChatWindow } from "./parts/chat-window";
 import { SettingsWrapper } from "./parts/settings-wrapper";
 
@@ -10,13 +9,13 @@ import { SettingsWrapper } from "./parts/settings-wrapper";
 loadDB();
 
 export const AppFrame = () => {
-  async function startServer() {
-    let result = await Command.create("ollama-server", [
-      "-c",
-      "OLLAMA_ORIGINS=* OLLAMA_HOST=127.0.0.1:11434 ollama serve",
-    ]).execute();
-    console.log(result);
-  }
+  // async function startServer() {
+  //   let result = await Command.create("ollama-server", [
+  //     "-c",
+  //     "OLLAMA_ORIGINS=* OLLAMA_HOST=127.0.0.1:11434 ollama serve",
+  //   ]).execute();
+  //   console.log(result);
+  // }
 
   const loadAppData = async () => {
     // Load available models

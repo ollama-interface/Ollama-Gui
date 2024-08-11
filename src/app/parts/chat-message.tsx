@@ -9,7 +9,7 @@ export const ChatMessage = (props: ChatMessageProps) => {
 
   const parseText = useCallback(async () => {
     const p = await marked.parse(props.message);
-    contentRef.current.innerHTML = p;
+    if (contentRef?.current) contentRef.current.innerHTML = p;
   }, [props.message]);
 
   useEffect(() => {
