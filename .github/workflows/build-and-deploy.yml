@@ -68,6 +68,10 @@ jobs:
           path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
           if-no-files-found: error # or 'warn' or 'ignore'
 
+      # Pre command for intell build
+      - name: rustup command
+        run: rustup target add x86_64-apple-darwin
+
       # Build the project for MacOS Intel
       - name: Build for MacOS Intel
         run: pnpm build:app:intell
