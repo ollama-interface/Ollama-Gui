@@ -87,3 +87,8 @@ html {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+.drag-window {
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}

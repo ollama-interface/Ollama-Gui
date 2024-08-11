@@ -60,3 +60,12 @@ export function generateRandomId(length: number): string {
   }
   return result;
 }
+
+export const generateIdNumber = (input_length: number) => {
+  let result = "";
+  let chars = "0123456789";
+  for (let i = 0; i < input_length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};

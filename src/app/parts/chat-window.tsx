@@ -2,21 +2,42 @@ import { ChatHeader } from "./chat-header";
 import { Command } from "@tauri-apps/plugin-shell";
 import { Input } from "@/components/ui/input";
 import { useCallback, useState } from "react";
-import { actions, core, generateRandomId, sendPrompt } from "@/core";
+import {
+  actions,
+  core,
+  generateIdNumber,
+  generateRandomId,
+  sendPrompt,
+} from "@/core";
 import { useSimple } from "simple-core-state";
 import dayjs from "dayjs";
 import { produce } from "immer";
-import { ConversationMessage } from "@/core/types";
+import { ConversationMessage, ConversationMeta } from "@/core/types";
 import { ChatMessage } from "./chat-message";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const ChatWindow = () => {
   const conversations = useSimple(core.conversations);
   const conv_id = useSimple(core.focused_conv_id);
   const messages = useSimple(core.focused_conv_data);
+  const conversation_meta = useSimple(core.focused_conv_meta);
+  const available_models = useSimple(core.available_models);
+  const last_used_model = useSimple(core.last_used_model);
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const messagesList = useCallback(() => {
+    return messages;
+  }, [messages, conv_id]);
+
+  // TODO: We need to move this function to a life cycle for auto restart feature
   async function startServer() {
     let result = await Command.create("ollama-server", [
       "-c",
@@ -25,24 +46,54 @@ export const ChatWindow = () => {
     console.log(result);
   }
 
+  const changeModel = (model_name: string) => {
+    // Update last used
+    core.last_used_model.set(model_name);
+
+    // Update the current conversation we are looking at
+    core.focused_conv_meta.patchObject({ model: model_name });
+  };
+
   const sendPromptMessage = useCallback(async () => {
     setLoading(true);
+
+    // Check if we need to create a new conversation first
+    if (!conv_id) {
+      const v = {
+        id: generateRandomId(12),
+        created_at: dayjs().toDate(),
+        model: last_used_model,
+        title: "Conversation " + generateIdNumber(2),
+      };
+
+      actions.createConversation(v);
+
+      core.conversations.set(
+        produce((draft) => {
+          draft.push(v as unknown as ConversationMeta);
+        })
+      );
+
+      core.focused_conv_id.set(v.id);
+      core.focused_conv_meta.set(v);
+      core.focused_conv_data.set([]);
+    }
 
     let m = msg;
     let _conversation_id = conv_id;
     setMsg("");
 
     const v1 = {
-      ai_replied: false,
-      conversation_id: _conversation_id,
-      created_at: dayjs().toDate(),
       id: generateRandomId(12),
+      conversation_id: _conversation_id,
       message: m,
+      created_at: dayjs().toDate(),
+      ai_replied: false,
       ctx: null,
     };
 
     // save the send prompt in db
-    actions.sendPrompt(v1);
+    await actions.sendPrompt(v1);
 
     // Update the local state
     const messageCopy = [...messages];
@@ -52,29 +103,20 @@ export const ChatWindow = () => {
       })
     );
 
-    // Check if this is the first message we sent so we can update the conversation title
-    if (messages?.length === 0 || !messages) {
-      console.log("This is the first message of the conversations");
-
-      actions.updateConversationName(m, _conversation_id);
-
-      // core.focused_conv_meta.patchObject({ title: m });
-      core.conversations.set(
-        produce(conversations, (draft) => {
-          const c = draft.find((x) => x.id === _conversation_id);
-          c.title = m;
-        })
-      );
-    }
-
     let lastCtx = [];
     if (messages.length > 1) {
       lastCtx = JSON.parse(messages[1].ctx);
     }
 
+    if (messages?.length === 0) {
+      const x = msg?.slice(0, 20);
+      core.focused_conv_meta.updatePiece("title", x);
+      actions.updateConversationName(x, conversation_meta.id);
+    }
+
     // send the promp the the ai
     const res = await sendPrompt({
-      model: "llama3",
+      model: conversation_meta.model,
       prompt: m,
       context: lastCtx,
     });
@@ -89,8 +131,8 @@ export const ChatWindow = () => {
       ctx: res.context,
     };
 
-    /// save the send prompt in db
-    actions.sendPrompt(v2);
+    // save the send prompt in db
+    await actions.sendPrompt(v2);
 
     // Update the local state
     const messageCopy2 = [...messages];
@@ -101,22 +143,50 @@ export const ChatWindow = () => {
     );
 
     setLoading(false);
-  }, [msg, messages, conversations]);
+  }, [
+    msg,
+    messages,
+    conversations,
+    last_used_model,
+    conversation_meta,
+    conv_id,
+  ]);
 
   return (
     <div className="h-full">
       <ChatHeader />
       <div
         style={{ height: "calc(100% - 50px)" }}
-        className="w-full bg-neutral-100 p-4 flex flex-col"
+        className="w-full bg-neutral-100 flex flex-col"
       >
-        <div className="overflow-y-scroll flex flex-1 flex-col">
-          {!!messages?.length &&
-            messages?.map((item, index) => (
-              <ChatMessage {...item} key={index} />
-            ))}
+        <div className="overflow-y-scroll flex flex-1 flex-col pt-4">
+          {messages.length === 0 && (
+            <div className="flex-row flex py-1 items-center pl-4">
+              <p className="mr-2 text-sm">Select model: </p>
+              <Select
+                value={last_used_model}
+                onValueChange={(v) => {
+                  changeModel(v);
+                }}
+              >
+                <SelectTrigger className="w-[180px] h-[30px] bg-white">
+                  <SelectValue placeholder="Model" />
+                </SelectTrigger>
+                <SelectContent>
+                  {available_models.map((item, index) => (
+                    <SelectItem key={index} value={item.name}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          {(messagesList() || []).map((item) => (
+            <ChatMessage {...item} key={item.id} />
+          ))}
         </div>
-        <div className="flex flex-row">
+        <div className="flex flex-row p-4 pt-0">
           <Input
             disabled={loading}
             className="bg-white rounded-full"

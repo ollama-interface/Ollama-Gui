@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { ConversationMessage } from "@/core/types";
 import { marked } from "marked";
 import { twMerge } from "tailwind-merge";
@@ -19,7 +19,7 @@ export const ChatMessage = (props: ChatMessageProps) => {
   return (
     <div
       className={twMerge(
-        "w-full flex flex-row relative",
+        "w-full flex flex-row relative px-4",
         props.ai_replied ? "" : "justify-end"
       )}
     >

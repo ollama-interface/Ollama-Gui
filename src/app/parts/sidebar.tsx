@@ -1,11 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { actions, core, generateRandomId } from "@/core";
-import {
-  ConversationMessage,
-  ConversationMessages,
-  IConversationType,
-} from "@/core/types";
+import { actions, core, generateIdNumber, generateRandomId } from "@/core";
+import { ConversationMeta } from "@/core/types";
 import { GearIcon } from "@radix-ui/react-icons";
 import dayjs from "dayjs";
 import { produce } from "immer";
@@ -15,19 +10,20 @@ import { twMerge } from "tailwind-merge";
 export const Sidebar = () => {
   const convs = useSimple(core.conversations);
   const focused_conv_id = useSimple(core.focused_conv_id);
+  const last_used_model = useSimple(core.last_used_model);
 
   const newConversation = () => {
     const v = {
       id: generateRandomId(12),
       created_at: dayjs().toDate(),
-      model: "llama3",
-      title: "Somethign",
+      model: last_used_model,
+      title: "Conversation " + generateIdNumber(2),
     };
     actions.createConversation(v);
 
     core.conversations.set(
       produce((draft) => {
-        draft.push(v as unknown as IConversationType);
+        draft.push(v as unknown as ConversationMeta);
       })
     );
 
@@ -36,16 +32,15 @@ export const Sidebar = () => {
     core.focused_conv_data.set([]);
   };
 
-  const loadConversation = async (conv: IConversationType) => {
+  const loadConversation = async (conv: ConversationMeta) => {
     // set data
     core.focused_conv_id.set(conv.id);
     core.focused_conv_meta.set(conv);
 
     // Get messages from the conversation
-    const res = (await actions.getConversationMessages(
-      conv.id
-    )) as ConversationMessages;
-    core.focused_conv_data.set(res || []);
+    const res = await actions.getConversationMessages(conv.id);
+
+    core.focused_conv_data.set(res as any);
   };
 
   return (

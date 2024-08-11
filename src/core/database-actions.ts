@@ -97,3 +97,8 @@ export const prepareDatabase = async () => {
 
   return true;
 };
+
+export const flushDatbase = async () => {
+  await db.execute(`DELETE FROM conversation_messages;`);
+  await db.execute(`DELETE FROM conversations;`);
+};

@@ -8,8 +8,6 @@ export const loadDB = async () => {
     db = await Database.load("sqlite:ollama-chat.db");
     core.database.patchObject({ ready: true });
   } catch (error) {
-    console.log(error);
+    console.log("Something went wrong with loading the database", error);
   }
 };
-
-// TODO: Doc says it improves the performance, enable this
