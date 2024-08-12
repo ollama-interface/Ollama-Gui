@@ -3,6 +3,9 @@ name: Build and Deploy
 
 # Trigger the workflow on push to the specified branch
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
