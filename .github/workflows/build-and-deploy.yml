@@ -100,14 +100,14 @@ jobs:
 
       # Placeholder steps for future implementation for Windows
       # Build the project for Windows OS
-      # - name: Build for Windows
-      #   run: pnpm build:app:windows
+      - name: Build for Windows
+        run: pnpm build:app:windows
 
-      # - name: Archive Windows artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: windows
-      #     path: src-tauri/target/release/bundle/windows/* # Adjust this path if necessary
+      - name: Archive Windows artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows
+          path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
 
       # Placeholder steps for future implementation for Linux
       # Build the project for Linux OS

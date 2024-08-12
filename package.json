@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "clean-target": "rm -rf ./src-tauri/target",
+    "build:app:win64": "tauri build --target x86_64-pc-windows-msvc",
     "build:app:silicon": "pnpm clean-target && tauri build --target aarch64-apple-darwin",
     "build:app:intell": "pnpm clean-target && tauri build --target x86_64-apple-darwin",
     "build:app:universal": "pnpm clean-target && tauri build --target universal-apple-darwin",
