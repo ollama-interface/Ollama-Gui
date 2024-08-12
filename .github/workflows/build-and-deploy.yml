@@ -100,6 +100,11 @@ jobs:
 
       # Placeholder steps for future implementation for Windows
       # Build the project for Windows OS
+
+      - name: Pre windows script
+        run: rustup target add x86_64-pc-windows-msvc
+        
+        
       - name: Build for Windows
         run: pnpm build:app:windows
 
