@@ -92,3 +92,13 @@ html {
   -webkit-user-select: none;
   -webkit-app-region: drag;
 }
+
+
+/* For chat markdown styling since code block looks ugly */
+pre {
+  background-color: rgb(255, 255, 255);
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  margin-top: 2px;
+}

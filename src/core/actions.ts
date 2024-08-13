@@ -11,9 +11,7 @@ interface sendProptOptions {
 
 export const sendPrompt = async (p: sendProptOptions) => {
   try {
-    const res = await Axios({
-      method: "POST",
-      url: `${core.server_host._value}/api/generate`,
+    const res = await ollamaRequest<any>("POST", "api/generate", {
       data: {
         model: p.model,
         prompt: p.prompt,
@@ -22,7 +20,7 @@ export const sendPrompt = async (p: sendProptOptions) => {
       },
     });
 
-    return res.data;
+    return res;
   } catch (error) {
     throw error;
   }
@@ -39,4 +37,18 @@ export const syncModels = async () => {
       size: item.size,
     }))
   );
+};
+
+export const serverStatusCheck = async () => {
+  try {
+    const res = await Axios({ url: core.server_host._value });
+    if (res.status === 200) {
+      core.server_connected.set(true);
+    } else {
+      core.server_connected.set(false);
+    }
+  } catch (error) {
+    // TODO: alert the user for disconnection
+    core.server_connected.set(false);
+  }
 };
