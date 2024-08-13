@@ -11,6 +11,8 @@ export const Sidebar = () => {
   const convs = useSimple(core.conversations);
   const focused_conv_id = useSimple(core.focused_conv_id);
   const last_used_model = useSimple(core.last_used_model);
+  const server_connected = useSimple(core.server_connected);
+  const server_host = useSimple(core.server_host);
 
   const newConversation = () => {
     const v = {
@@ -19,6 +21,7 @@ export const Sidebar = () => {
       model: last_used_model,
       title: "Conversation " + generateIdNumber(2),
     };
+
     actions.createConversation(v);
 
     core.conversations.set(
@@ -45,6 +48,20 @@ export const Sidebar = () => {
 
   return (
     <div className="flex flex-col w-[340px] border-r-[1px] border-solid border-r-neutral-200">
+      <div className="p-4">
+        <div className="flex-row flex ">
+          <p className="text-xs font-medium">Status: </p>
+          <p
+            className={twMerge(
+              "text-xs font-medium ml-1",
+              server_connected ? "text-green-700" : "text-red-700"
+            )}
+          >
+            {server_connected ? "Connected" : "Disconnected"}
+          </p>
+        </div>
+        <p className="text-xs opacity-50">{server_host}</p>
+      </div>
       <div className="p-4 w-full flex-row flex">
         <Button className="w-full" onClick={newConversation} variant="outline">
           New Conversation

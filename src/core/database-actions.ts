@@ -50,7 +50,7 @@ export const sendPrompt = async (p: SendPrompProps) => {
       p.message,
       p.created_at,
       p?.ai_replied ? 1 : 0,
-      p?.ctx || null,
+      p?.ctx || '',
     ]
   );
   return true;
@@ -75,25 +75,24 @@ export const deleteConversation = async (id: string) => {
 export const prepareDatabase = async () => {
   // Create the conversations table
   await db.execute(
-    `CREATE TABLE conversations (
-    id TEXT PRIMARY KEY,
-    title TEXT NOT NULL,
-    mode TEXT NOT NULL,
-    created_at DATETIME NOT NULL
-  );`
-  );
+    `CREATE TABLE IF NOT EXISTS conversations (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      model TEXT NOT NULL,
+      created_at DATETIME NOT NULL
+    );`);
 
   // Create the conversation_messages table
   await db.execute(`
-  CREATE TABLE conversation_messages (
-    id TEXT PRIMARY KEY,
-    conversation_id TEXT NOT NULL,
-    message TEXT NOT NULL,
-    created_at DATETIME NOT NULL,
-    ai_replied INTEGER NOT NULL
-    FOREIGN KEY(conversation_id) REFERENCES conversations(id)
-  )
-`);
+    CREATE TABLE IF NOT EXISTS conversation_messages (
+      id TEXT PRIMARY KEY,
+      conversation_id TEXT NOT NULL,
+      message TEXT NOT NULL,
+      created_at DATETIME NOT NULL,
+      ai_replied INTEGER NOT NULL,
+      ctx TEXT NULL,
+      FOREIGN KEY(conversation_id) REFERENCES conversations(id)
+    );`);
 
   return true;
 };
