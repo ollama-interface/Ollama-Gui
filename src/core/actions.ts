@@ -1,6 +1,6 @@
 import Axios from "axios";
 import { core } from "./core";
-import { ollamaRequest } from "./utils";
+import { ollamaRequest, pullModel, PullProgressEvent } from "./utils";
 import { IModelType } from "./types";
 
 interface sendProptOptions {
@@ -37,6 +37,32 @@ export const syncModels = async () => {
       digest: item.digest,
       modified_at: item.modified_at,
       size: item.size,
-    }))
+    })),
   );
+};
+
+export const downloadModel = async (
+  modelName: string,
+  onProgress?: (progress: PullProgressEvent) => void,
+  signal?: AbortSignal,
+) => {
+  try {
+    await pullModel(modelName, onProgress, signal);
+    await syncModels();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteModel = async (modelName: string) => {
+  try {
+    await ollamaRequest("DELETE", `api/delete`, {
+      data: {
+        name: modelName,
+      },
+    });
+    await syncModels();
+  } catch (error) {
+    throw error;
+  }
 };

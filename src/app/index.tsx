@@ -18,12 +18,20 @@ export const AppFrame = () => {
   // }
 
   const loadAppData = async () => {
-    // Load available models
-    syncModels();
+    try {
+      // Load available models
+      await syncModels();
+    } catch (error) {
+      console.error("Failed to sync models:", error);
+    }
 
-    // Get all conversations from the db
-    const res = await actions.getConversations();
-    core.conversations.set(res as any);
+    try {
+      // Get all conversations from the db
+      const res = await actions.getConversations();
+      core.conversations.set(res as any);
+    } catch (error) {
+      console.error("Failed to load conversations:", error);
+    }
   };
 
   useEffect(() => {

@@ -16,6 +16,14 @@ export type ConversationMessage = {
   ai_replied: boolean;
   message: string;
   ctx?: string;
+  metrics?: {
+    total_duration?: number;
+    load_duration?: number;
+    prompt_eval_count?: number;
+    prompt_eval_duration?: number;
+    eval_count?: number;
+    eval_duration?: number;
+  };
 };
 
 export type IModelType = {
@@ -39,4 +47,6 @@ export type ICoreType = {
   server_connected: boolean;
   available_models: IModelType[];
   introduction_finished: boolean;
+  streaming_conv_id: string;
+  show_metrics: boolean;
 };
