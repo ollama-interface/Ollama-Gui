@@ -1,4 +1,4 @@
-# Ollama Chat App 🐐
+# Ollama Chat App 🐐 V2
 
 [![Build and Deploy](https://github.com/ollama-interface/Ollama-Gui/actions/workflows/build-and-deploy.yml/badge.svg?branch=main)](https://github.com/ollama-interface/Ollama-Gui/actions/workflows/build-and-deploy.yml)
 
@@ -12,35 +12,34 @@ Welcome to my Ollama Chat, this is an interface for the Official ollama CLI to m
 - Import & Export Chats 🚛
 - Light & Dark Theme 🌗
 
+This is a re write of the first version of Ollama chat, The new update will include some time saving features and make it more stable and available for Macos and Windows. Also a new freshly look will be included as well.
 <br />
 
-<img src="./.github/docs/preview-2.png" />
+Stay in touch for upcoming updates
 
 <br />
 
-## How to build on your machine
+Todo list:
 
-### Requirements
-
-- [Git](https://git-scm.com/)
-- [NodeJS](https://nodejs.org/en) LTS 18
-- [pnpm](https://pnpm.io/) 8.8.0+
-- [rust](https://www.rust-lang.org/) 1.72.1=
+- Add server auto start
+- Add dark mode
+- fix some minor bugs
+- Improve settings page
 
 Your machine needs to be set up to build Tauri apps. Follow the [Getting Started](https://tauri.app/v1/guides/getting-started/prerequisites) guide to ensure you system is set up correctly.
 
 <br />
-
-1.  Clone the repo `git clone git@github.com:ollama-interface/Ollama-Gui.git`
-2.  `pnpm i`
-3.  `pnpm build:app:silicon` (:silicon or :intell or :universal) depending on your machine
-4.  Go to `/src-tauri/target/release/bundle/dmg/*.dmg` and install the program with the .dmg file.
-
 <br />
 
-You as well you need to install [Ollama](https://ollama.ai) and after you installed it, you can run your local server with this command `OLLAMA_ORIGINS=* OLLAMA_HOST=127.0.0.1:11435 ollama serve`.
+Welcome to my Ollama Chat, this is an interface for the Official ollama CLI to make it easier to chat. It includes futures such as:
 
-<br />
-<br />
+- Improved interface design & user friendly
+- ~~Auto check if ollama is running~~ _(**NEW**, Auto start ollama server)_ ⏰
+- Multiple conversations 💬
+- Detect which models are available to use 📋
+- Able to change the host where ollama is running at 🖥️
+- Perstistance 📀
+- Import & Export Chats 🚛
+- Light & Dark Theme 🌗
 
 For any questions, please contact [Twan Luttik (Twitter - X)](https://twitter.com/twanluttik)

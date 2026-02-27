@@ -28,7 +28,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x'
+          node-version: "20.x"
 
       # Set up the Rust toolchain
       - name: Setup Rust
@@ -68,6 +68,10 @@ jobs:
           path: src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg
           if-no-files-found: error # or 'warn' or 'ignore'
 
+      # Pre command for intell build
+      - name: rustup command
+        run: rustup target add x86_64-apple-darwin
+
       # Build the project for MacOS Intel
       - name: Build for MacOS Intel
         run: pnpm build:app:intell
@@ -96,14 +100,19 @@ jobs:
 
       # Placeholder steps for future implementation for Windows
       # Build the project for Windows OS
-      # - name: Build for Windows
-      #   run: pnpm build:app:windows
 
-      # - name: Archive Windows artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: windows
-      #     path: src-tauri/target/release/bundle/windows/* # Adjust this path if necessary
+      - name: Pre windows script
+        run: rustup target add x86_64-pc-windows-msvc
+        
+        
+      - name: Build for Windows
+        run: pnpm build:app:windows
+
+      - name: Archive Windows artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows
+          path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
 
       # Placeholder steps for future implementation for Linux
       # Build the project for Linux OS
