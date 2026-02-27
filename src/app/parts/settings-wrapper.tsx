@@ -22,7 +22,10 @@ export const SettingsWrapper = ({ children }: { children: ReactNode }) => {
     handleSubmit,
     formState: { isDirty },
   } = useForm<Inputs>({ values: { host: host_url } });
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    console.log("1223m", data);
+  };
 
   const clearDatabase = async () => {
     await actions.flushDatbase();
@@ -35,7 +38,7 @@ export const SettingsWrapper = ({ children }: { children: ReactNode }) => {
   return (
     <div className="h-full w-full relative">
       {open && (
-        <div className="absolute h-full w-full bg-white z-10">
+        <div className="absolute h-full w-full bg-white z-20 ">
           <div className="p-4">
             <div className="flex-row flex mb-2">
               <p className="font-bold text-lg">Settings</p>
@@ -51,7 +54,13 @@ export const SettingsWrapper = ({ children }: { children: ReactNode }) => {
             <form onSubmit={handleSubmit(onSubmit)}>
               {isDirty && (
                 <div className="flex flex-row mb-2">
-                  <Button size="sm" className="mr-2">
+                  <Button
+                    size="sm"
+                    className="mr-2"
+                    onClick={() => {
+                      handleSubmit(onSubmit);
+                    }}
+                  >
                     Save
                   </Button>
                   <Button
@@ -84,21 +93,25 @@ export const SettingsWrapper = ({ children }: { children: ReactNode }) => {
             </div>
             <div className="flex flex-col">
               <p>Build by:</p>
-              <Button
-                variant="link"
-                onClick={() => window.open("https://x.com/twanluttik")}
-              >
-                Twan Luttik - x.com
-              </Button>
+              <div className="flex-col flex items-start">
+                <p
+                  className="cursor-pointer hover:opacity-50 active:opacity-30"
+                  onClick={() => window.open("https://x.com/twanluttik")}
+                >
+                  Twan Luttik - x.com
+                </p>
 
-              <Button
-                variant="link"
-                onClick={() =>
-                  window.open("https://github.com/ollama-interface/Ollama-Gui")
-                }
-              >
-                code - github.com
-              </Button>
+                <p
+                  className="cursor-pointer hover:opacity-50"
+                  onClick={() =>
+                    window.open(
+                      "https://github.com/ollama-interface/Ollama-Gui"
+                    )
+                  }
+                >
+                  code - github.com
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -36,15 +36,6 @@ export const ChatWindow = () => {
     return messages;
   }, [messages, conv_id]);
 
-  // TODO: We need to move this function to a life cycle for auto restart feature
-  // async function startServer() {
-  //   let result = await Command.create("ollama-server", [
-  //     "-c",
-  //     "OLLAMA_ORIGINS=* OLLAMA_HOST=127.0.0.1:11434 ollama serve",
-  //   ]).execute();
-  //   console.log(result);
-  // }
-
   const changeModel = (model_name: string) => {
     // Update last used
     core.last_used_model.set(model_name);

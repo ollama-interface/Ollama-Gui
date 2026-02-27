@@ -19,7 +19,7 @@ export const ollamaRequest = async <T extends any>(
     return res.data as T;
   } catch (error) {
     core.server_connected.set(false);
-    throw error;
+    throw error
   }
 };
 
