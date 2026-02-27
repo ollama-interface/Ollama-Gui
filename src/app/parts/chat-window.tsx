@@ -1,5 +1,5 @@
 import { ChatHeader } from "./chat-header";
-import { Input } from "@/components/ui/input";
+import { ChatInput } from "./chat-input";
 import { useCallback, useState, useRef, useEffect } from "react";
 import {
   actions,
@@ -447,27 +447,14 @@ export const ChatWindow = () => {
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <div className="flex flex-row p-4 pt-0">
-          <Input
-            disabled={loading}
-            className="bg-white rounded-full"
-            placeholder="Type your prompt"
-            onChange={(x) => setMsg(x.target.value)}
+        <div className="flex flex-col p-4 pt-0">
+          <ChatInput
             value={msg}
-            onKeyDown={(x) => {
-              if (x.code === "Enter") {
-                sendPromptMessage();
-              }
-            }}
+            onChange={setMsg}
+            onSend={sendPromptMessage}
+            disabled={loading}
+            placeholder="Type your prompt... (Shift+Enter for new line)"
           />
-          <Button
-            size="sm"
-            className="ml-2 rounded-full text-sm h-full px-4"
-            disabled={loading || msg === ""}
-            onClick={sendPromptMessage}
-          >
-            Send
-          </Button>
         </div>
       </div>
       <ModelDownloadDialog

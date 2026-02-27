@@ -5,6 +5,7 @@ import { twMerge } from "tailwind-merge";
 import { ResponseMetrics } from "./response-metrics";
 import { useSimple } from "simple-core-state";
 import { core } from "@/core";
+import { open } from "@tauri-apps/plugin-shell";
 
 interface ChatMessageProps extends ConversationMessage {}
 export const ChatMessage = (props: ChatMessageProps) => {
@@ -13,7 +14,57 @@ export const ChatMessage = (props: ChatMessageProps) => {
 
   const parseText = useCallback(async () => {
     const p = await marked.parse(props.message);
-    if (contentRef?.current) contentRef.current.innerHTML = p;
+    if (contentRef?.current) {
+      contentRef.current.innerHTML = p;
+
+      // Add click handlers to links
+      const links = contentRef.current.querySelectorAll("a");
+      links.forEach((link) => {
+        link.addEventListener("click", async (e) => {
+          e.preventDefault();
+          const href = link.getAttribute("href");
+          if (href) {
+            try {
+              await open(href);
+            } catch (error) {
+              console.error("Failed to open link:", error);
+            }
+          }
+        });
+      });
+
+      // Add copy buttons to code blocks
+      const preBlocks = contentRef.current.querySelectorAll("pre");
+      preBlocks.forEach((pre) => {
+        const codeBlock = pre.querySelector("code");
+        if (codeBlock) {
+          const wrapper = document.createElement("div");
+          wrapper.className = "code-block-wrapper";
+
+          const copyButton = document.createElement("button");
+          copyButton.className = "copy-button";
+          copyButton.textContent = "Copy";
+          copyButton.type = "button";
+
+          copyButton.addEventListener("click", async () => {
+            const code = codeBlock.textContent || "";
+            try {
+              await navigator.clipboard.writeText(code);
+              copyButton.textContent = "Copied!";
+              setTimeout(() => {
+                copyButton.textContent = "Copy";
+              }, 2000);
+            } catch (error) {
+              console.error("Failed to copy code:", error);
+            }
+          });
+
+          pre.parentNode?.insertBefore(wrapper, pre);
+          wrapper.appendChild(copyButton);
+          wrapper.appendChild(pre);
+        }
+      });
+    }
   }, [props.message]);
 
   useEffect(() => {
@@ -32,13 +83,16 @@ export const ChatMessage = (props: ChatMessageProps) => {
       </p>
       <div
         className={twMerge(
-          "px-4 py-2 rounded-2xl w-fit",
+          "px-4 py-2 rounded-3xl w-fit",
           props.ai_replied
             ? "bg-gray-200 text-gray-900 max-w-2xl"
             : "bg-blue-500 text-white max-w-xs",
         )}
       >
-        <div className="text-[14px] leading-relaxed" ref={contentRef}></div>
+        <div
+          className="text-[14px] leading-relaxed markdown-content"
+          ref={contentRef}
+        ></div>
         {props.ai_replied && props.metrics && show_metrics && (
           <ResponseMetrics
             total_duration={props.metrics.total_duration}

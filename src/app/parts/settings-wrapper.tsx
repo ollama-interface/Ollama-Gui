@@ -140,10 +140,10 @@ export const SettingsWrapper = ({ children }: { children: ReactNode }) => {
   return (
     <div className="h-full w-full relative">
       {open && (
-        <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-white w-full h-full max-w-full max-h-full overflow-y-auto flex flex-col">
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between shrink-0">
               <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
               <button
                 onClick={() => setOpen(false)}
@@ -154,7 +154,7 @@ export const SettingsWrapper = ({ children }: { children: ReactNode }) => {
             </div>
 
             {/* Content */}
-            <div className="p-6 space-y-8">
+            <div className="p-6 space-y-8 overflow-y-auto flex-1">
               {/* Server Settings Section */}
               <section>
                 <div className="flex items-center gap-2 mb-4">

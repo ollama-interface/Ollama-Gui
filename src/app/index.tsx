@@ -1,21 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { actions, core, syncModels } from "@/core";
 import { loadDB } from "@/core/local-database";
 import { Sidebar } from "@/app/parts/sidebar";
 import { ChatWindow } from "./parts/chat-window";
 import { SettingsWrapper } from "./parts/settings-wrapper";
+import { Onboarding } from "./parts/onboarding";
+import { useSimple } from "simple-core-state";
 
 // Load the database on the app frame
 loadDB();
 
 export const AppFrame = () => {
-  // async function startServer() {
-  //   let result = await Command.create("ollama-server", [
-  //     "-c",
-  //     "OLLAMA_ORIGINS=* OLLAMA_HOST=127.0.0.1:11434 ollama serve",
-  //   ]).execute();
-  //   console.log(result);
-  // }
+  const introduction_finished = useSimple(core.introduction_finished);
+  const [showOnboarding, setShowOnboarding] = useState(!introduction_finished);
 
   const loadAppData = async () => {
     try {
@@ -38,6 +35,14 @@ export const AppFrame = () => {
     // Load app data in order for functionality
     loadAppData();
   }, []);
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+  };
+
+  if (showOnboarding) {
+    return <Onboarding onComplete={handleOnboardingComplete} />;
+  }
 
   return (
     <SettingsWrapper>

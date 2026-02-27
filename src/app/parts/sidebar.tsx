@@ -7,6 +7,7 @@ import { produce } from "immer";
 import { useSimple } from "simple-core-state";
 import { twMerge } from "tailwind-merge";
 import { Plus, Settings, Loader } from "lucide-react";
+import { OllamaStatusIndicator } from "./ollama-status";
 
 export const Sidebar = () => {
   const convs = useSimple(core.conversations);
@@ -133,6 +134,9 @@ export const Sidebar = () => {
           )}
         </div>
       </div>
+
+      {/* Ollama Status */}
+      <OllamaStatusIndicator />
     </div>
   );
 };
