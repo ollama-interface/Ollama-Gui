@@ -129,50 +129,48 @@ jobs:
 
     # Define the steps to be performed in the release job
     steps:
-      # Download the build artifacts from the build job
       - name: Download artifacts
         uses: actions/download-artifact@v4
+        with:
+          path: artifacts
 
-      # # List the contents of the directories
-      # # For debugging purposes
-      # - name: List contents of directories
-      #   run: |
-      #     echo "Listing contents of macos-silicon directory"
-      #     ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-silicon
-      #     echo "Listing contents of macos-intel directory"
-      #     ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-intel
-      #     echo "Listing contents of macos-universal directory"
-      #     ls -la /home/runner/work/Ollama-Gui/Ollama-Gui/macos-universal
+      - name: List downloaded artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          find artifacts -type f -name "*.dmg" -o -name "*.exe"
+          ls -la artifacts/
 
       - name: Generate tag
         id: generate_tag
         run: echo "tag=release-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Create GitHub Release and Upload Assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="${{ steps.generate_tag.outputs.tag }}"
+          echo "Creating release with tag: $TAG"
 
+          # Collect all artifacts
+          ASSETS=()
+          for file in artifacts/macos-silicon/*.dmg artifacts/macos-intel/*.dmg artifacts/macos-universal/*.dmg artifacts/windows/*.exe; do
+            if [ -f "$file" ]; then
+              ASSETS+=("$file")
+              echo "Found asset: $file"
+            fi
+          done
+
+          if [ ${#ASSETS[@]} -eq 0 ]; then
+            echo "ERROR: No artifacts found!"
+            exit 1
+          fi
+
+          # Create release with all assets
           gh release create "$TAG" \
             --title "Release $TAG" \
             --draft=false \
             --prerelease=false \
-            macos-silicon/*.dmg \
-            macos-intel/*.dmg \
-            macos-universal/*.dmg \
-            windows/*.exe \
-            2>/dev/null || echo "Release already exists or failed to create"
+            "${ASSETS[@]}"
 
-          if [ -f "macos-silicon"/*.dmg ]; then
-            gh release upload "$TAG" macos-silicon/*.dmg --clobber 2>/dev/null || true
-          fi
-          if [ -f "macos-intel"/*.dmg ]; then
-            gh release upload "$TAG" macos-intel/*.dmg --clobber 2>/dev/null || true
-          fi
-          if [ -f "macos-universal"/*.dmg ]; then
-            gh release upload "$TAG" macos-universal/*.dmg --clobber 2>/dev/null || true
-          fi
-          if [ -f "windows"/*.exe ]; then
-            gh release upload "$TAG" windows/*.exe --clobber 2>/dev/null || true
-          fi
+          echo "Release created successfully with ${#ASSETS[@]} assets"
