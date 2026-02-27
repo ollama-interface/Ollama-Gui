@@ -40,7 +40,7 @@ jobs:
 
       # Check if there is a cache of the pnpm modules and restore it
       - name: Cache pnpm modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.pnpm-store
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -61,7 +61,7 @@ jobs:
 
       # Archive the MacOS Silicon build artifacts
       - name: Archive MacOS Silicon artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-silicon
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
@@ -78,7 +78,7 @@ jobs:
 
       # Archive the MacOS Intel build artifacts
       - name: Archive MacOS Intel artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-intel
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
@@ -91,7 +91,7 @@ jobs:
 
       # Archive the MacOS Universal build artifacts
       - name: Archive MacOS Universal artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-universal
           # The current path is very specific and might need adjustments with any changes in the file name or structure. A more generalized path (e.g., src-tauri/target/release/bundle/dmg/*.dmg) would be preferable as it's more flexible and resilient to such changes.
@@ -103,13 +103,12 @@ jobs:
 
       - name: Pre windows script
         run: rustup target add x86_64-pc-windows-msvc
-        
-        
+
       - name: Build for Windows
         run: pnpm build:app:windows
 
       - name: Archive Windows artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows
           path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
