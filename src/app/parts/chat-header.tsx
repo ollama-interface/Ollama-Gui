@@ -8,6 +8,7 @@ import { Link2, Code2 } from "lucide-react";
 
 export const ChatHeader = () => {
   const conversation_meta = useSimple(core.focused_conv_meta);
+  const last_used_model = useSimple(core.last_used_model);
   const messages = useSimple(core.focused_conv_data);
   const [isCollectionsOpen, setIsCollectionsOpen] = useState(false);
 
@@ -25,7 +26,7 @@ export const ChatHeader = () => {
           <p className="text-sm font-medium tracking-tight">
             {conversation_meta?.title || " "}
           </p>
-          <p className="text-xs italic opacity-40">{conversation_meta.model}</p>
+          <p className="text-xs italic opacity-40">{last_used_model}</p>
         </div>
         <div className="flex items-center gap-3">
           {conversation_meta.created_at && (

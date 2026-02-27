@@ -6,6 +6,12 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "src/**"
+      - "src-tauri/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/build-and-deploy.yml"
 
 # Define the jobs to be run
 jobs:

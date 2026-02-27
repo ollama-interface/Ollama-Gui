@@ -8,6 +8,8 @@ A modern, feature-rich desktop application for interacting with Ollama models. B
 
 Ollama Chat App is a user-friendly interface for the [Official Ollama CLI](https://ollama.ai) that makes it easy to chat with large language models locally. Whether you're a developer, researcher, or AI enthusiast, this app provides an intuitive way to interact with Ollama without touching the command line.
 
+![Ollama Chat App Screenshot](./HCKOKjtaEAAK4Ok.jpeg)
+
 ## ✨ Features
 
 - **🎨 Modern UI** – Clean, intuitive interface built with React and Tailwind CSS

@@ -93,7 +93,7 @@ export const ChatWindow = () => {
 
       setLoading(true);
       const _conversation_id = conv_id;
-      const _model = conversation_meta?.model || last_used_model;
+      const _model = last_used_model;
 
       try {
         const chatMessages: ChatMessageType[] = messages.map((msg) => ({
@@ -171,7 +171,7 @@ export const ChatWindow = () => {
     setLoading(true);
 
     let _conversation_id = conv_id;
-    let _model = conversation_meta?.model || last_used_model;
+    let _model = last_used_model;
     let _messages = messages;
 
     if (!conv_id) {
@@ -200,7 +200,6 @@ export const ChatWindow = () => {
       core.focused_conv_meta.set(v);
       core.focused_conv_data.set([]);
       _conversation_id = v.id;
-      _model = v.model;
       _messages = [];
     }
 
@@ -541,7 +540,7 @@ Remember: You MUST use tools. Do not explain what tools do - USE THEM.`,
     setLoading(true);
 
     let _conversation_id = conv_id;
-    let _model = conversation_meta?.model || last_used_model;
+    let _model = last_used_model;
     let _messages = messages;
 
     // Check if we need to create a new conversation first
@@ -571,7 +570,6 @@ Remember: You MUST use tools. Do not explain what tools do - USE THEM.`,
       core.focused_conv_meta.set(v);
       core.focused_conv_data.set([]);
       _conversation_id = v.id;
-      _model = v.model;
       _messages = [];
     }
 
