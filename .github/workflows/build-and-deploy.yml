@@ -67,7 +67,7 @@ jobs:
         run: pnpm i
 
       - name: Build for macOS ${{ matrix.name }}
-        run: pnpm clean-target && tauri build --target ${{ matrix.target }}
+        run: pnpm clean-target && pnpm tauri build --target ${{ matrix.target }}
 
       - name: Archive macOS ${{ matrix.name }} artifacts
         uses: actions/upload-artifact@v4
@@ -112,7 +112,7 @@ jobs:
         run: pnpm i
 
       - name: Build for Windows
-        run: pnpm clean-target && tauri build --target x86_64-pc-windows-msvc
+        run: pnpm clean-target && pnpm tauri build --target x86_64-pc-windows-msvc
 
       - name: Archive Windows artifacts
         uses: actions/upload-artifact@v4
