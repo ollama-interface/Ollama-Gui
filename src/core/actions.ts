@@ -1,7 +1,14 @@
 import Axios from "axios";
 import { core } from "./core";
-import { ollamaRequest, pullModel, PullProgressEvent } from "./utils";
-import { IModelType } from "./types";
+import {
+  ollamaRequest,
+  pullModel,
+  PullProgressEvent,
+  buildModel,
+  BuildProgressEvent,
+  ModelfileConfig,
+} from "./utils";
+import { IModelType, Modelfile } from "./types";
 
 interface sendProptOptions {
   prompt: string;
@@ -65,4 +72,79 @@ export const deleteModel = async (modelName: string) => {
   } catch (error) {
     throw error;
   }
+};
+
+export const buildModelFromFile = async (
+  modelName: string,
+  modelfile: Modelfile,
+  onProgress?: (progress: BuildProgressEvent) => void,
+  signal?: AbortSignal,
+) => {
+  try {
+    const config: ModelfileConfig = {
+      from: modelfile.from,
+      system: modelfile.system,
+      template: modelfile.template,
+      adapter: modelfile.adapter,
+      license: modelfile.license,
+      requires: modelfile.requires,
+    };
+
+    if (modelfile.parameters && modelfile.parameters.length > 0) {
+      config.parameters = {};
+      for (const param of modelfile.parameters) {
+        config.parameters[param.name] = param.value;
+      }
+    }
+
+    if (modelfile.messages && modelfile.messages.length > 0) {
+      config.messages = modelfile.messages.map((msg) => ({
+        role: msg.role,
+        content: msg.content,
+      }));
+    }
+
+    await buildModel(modelName, config, onProgress, signal);
+    await syncModels();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const convertModelfileToString = (modelfile: Modelfile): string => {
+  let content = `FROM ${modelfile.from}\n`;
+
+  if (modelfile.parameters && modelfile.parameters.length > 0) {
+    for (const param of modelfile.parameters) {
+      content += `PARAMETER ${param.name} ${param.value}\n`;
+    }
+  }
+
+  if (modelfile.template) {
+    content += `TEMPLATE """${modelfile.template}"""\n`;
+  }
+
+  if (modelfile.system) {
+    content += `SYSTEM """${modelfile.system}"""\n`;
+  }
+
+  if (modelfile.adapter) {
+    content += `ADAPTER ${modelfile.adapter}\n`;
+  }
+
+  if (modelfile.license) {
+    content += `LICENSE """${modelfile.license}"""\n`;
+  }
+
+  if (modelfile.messages && modelfile.messages.length > 0) {
+    for (const msg of modelfile.messages) {
+      content += `MESSAGE ${msg.role} ${msg.content}\n`;
+    }
+  }
+
+  if (modelfile.requires) {
+    content += `REQUIRES ${modelfile.requires}\n`;
+  }
+
+  return content;
 };

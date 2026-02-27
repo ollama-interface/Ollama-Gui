@@ -2,15 +2,16 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": [
-    "main"
-  ],
+  "windows": ["main"],
   "permissions": [
     "sql:default",
     "sql:allow-select",
     "sql:allow-load",
     "sql:allow-execute",
     "core:app:default",
+    "core:path:default",
+    "core:path:allow-resolve-directory",
+    "opener:allow-open-path",
     "shell:allow-open",
     "shell:default",
     {
@@ -19,10 +20,17 @@
         {
           "name": "ollama-server",
           "cmd": "ollama",
-          "args": [
-            "serve"
-          ],
-          "sidecar": false
+          "args": ["serve"]
+        },
+        {
+          "name": "open-folder",
+          "cmd": "open",
+          "args": ["*"]
+        },
+        {
+          "name": "xdg-open-folder",
+          "cmd": "xdg-open",
+          "args": ["*"]
         }
       ]
     },

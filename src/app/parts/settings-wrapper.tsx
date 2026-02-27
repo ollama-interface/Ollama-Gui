@@ -138,7 +138,7 @@ export const SettingsWrapper = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <div className="h-full w-full relative">
+    <div className="h-full w-full relative overflow-hidden">
       {open && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
           <div className="bg-white w-full h-full max-w-full max-h-full overflow-y-auto flex flex-col">

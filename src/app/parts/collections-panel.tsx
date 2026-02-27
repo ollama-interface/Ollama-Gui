@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Link2, Code2, Copy, ExternalLink } from "lucide-react";
+import { Link2, Code2, Copy, ExternalLink } from "lucide-react";
 import { open } from "@tauri-apps/plugin-shell";
 import { CollectionItem } from "./collections-utils";
 
@@ -9,7 +9,6 @@ interface CollectionsPanelProps {
 }
 
 export const CollectionsPanel = ({ items, onClose }: CollectionsPanelProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const linkItems = items.filter((item) => item.type === "link");
@@ -39,25 +38,16 @@ export const CollectionsPanel = ({ items, onClose }: CollectionsPanelProps) => {
 
   return (
     <div className="border-t border-neutral-200 bg-white">
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-neutral-50 transition-colors"
-      >
-        <div className="flex items-center gap-2">
+      <div className="px-4 py-3">
+        <div className="flex items-center gap-2 mb-4">
           <span className="text-sm font-medium">Collections</span>
           <span className="text-xs bg-neutral-200 text-neutral-700 px-2 py-1 rounded-full">
             {items.length}
           </span>
         </div>
-        <ChevronDown
-          size={18}
-          className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}
-        />
-      </button>
 
-      {isExpanded && (
         <div className="max-h-96 overflow-y-auto">
-          <div className="px-4 py-3 space-y-4">
+          <div className="space-y-4">
             {linkItems.length > 0 && (
               <div>
                 <h3 className="text-xs font-semibold text-neutral-600 mb-2 flex items-center gap-1">
@@ -126,7 +116,7 @@ export const CollectionsPanel = ({ items, onClose }: CollectionsPanelProps) => {
             )}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

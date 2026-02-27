@@ -9,6 +9,41 @@ export interface ConversationMeta {
 export type IConversations = ConversationMeta[];
 export type ConversationMessages = ConversationMessage[];
 
+export type ToolParameter = {
+  type: "string" | "number" | "integer" | "boolean" | "object" | "array";
+  description: string;
+  enum?: string[];
+};
+
+export type ToolFunction = {
+  name: string;
+  description: string;
+  parameters: {
+    type: "object";
+    required: string[];
+    properties: Record<string, ToolParameter>;
+  };
+};
+
+export type Tool = {
+  type: "function";
+  function: ToolFunction;
+};
+
+export type ToolCall = {
+  type: "function";
+  function: {
+    index?: number;
+    name: string;
+    arguments: Record<string, any>;
+  };
+};
+
+export type ToolResult = {
+  tool_name: string;
+  content: string;
+};
+
 export type ConversationMessage = {
   id: string;
   conversation_id: string;
@@ -16,6 +51,8 @@ export type ConversationMessage = {
   ai_replied: boolean;
   message: string;
   ctx?: string;
+  tool_calls?: ToolCall[];
+  tool_results?: ToolResult[];
   metrics?: {
     total_duration?: number;
     load_duration?: number;
@@ -31,6 +68,33 @@ export type IModelType = {
   digest: string;
   modified_at: string;
   size: number;
+};
+
+export type ModelfileParameter = {
+  name: string;
+  value: string | number;
+};
+
+export type ModelfileMessage = {
+  role: "user" | "assistant" | "system";
+  content: string;
+};
+
+export type Modelfile = {
+  from: string;
+  parameters?: ModelfileParameter[];
+  template?: string;
+  system?: string;
+  adapter?: string;
+  license?: string;
+  messages?: ModelfileMessage[];
+  requires?: string;
+};
+
+export type ModelBuildRequest = {
+  name: string;
+  modelfile: Modelfile;
+  stream?: boolean;
 };
 
 export type ICoreType = {

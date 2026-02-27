@@ -31,24 +31,45 @@ export const ResponseMetrics = ({
   eval_count,
   eval_duration,
 }: ResponseMetricsProps) => {
+  const hasMetrics =
+    total_duration ||
+    load_duration ||
+    prompt_eval_duration ||
+    eval_duration ||
+    prompt_eval_count ||
+    eval_count;
+
+  if (!hasMetrics) return null;
+
   return (
-    <div className="mt-2 pt-2 border-t border-gray-300 text-xs text-gray-600">
+    <div className="mt-2 pt-2 pb-2 border-t border-gray-300 text-xs text-gray-600">
       <div className="flex flex-wrap gap-3">
-        <span>
-          <strong>Total:</strong> {formatDuration(total_duration)}
-        </span>
-        <span>
-          <strong>Load:</strong> {formatDuration(load_duration)}
-        </span>
-        <span>
-          <strong>Prompt eval:</strong> {formatDuration(prompt_eval_duration)}
-        </span>
-        <span>
-          <strong>Output eval:</strong> {formatDuration(eval_duration)}
-        </span>
-        <span>
-          <strong>Tokens:</strong> {prompt_eval_count} in, {eval_count} out
-        </span>
+        {total_duration && (
+          <span>
+            <strong>Total:</strong> {formatDuration(total_duration)}
+          </span>
+        )}
+        {load_duration && (
+          <span>
+            <strong>Load:</strong> {formatDuration(load_duration)}
+          </span>
+        )}
+        {prompt_eval_duration && (
+          <span>
+            <strong>Prompt eval:</strong> {formatDuration(prompt_eval_duration)}
+          </span>
+        )}
+        {eval_duration && (
+          <span>
+            <strong>Output eval:</strong> {formatDuration(eval_duration)}
+          </span>
+        )}
+        {(prompt_eval_count || eval_count) && (
+          <span>
+            <strong>Tokens:</strong> {prompt_eval_count || 0} in,{" "}
+            {eval_count || 0} out
+          </span>
+        )}
         {eval_duration && eval_count && (
           <span className="flex items-center gap-1">
             <Zap size={12} className="text-yellow-600" />
