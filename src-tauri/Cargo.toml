@@ -26,3 +26,11 @@ tauri-plugin-fs = "2.1"
 features = ["sqlite"] 
 version = "2.1"
 
+[dependencies.sqlx]
+version = "0.8"
+features = ["runtime-tokio-native-tls", "sqlite"]
+
+[target.'cfg(windows)'.dependencies.libsqlite3-sys]
+version = "0.28"
+features = ["bundled"]
+
